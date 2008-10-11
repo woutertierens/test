@@ -159,7 +159,7 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 	}
 
 	/////////////////////////////////////////////////////////////////
-	//	Uneditable versions, for:
+	//	Default versions, for:
 	//
 	//	Float, Double
 	//	Boolean, Byte, Short, Integer, Long
@@ -170,35 +170,35 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 	//	Map
 	/////////////////////////////////////////////////////////////////
 
-	public Prop<Float> uneditable(String name, Float value) {
+	public Prop<Float> create(String name, Float value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Double> uneditable(String name, Double value) {
+	public Prop<Double> create(String name, Double value) {
 		return add(PropPrimitive.create(name, value));
 	}
 	public Prop<Boolean> create(String name, Boolean value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Byte> uneditable(String name, Byte value) {
+	public Prop<Byte> create(String name, Byte value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Short> uneditable(String name, Short value) {
+	public Prop<Short> create(String name, Short value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Integer> uneditable(String name, Integer value) {
+	public Prop<Integer> create(String name, Integer value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Long> uneditable(String name, Long value) {
+	public Prop<Long> create(String name, Long value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<String> uneditable(String name, String value) {
+	public Prop<String> create(String name, String value) {
 		return add(PropPrimitive.create(name, value));
 	}
 	public <S extends Enum<S>> PropPrimitive<S> create(Class<S> clazz, String name, S value) {
 		return add(new PropPrimitive<S>(PropName.create(name, clazz), value));
 	}
 
-	//TODO put this back when we have these uneditable types
+	//TODO put this back when we have these types
 //	/**
 //	 * Make a new {@link Prop} with an {@link Bean} value
 //	 * and add to this map
@@ -213,8 +213,8 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 //	 * @return
 //	 * 		The new prop
 //	 */
-//	public <S extends Bean> UneditableBeanProp<S> uneditable(Class<S> clazz, String name, S value) {
-//		return add(UneditableBeanPropDefault.create(name, clazz, value));
+//	public <S extends Bean> BeanProp<S> create(Class<S> clazz, String name, S value) {
+//		return add(BeanPropDefault.create(name, clazz, value));
 //	}
 	
 //	/**
@@ -230,8 +230,8 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 //	 * @return
 //	 * 		The new prop
 //	 */
-//	public <S> UneditableListProp<S> uneditableList(Class<S> clazz, String name, List<S> data) {
-//		return add(UneditableListPropDefault.create(name, clazz, data));
+//	public <S> ListProp<S> createList(Class<S> clazz, String name, List<S> data) {
+//		return add(ListPropDefault.create(name, clazz, data));
 //	}
 	
 //	/**
@@ -249,8 +249,8 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 //	 * @return
 //	 * 		The new prop
 //	 */
-//	public <J, S> UneditableMapProp<J, S> uneditableMap(Class<S> clazz, String name, Map<J, S> data) {
-//		return add(UneditableMapPropDefault.create(name, clazz, data));
+//	public <J, S> MapProp<J, S> createMap(Class<S> clazz, String name, Map<J, S> data) {
+//		return add(MapPropDefault.create(name, clazz, data));
 //	}
 //	
 //	/**
@@ -266,8 +266,8 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 //	 * @return
 //	 * 		The new prop
 //	 */
-//	public <J, S> UneditableMapProp<J, S> uneditableMap(Class<S> clazz, String name) {
-//		return add(UneditableMapPropDefault.<J, S>create(name, clazz));
+//	public <J, S> MapProp<J, S> createMap(Class<S> clazz, String name) {
+//		return add(MapPropDefault.<J, S>create(name, clazz));
 //	}
 
 	

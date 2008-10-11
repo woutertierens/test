@@ -256,8 +256,8 @@ public class GenericPropName<P extends GeneralProp<T>, T> {
 //	 * @return
 //	 * 		A new name
 //	 */
-//	public static <T> GenericPropName<UneditableProp<T>, T> uneditable(String s, Class<T> clazz) {
-//		return new GenericPropName<UneditableProp<T>, T>(s, clazz, PropInfo.UNEDITABLE);
+//	public static <T> GenericPropName<Prop<T>, T> create(String s, Class<T> clazz) {
+//		return new GenericPropName<Prop<T>, T>(s, clazz, PropInfo.DEFAULT);
 //	}
 //
 //	/**
@@ -286,8 +286,8 @@ public class GenericPropName<P extends GeneralProp<T>, T> {
 //	 * @return
 //	 * 		A new name
 //	 */
-//	public static <T> GenericPropName<UneditableListProp<T>, T> uneditableList(String s, Class<T> clazz) {
-//		return new GenericPropName<UneditableListProp<T>, T>(s, clazz, PropInfo.UNEDITABLE_LIST);
+//	public static <T> GenericPropName<ListProp<T>, T> createList(String s, Class<T> clazz) {
+//		return new GenericPropName<ListProp<T>, T>(s, clazz, PropInfo.DEFAULT_LIST);
 //	}
 //
 //	/**
@@ -320,7 +320,7 @@ public class GenericPropName<P extends GeneralProp<T>, T> {
 //	 * @return
 //	 * 		A new name
 //	 */
-//	public static <K, T> GenericPropName<UneditableMapProp<K, T>, T> uneditableMap(String s, Class<T> clazz) {
-//		return new GenericPropName<UneditableMapProp<K, T>, T>(s, clazz, PropInfo.UNEDITABLE_MAP);
+//	public static <K, T> GenericPropName<MapProp<K, T>, T> createMap(String s, Class<T> clazz) {
+//		return new GenericPropName<MapProp<K, T>, T>(s, clazz, PropInfo.DEFAULT_MAP);
 //	}
 }

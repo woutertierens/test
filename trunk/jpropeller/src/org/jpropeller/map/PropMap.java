@@ -60,8 +60,7 @@ import org.jpropeller.properties.event.PropListener;
  * 
  * 		All {@link GeneralProp}s in a {@link PropMap} must have an appropriate type 
  * of {@link PropName} - that is, a {@link GeneralProp} cannot be added if it has a 
- * {@link PropName} for an {@link EditableProp} but is NOT an {@link EditableProp},
- * and similarly for UneditablePropName and UneditableProp
+ * {@link PropName} for an {@link EditableProp} but is NOT an {@link EditableProp}
  * 
  * 		A {@link PropMap} can be iterated as a list of the {@link Prop}s in the map,
  * in the order they were added

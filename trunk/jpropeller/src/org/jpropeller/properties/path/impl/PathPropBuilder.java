@@ -15,7 +15,7 @@ import org.jpropeller.properties.list.ListProp;
  * For example, to make a {@link PathProp} starting from bean b and progressing
  * via properties x, y, z in order, use:
  * <pre>
- * UneditablePathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
+ * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
  * </pre>
  * 
  * @param <P> 
@@ -72,7 +72,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	 * For example, to make a {@link PathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
-	 * UneditablePathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
+	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},

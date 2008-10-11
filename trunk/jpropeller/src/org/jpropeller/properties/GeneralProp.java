@@ -18,7 +18,7 @@ import org.jpropeller.properties.map.HasPropMap;
  * as a subinterface of the {@link GeneralProp} interface, e.g. {@link EditableProp} etc.
  * The info ({@link #getInfo()}) of the Prop can however be used as a quicker/easier
  * way of checking than instanceof - where {@link #getInfo()} returns EDITABLE the Prop may
- * be cast to EditableProp, and similarly for UNEDITABLE and UneditableProp, and the list and map
+ * be cast to EditableProp, and similarly for the list and map
  * subclasses of {@link GeneralProp}
  * 
  * NOTE: implementations must enforce the rules for {@link Bean}s, {@link PropMap} and {@link Prop}s:
@@ -28,15 +28,14 @@ import org.jpropeller.properties.map.HasPropMap;
  * it first returns a non-null value, it must always return the same value from
  * then onwards.
  * 
- * The PropName returned by getName() must have editability matching the Prop - 
- * that is, a Prop should not return an EditablePropName unless it is an EditableProp,
- * or an UneditablePropName unless it is an UneditableProp. If this is done wrongly,
- * it should be caught by compliant {@link PropMap}s, which will not allow non-compliant
- * Props to be added.   
+ * The {@link PropName} returned by {@link #getName()} must have editability matching the {@link Prop} - 
+ * that is, a {@link Prop} should not return an {@link PropName} with parametric type for an
+ * {@link EditableProp} unless it is an {@link EditableProp}. 
+ * If this is done wrongly, it should be caught by compliant {@link PropMap}s, which 
+ * will not allow non-compliant {@link Prop}s to be added.   
  * 
- * @author bwebster
- *
  * @param <T>
+ * 		The type of value in the property
  */
 public interface GeneralProp<T> extends HasPropMap {
 

@@ -52,7 +52,7 @@ import org.jpropeller.properties.map.HasPropMap;
  * 
  * NOTE: implementations must enforce the rules for {@link Bean}s, {@link PropMap}s and {@link Prop}s:
  *		
- *		A {@link Bean} must have an uneditable {@link PropMap} - it should be created when the
+ *		A {@link Bean} must have an constant {@link PropMap} - it should be created when the
  * {@link Bean} is created, and must not be changed. It cannot be shared with another
  * {@link Bean}, and the {@link PropMap} MUST have its bean property set to this {@link Bean}
  * 

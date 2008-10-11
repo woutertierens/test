@@ -132,7 +132,7 @@ public class PropMapDefault implements PropMapMutable {
 
 				//For safety, check that the info of the propname matches the info of the prop.
 				//If this is the case then we know that the PropName type P matches the type of
-				//the Prop (at least in terms of single/list/map and uneditable/editable)
+				//the Prop (at least in terms of single/list/map and default/editable)
 				if (prop.getInfo() != prop.getName().getPropInfo()) {
 					throw new IllegalArgumentException(
 							"Cannot add property '" + prop + 
