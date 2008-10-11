@@ -74,8 +74,7 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	}
 	
 	/**
-	 * Make a {@link PropViewHelp} for a view displaying an uneditable prop (or prop
-	 * of unknown editability)
+	 * Make a {@link PropViewHelp} for a view displaying a prop not known to be editable
 	 * 
 	 * This will connect the {@link UpdatableView} to the update manager, and to its own proxy.
 	 * The {@link UpdatableView} must be otherwise fully constructed, and have its

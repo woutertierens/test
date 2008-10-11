@@ -215,7 +215,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Float> uneditable(String name, Float value);
+	public Prop<Float> create(String name, Float value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -226,7 +226,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Double> uneditable(String name, Double value);
+	public Prop<Double> create(String name, Double value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -248,7 +248,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Byte> uneditable(String name, Byte value);
+	public Prop<Byte> create(String name, Byte value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -259,7 +259,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Short> uneditable(String name, Short value);
+	public Prop<Short> create(String name, Short value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -270,7 +270,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Integer> uneditable(String name, Integer value);
+	public Prop<Integer> create(String name, Integer value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -281,7 +281,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Long> uneditable(String name, Long value);
+	public Prop<Long> create(String name, Long value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -292,7 +292,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<String> uneditable(String name, String value);
+	public Prop<String> create(String name, String value);
 
 	/**
 	 * Make a new {@link Prop} with an {@link Enum} value

@@ -104,34 +104,33 @@ public abstract class BeanDefault implements Bean {
 		return props.create(name, value);
 	}
 
-	//FIXME uneditable
-//	protected Prop<Byte> create(String name, Byte value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<Double> create(String name, Double value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<Float> create(String name, Float value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<Integer> create(String name, Integer value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<Long> create(String name, Long value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<Short> create(String name, Short value) {
-//		return props.uneditable(name, value);
-//	}
-//
-//	protected Prop<String> create(String name, String value) {
-//		return props.uneditable(name, value);
-//	}
+	protected Prop<Byte> create(String name, Byte value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<Double> create(String name, Double value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<Float> create(String name, Float value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<Integer> create(String name, Integer value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<Long> create(String name, Long value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<Short> create(String name, Short value) {
+		return props.create(name, value);
+	}
+
+	protected Prop<String> create(String name, String value) {
+		return props.create(name, value);
+	}
 
 	protected <P extends GeneralProp<S>, S> P addProp(P prop) {
 		return props.add(prop);
@@ -165,7 +164,7 @@ public abstract class BeanDefault implements Bean {
 	}
 	
 	/**
-	 * Create an uneditable path property relative to this bean
+	 * Create a path property relative to this bean
 	 * @param name	
 	 * 		The string name of the property
 	 * @param clazz

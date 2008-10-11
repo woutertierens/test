@@ -50,18 +50,18 @@ public class ViewProxyPath<M> implements ViewProxy<M> {
 	 * @param pathRoot
 	 * 		The start of the path 
 	 * @return 
-	 * 		A builder - call {@link ViewProxyUneditablePathBuilder#via(PropName)}
-	 * and {@link ViewProxyUneditablePathBuilder#toProxy(PropName)} on this builder
+	 * 		A builder - call {@link ViewProxyPathBuilder#via(PropName)}
+	 * and {@link ViewProxyPathBuilder#toProxy(PropName)} on this builder
 	 * to build the entire path and then return the actual {@link ViewProxyPath}
 	 * 
 	 */
 	public static <P extends Prop<T>, T> PathPropBuilder<P, T> from(Class<T> clazz, Bean pathRoot) {
-		return new ViewProxyUneditablePathBuilder<P, T>(clazz, pathRoot);
+		return new ViewProxyPathBuilder<P, T>(clazz, pathRoot);
 	}
 	
 	//FIXME would be neater to make a different visible builder interface
 	//where "to" method could return the proxy - this would still want to
-	//use an UneditablePathPropBuilder, but not subclass it, so that the
+	//use a PathPropBuilder, but not subclass it, so that the
 	//"to" method name is still available 
 	/**
 	 * A class used to build a {@link ViewProxyPath}
@@ -71,8 +71,8 @@ public class ViewProxyPath<M> implements ViewProxy<M> {
 	 * @param <T>
 	 * 		The type of value in the property at the end of the path for the proxy
 	 */
-	public static class ViewProxyUneditablePathBuilder<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
-		protected ViewProxyUneditablePathBuilder(Class<T> clazz, Bean pathRoot) {
+	public static class ViewProxyPathBuilder<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
+		protected ViewProxyPathBuilder(Class<T> clazz, Bean pathRoot) {
 			super("model", clazz, pathRoot);
 		}
 		
