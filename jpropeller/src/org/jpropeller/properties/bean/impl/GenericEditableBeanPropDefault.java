@@ -24,12 +24,11 @@ package org.jpropeller.properties.bean.impl;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.info.PropInfo;
-import org.jpropeller.map.PropMap;
 import org.jpropeller.name.GenericPropName;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.bean.GenericEditableBeanProp;
-import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropEventOrigin;
 import org.jpropeller.properties.event.PropInternalListener;
 import org.jpropeller.properties.event.impl.PropEventDefault;
@@ -45,11 +44,9 @@ import org.jpropeller.properties.event.impl.PropEventDefault;
  * @param <T>
  * 		The type of the Prop value
  */
-public class GenericEditableBeanPropDefault<T extends Bean> implements GenericEditableBeanProp<T>, PropInternalListener {
+public class GenericEditableBeanPropDefault<T extends Bean> extends GenericBeanPropDefault<T> implements GenericEditableBeanProp<T>, PropInternalListener {
 
-	PropMap propMap;
-	T value;
-	GenericPropName<EditableProp<T>, T> name;
+	GenericPropName<EditableProp<T>, T> editableName;
 	
 	/**
 	 * Create a prop
@@ -59,17 +56,12 @@ public class GenericEditableBeanPropDefault<T extends Bean> implements GenericEd
 	 * 		The initial value of the prop
 	 */
 	protected GenericEditableBeanPropDefault(GenericPropName<EditableProp<T>, T> name, T value) {
-		this.value = value;
-		this.name = name;
-		
-		//Make sure we listen to our initial value
-		if (value != null) {
-			value.props().addInternalListener(this);
-		}		
+		super(name, value);
+		this.editableName = name;
 	}
 
 	/**
-	 * Make a new MutablePropBean
+	 * Make a new {@link GenericEditableBeanProp}
 	 * @param <S>
 	 * 		The type of bean in the prop
 	 * @param name
@@ -79,7 +71,7 @@ public class GenericEditableBeanPropDefault<T extends Bean> implements GenericEd
 	 * @param value
 	 * 		The initial value of the Prop
 	 * @return
-	 * 		The Prop
+	 * 		The {@link Prop}
 	 */
 	public static <S extends Bean> GenericEditableBeanPropDefault<S> create(String name, Class<S> clazz, S value) {
 		return new GenericEditableBeanPropDefault<S>(PropName.editable(name, clazz), value);
@@ -107,36 +99,8 @@ public class GenericEditableBeanPropDefault<T extends Bean> implements GenericEd
 	}
 
 	@Override
-	public <S> void propInternalChanged(PropEvent<S> event) {
-		//We need to fire the change on as a deep change
-		props().propChanged(new PropEventDefault<T>(this, event));
-	}
-	
-	@Override
-	public void setPropMap(PropMap map) {
-		if (propMap != null) throw new IllegalArgumentException("Prop '" + this + "' already has its PropMap set to '" + propMap + "'");
-		if (map == null) throw new IllegalArgumentException("PropMap must be non-null");
-		this.propMap = map;
-	}
-	
-	@Override
-	public T get() {
-		return value;
-	}
-
-	@Override
-	public Bean getBean() {
-		return props().getBean();
-	}
-
-	@Override
 	public GenericPropName<EditableProp<T>, T> getName() {
-		return name;
-	}
-
-	@Override
-	public PropMap props() {
-		return propMap;
+		return editableName;
 	}
 
 	@Override

@@ -22,17 +22,16 @@
  */
 package org.jpropeller.properties.primitive.impl;
 
-import org.jpropeller.bean.Bean;
 import org.jpropeller.info.PropInfo;
-import org.jpropeller.map.PropMap;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.PropEventOrigin;
 import org.jpropeller.properties.event.impl.PropEventDefault;
 
 /**
- * A EditableProp which can only have a value of a primitive wrapper
- * type - that is:
+ * An {@link EditableProp} which can only have a value of an
+ * immutable primitive(ish) type - that is:
  * 
  * Boolean
  * Short
@@ -42,19 +41,15 @@ import org.jpropeller.properties.event.impl.PropEventDefault;
  * Float
  * Double
  *
- * All these wrapper types are immutable, so this prop only implements
+ * All these types are immutable, so this prop only implements
  * shallow change notification
  *
- * @author shingoki
- *
  * @param <T>
- * 		The type of the Prop value
+ * 		The type of the {@link Prop} value
  */
-public class EditablePropPrimitive<T> implements EditableProp<T> {
+public class EditablePropPrimitive<T> extends PropPrimitive<T> implements EditableProp<T> {
 
-	PropMap propMap;
-	T value;
-	PropName<EditableProp<T>, T> name;
+	PropName<EditableProp<T>, T> editableName;
 	
 	/**
 	 * Create a prop
@@ -64,36 +59,14 @@ public class EditablePropPrimitive<T> implements EditableProp<T> {
 	 * 		The initial value of the prop
 	 */
 	public EditablePropPrimitive(PropName<EditableProp<T>, T> name, T value) {
-		this.value = value;
-		this.name = name;
-	}
-
-	@Override
-	public void setPropMap(PropMap set) {
-		if (propMap != null) throw new IllegalArgumentException("Prop '" + this + "' already has its PropMap set to '" + propMap + "'");
-		if (set == null) throw new IllegalArgumentException("PropMap must be non-null");
-		this.propMap = set;
+		super(name, value);
+		this.editableName = name;
 	}
 
 	@Override
 	public void set(T value) {
 		this.value = value;
 		props().propChanged(new PropEventDefault<T>(this, PropEventOrigin.USER));
-	}
-
-	@Override
-	public T get() {
-		return value;
-	}
-
-	@Override
-	public Bean getBean() {
-		return props().getBean();
-	}
-
-	@Override
-	public PropMap props() {
-		return propMap;
 	}
 
 	@Override
@@ -108,7 +81,7 @@ public class EditablePropPrimitive<T> implements EditableProp<T> {
 
 	@Override
 	public PropName<EditableProp<T>, T> getName() {
-		return name;
+		return editableName;
 	}
 	
 	//Horrible repeated code to get around some of the horrible effects of type erasure.
