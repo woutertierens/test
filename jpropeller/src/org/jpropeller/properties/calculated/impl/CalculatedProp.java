@@ -38,13 +38,11 @@ import org.jpropeller.properties.event.PropInternalListener;
 import org.jpropeller.properties.event.impl.PropEventDefault;
 
 /**
- * An UneditableProp which calculates its value as needed
+ * A {@link Prop} which calculates its value as needed
  * based on the values of other properties
  * 
- * @author shingoki
- *
  * @param <T>
- * 		The type of the Prop value
+ * 		The type of the {@link Prop} value
  */
 public class CalculatedProp<T> implements Prop<T>, PropInternalListener {
 

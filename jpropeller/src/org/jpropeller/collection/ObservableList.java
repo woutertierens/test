@@ -4,29 +4,30 @@ import java.util.List;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.properties.UneditableProp;
+import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.event.ListPropEvent;
 
 /**
- * A ListBean is a Bean with a single property, an UneditableProp<Long>
+ * A ListBean is a Bean with a single property, an {@link Prop} of type {@link Long}
  * called "modifications", which must be accessible in the Bean {@link PropMap},
- * and also via a method "modifications()"
+ * and also via a method {@link #modifications()}
  * 
  * The modifications property must return the number of modifications via
  * calling of List methods or by internal changes, since the List was created.
  * 
- * Whenever the contents of the List are directly changed, either internally or via
+ * Whenever the contents of the {@link List} are directly changed, either internally or via
  * List methods, the modifications property must be incremented, and then 
- * a shallow ListPropEvent fired showing the change, and also carrying a ListChange
- * describing the change to the list. This ListChange MUST be at least "as 
+ * a shallow {@link ListPropEvent} fired showing the change, and also carrying a {@link ListChange}
+ * describing the change to the list. This {@link ListChange} MUST be at least "as 
  * large" as the actual change - that is, if some elements of the list have
- * changed, the ListChange must be at least an ALTERATION change covering all
+ * changed, the {@link ListChange} must be at least an ALTERATION change covering all
  * changed elements (and possibly some non-changed elements - overstating
  * the change is allowable). For some changes, a COMPLETE list change will have
  * to be used, for example if multiple non-contiguous elements are 
  * inserted/deleted/changed
  * 
- * Whenever a DEEP change occurs in the list, a DEEP ListPropEvent must be fired
- * with a valid ListChange - this should always be either an ALTERATION change
+ * Whenever a DEEP change occurs in the list, a DEEP {@link ListPropEvent} must be fired
+ * with a valid {@link ListChange} - this should always be either an ALTERATION change
  * covering the indices of the list elements that have changed in a deep way,
  * or a COMPLETE change if a more specific range cannot be identified.
  * 
@@ -46,7 +47,7 @@ public interface ObservableList<E> extends Bean, List<E> {
 	 * @return
 	 * 		modification count
 	 */
-	public UneditableProp<Long> modifications();
+	public Prop<Long> modifications();
 
 	/**
 	 * Clear all list values, then replace them with the new contents,

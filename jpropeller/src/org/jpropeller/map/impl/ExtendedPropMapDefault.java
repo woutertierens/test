@@ -176,7 +176,7 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 	public Prop<Double> uneditable(String name, Double value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public Prop<Boolean> uneditable(String name, Boolean value) {
+	public Prop<Boolean> create(String name, Boolean value) {
 		return add(PropPrimitive.create(name, value));
 	}
 	public Prop<Byte> uneditable(String name, Byte value) {
@@ -194,8 +194,8 @@ public class ExtendedPropMapDefault implements PropMapMutable, ExtendedPropMap {
 	public Prop<String> uneditable(String name, String value) {
 		return add(PropPrimitive.create(name, value));
 	}
-	public <S extends Enum<S>> PropPrimitive<S> uneditable(Class<S> clazz, String name, S value) {
-		return add(new PropPrimitive<S>(PropName.uneditable(name, clazz), value));
+	public <S extends Enum<S>> PropPrimitive<S> create(Class<S> clazz, String name, S value) {
+		return add(new PropPrimitive<S>(PropName.create(name, clazz), value));
 	}
 
 	//TODO put this back when we have these uneditable types

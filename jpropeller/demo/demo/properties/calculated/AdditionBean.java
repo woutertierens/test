@@ -32,7 +32,7 @@ public class AdditionBean implements Bean {
 	EditableProp<Double> b = propMap.editable("b", 0.4);
 	@SuppressWarnings("unchecked")
 	Prop<Double> c = propMap.add(new CalculatedProp<Double>(
-			PropName.uneditable("c", Double.class), new PropAddition(a, b)));
+			PropName.create("c", Double.class), new PropAddition(a, b)));
 
 	/**
 	 * Access property a

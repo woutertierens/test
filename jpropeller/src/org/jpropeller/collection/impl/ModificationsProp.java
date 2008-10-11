@@ -30,7 +30,6 @@ import org.jpropeller.info.PropInfo;
 import org.jpropeller.map.PropMap;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.properties.UneditableProp;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropEventOrigin;
 import org.jpropeller.properties.event.impl.ListPropEventDefault;
@@ -41,10 +40,10 @@ import org.jpropeller.properties.event.impl.MapPropEventDefault;
  * an observable collection (List or Map)
  * @author shingoki
  */
-final class ModificationsProp implements UneditableProp<Long> {
+final class ModificationsProp implements Prop<Long> {
 	
 	private final Bean bean;
-	PropName<Prop<Long>, Long> modificationsName = PropName.uneditable("modifications", Long.class);
+	PropName<Prop<Long>, Long> modificationsName = PropName.create("modifications", Long.class);
 	
 	/**
 	 * Create a {@link ModificationsProp}

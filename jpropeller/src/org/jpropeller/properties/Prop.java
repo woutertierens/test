@@ -28,12 +28,11 @@ import org.jpropeller.name.PropName;
 /**
  * A property (prop) holding a single value
  * 
- * Such a property may be either an {@link EditableProp} or an {@link UneditableProp}, however
- * neither behaviour can be assumed, and so a {@link Prop} can only be read via this interface
+ * This interface allows reading only - the prop must be referenced
+ * as an {@link EditableProp} to be written. 
  * 
- * @author shingoki
- *
  * @param <T>
+ * 		The type of value in the property
  */
 public interface Prop<T> extends GenericProp<T> {
 

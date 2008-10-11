@@ -126,7 +126,7 @@ public final class PropName<P extends GeneralProp<T>, T> extends GenericPropName
 	 * @return
 	 * 		A new name
 	 */
-	public static <T> PropName<Prop<T>, T> uneditable(String s, Class<T> clazz) {
+	public static <T> PropName<Prop<T>, T> create(String s, Class<T> clazz) {
 		return new PropName<Prop<T>, T>(s, clazz, PropInfo.DEFAULT);
 	}
 
@@ -156,7 +156,7 @@ public final class PropName<P extends GeneralProp<T>, T> extends GenericPropName
 	 * @return
 	 * 		A new name
 	 */
-	public static <T> PropName<ListProp<T>, T> uneditableList(String s, Class<T> clazz) {
+	public static <T> PropName<ListProp<T>, T> createList(String s, Class<T> clazz) {
 		return new PropName<ListProp<T>, T>(s, clazz, PropInfo.DEFAULT_LIST);
 	}
 
@@ -190,7 +190,7 @@ public final class PropName<P extends GeneralProp<T>, T> extends GenericPropName
 	 * @return
 	 * 		A new name
 	 */
-	public static <K, T> PropName<MapProp<K, T>, T> uneditableMap(String s, Class<T> clazz) {
+	public static <K, T> PropName<MapProp<K, T>, T> createMap(String s, Class<T> clazz) {
 		return new PropName<MapProp<K, T>, T>(s, clazz, PropInfo.DEFAULT_MAP);
 	}
 }
