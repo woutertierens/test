@@ -29,8 +29,8 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 
 /**
- * A {@link Prop} which can only have a value of a primitive wrapper
- * type (or similar immutable type) - that is:
+ * A {@link Prop} which can only have a value of an
+ * immutable primitive(ish) type - that is:
  * 
  * Boolean
  * Short
