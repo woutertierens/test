@@ -237,7 +237,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop itself (already added to the map)
 	 */
-	public Prop<Boolean> uneditable(String name, Boolean value);
+	public Prop<Boolean> create(String name, Boolean value);
 
 	/**
 	 * Make a new prop and add to this map
@@ -308,7 +308,7 @@ public interface ExtendedPropMap extends PropMapMutable{
 	 * @return
 	 * 		The new prop
 	 */
-	public <S extends Enum<S>> PropPrimitive<S> uneditable(
+	public <S extends Enum<S>> PropPrimitive<S> create(
 			Class<S> clazz, String name, S value);
 
 }

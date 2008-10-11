@@ -79,7 +79,7 @@ public class GenericBeanPropDefault<T extends Bean> implements GenericProp<T>, P
 	 * 		The Prop
 	 */
 	public static <S extends Bean> GenericBeanPropDefault<S> create(String name, Class<S> clazz, S value) {
-		return new GenericBeanPropDefault<S>(PropName.uneditable(name, clazz), value);
+		return new GenericBeanPropDefault<S>(PropName.create(name, clazz), value);
 	}
 
 	@Override

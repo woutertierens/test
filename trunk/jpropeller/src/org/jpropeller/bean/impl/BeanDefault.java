@@ -10,7 +10,6 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.GeneralProp;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.properties.UneditableProp;
 import org.jpropeller.properties.bean.EditableBeanProp;
 import org.jpropeller.properties.list.EditableListProp;
 import org.jpropeller.properties.map.EditableMapProp;
@@ -96,42 +95,43 @@ public abstract class BeanDefault implements Bean {
 		return props.editable(name, value);
 	}
 
-	protected <S extends Enum<S>> PropPrimitive<S> uneditable(
+	protected <S extends Enum<S>> PropPrimitive<S> create(
 			Class<S> clazz, String name, S value) {
-		return props.uneditable(clazz, name, value);
+		return props.create(clazz, name, value);
 	}
 
-	protected Prop<Boolean> uneditable(String name, Boolean value) {
-		return props.uneditable(name, value);
+	protected Prop<Boolean> create(String name, Boolean value) {
+		return props.create(name, value);
 	}
 
-	protected Prop<Byte> uneditable(String name, Byte value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<Double> uneditable(String name, Double value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<Float> uneditable(String name, Float value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<Integer> uneditable(String name, Integer value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<Long> uneditable(String name, Long value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<Short> uneditable(String name, Short value) {
-		return props.uneditable(name, value);
-	}
-
-	protected Prop<String> uneditable(String name, String value) {
-		return props.uneditable(name, value);
-	}
+	//FIXME uneditable
+//	protected Prop<Byte> create(String name, Byte value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<Double> create(String name, Double value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<Float> create(String name, Float value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<Integer> create(String name, Integer value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<Long> create(String name, Long value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<Short> create(String name, Short value) {
+//		return props.uneditable(name, value);
+//	}
+//
+//	protected Prop<String> create(String name, String value) {
+//		return props.uneditable(name, value);
+//	}
 
 	protected <P extends GeneralProp<S>, S> P addProp(P prop) {
 		return props.add(prop);
@@ -173,12 +173,12 @@ public abstract class BeanDefault implements Bean {
 	 * path (the one that is mirrored by the path property)
 	 * 
 	 */
-	protected <P extends UneditableProp<T>, T> UneditablePathPropBuilderForBean<P, T> uneditableFrom(String name, Class<T> clazz) {
-		return new UneditablePathPropBuilderForBean<P, T>(name, clazz);
+	protected <P extends Prop<T>, T> PathPropBuilderForBean<P, T> from(String name, Class<T> clazz) {
+		return new PathPropBuilderForBean<P, T>(name, clazz);
 	}
 	
-	protected class UneditablePathPropBuilderForBean<P extends UneditableProp<T>, T> extends PathPropBuilder<P, T> {
-		protected UneditablePathPropBuilderForBean(String name, Class<T> clazz) {
+	protected class PathPropBuilderForBean<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
+		protected PathPropBuilderForBean(String name, Class<T> clazz) {
 			super(name, clazz, BeanDefault.this);
 		}
 		@Override

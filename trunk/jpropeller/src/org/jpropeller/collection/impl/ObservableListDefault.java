@@ -34,7 +34,7 @@ import org.jpropeller.collection.ListChange;
 import org.jpropeller.collection.ObservableList;
 import org.jpropeller.map.ExtendedPropMap;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.properties.UneditableProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.ListPropEvent;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropInternalListener;
@@ -72,7 +72,7 @@ public class ObservableListDefault<E> implements ObservableList<E>, PropInternal
 	//The List we delegate to for actual storage, etc.
 	private List<E> core;
 	
-	public UneditableProp<Long> modifications() { return modificationsProp; };
+	public Prop<Long> modifications() { return modificationsProp; };
 	
 	/**
 	 * Create a new {@link ObservableListDefault} based on a new {@link ArrayList}

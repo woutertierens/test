@@ -116,7 +116,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Double> create(String name, Double value) {
-		return new PropPrimitive<Double>(PropName.uneditable(name, Double.class), value);
+		return new PropPrimitive<Double>(PropName.create(name, Double.class), value);
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Integer> create(String name, Integer value) {
-		return new PropPrimitive<Integer>(PropName.uneditable(name, Integer.class), value);
+		return new PropPrimitive<Integer>(PropName.create(name, Integer.class), value);
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<String> create(String name, String value) {
-		return new PropPrimitive<String>(PropName.uneditable(name, String.class), value);
+		return new PropPrimitive<String>(PropName.create(name, String.class), value);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Float> create(String name, Float value) {
-		return new PropPrimitive<Float>(PropName.uneditable(name, Float.class), value);
+		return new PropPrimitive<Float>(PropName.create(name, Float.class), value);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Byte> create(String name, Byte value) {
-		return new PropPrimitive<Byte>(PropName.uneditable(name, Byte.class), value);
+		return new PropPrimitive<Byte>(PropName.create(name, Byte.class), value);
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Short> create(String name, Short value) {
-		return new PropPrimitive<Short>(PropName.uneditable(name, Short.class), value);
+		return new PropPrimitive<Short>(PropName.create(name, Short.class), value);
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Long> create(String name, Long value) {
-		return new PropPrimitive<Long>(PropName.uneditable(name, Long.class), value);
+		return new PropPrimitive<Long>(PropName.create(name, Long.class), value);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class PropPrimitive<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public static PropPrimitive<Boolean> create(String name, Boolean value) {
-		return new PropPrimitive<Boolean>(PropName.uneditable(name, Boolean.class), value);
+		return new PropPrimitive<Boolean>(PropName.create(name, Boolean.class), value);
 	}
 	
 }

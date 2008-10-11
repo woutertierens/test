@@ -33,7 +33,7 @@ import org.jpropeller.collection.MapChange;
 import org.jpropeller.collection.ObservableMap;
 import org.jpropeller.map.ExtendedPropMap;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.properties.UneditableProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.MapPropEvent;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropInternalListener;
@@ -78,7 +78,7 @@ public class ObservableMapDefault<K, V> implements ObservableMap<K, V>, PropInte
 	Set<Entry<K, V>> umEntrySet;
 	Set<K> umKeySet;
 	
-	public UneditableProp<Long> modifications() { return modificationsProp; };
+	public Prop<Long> modifications() { return modificationsProp; };
 	
 	/**
 	 * Create a new {@link ObservableMapDefault} based on a new {@link HashMap}

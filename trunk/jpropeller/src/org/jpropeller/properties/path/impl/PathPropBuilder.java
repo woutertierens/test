@@ -7,7 +7,6 @@ import org.jpropeller.path.impl.BeanPathDefault;
 import org.jpropeller.path.impl.PathNameListDefault;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.properties.UneditableProp;
 import org.jpropeller.properties.list.ListProp;
 
 /**
@@ -40,7 +39,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	}
 
 	protected PathPropBuilder(String name, Class<T> clazz, Bean pathRoot) {
-		this(PropName.uneditable(name, clazz), pathRoot);
+		this(PropName.create(name, clazz), pathRoot);
 	}
 
 	/**
@@ -49,7 +48,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	 * For example, to make an {@link PathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
-	 * UneditablePathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
+	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},
@@ -63,7 +62,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	 * @return
 	 * 		A builder to be used to make an {@link PathProp}
 	 */
-	public static <P extends UneditableProp<T>, T> PathPropBuilder<P, T> from(PropName<Prop<T>, T> name, Bean pathRoot) {
+	public static <P extends Prop<T>, T> PathPropBuilder<P, T> from(PropName<Prop<T>, T> name, Bean pathRoot) {
 		return new PathPropBuilder<P, T>(name, pathRoot);
 	}
 	
@@ -77,7 +76,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	 * </pre>
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},
-	 * {@link UneditableProp}, {@link ListProp} etc.)
+	 * {@link EditableProp}, {@link ListProp} etc.)
 	 * @param <T>
 	 * @param name
 	 * 		The string name of the {@link PathProp} to build
@@ -88,7 +87,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	 * @return
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
-	public static <P extends UneditableProp<T>, T> PathPropBuilder<P, T> from(String name, Class<T> clazz, Bean pathRoot) {
+	public static <P extends Prop<T>, T> PathPropBuilder<P, T> from(String name, Class<T> clazz, Bean pathRoot) {
 		return new PathPropBuilder<P, T>(name, clazz, pathRoot);
 	}
 	

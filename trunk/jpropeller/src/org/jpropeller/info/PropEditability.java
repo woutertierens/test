@@ -22,6 +22,15 @@
  */
 package org.jpropeller.info;
 
+import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.GenericEditableProp;
+import org.jpropeller.properties.GenericProp;
+import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.list.EditableListProp;
+import org.jpropeller.properties.list.ListProp;
+import org.jpropeller.properties.map.EditableMapProp;
+import org.jpropeller.properties.map.MapProp;
+
 /**
  * A hint as to whether or not the prop is editable (or how editable).
  *
@@ -29,27 +38,27 @@ package org.jpropeller.info;
 public enum PropEditability {
 
 	/**
-	 * Implements EditableProp, and so may be changed using a set() method
-	 * Props with this type may be cast to EditableProp
+	 * Implements an editable interface, having appropriate
+	 * set methods.
+	 * {@link GenericProp}s with this type may be cast to {@link GenericEditableProp}
+	 * <br />
+	 * {@link Prop}s with this type may be cast to {@link EditableProp}
+	 * <br />
+	 * {@link ListProp}s with this type may be cast to {@link EditableListProp}
+	 * <br />
+	 * {@link MapProp}s with this type may be cast to {@link EditableMapProp}
 	 */
 	EDITABLE,
 	
 	/**
-	 * Implements UneditableProp, and so may not be changed using a set() method.
+	 * Does not implement an editable interface, and so cannot have a new
+	 * value set directly.
 	 * However, the value may change in a deep way - for example, if we have
-	 * a Person with an Address Prop, and the Address Prop is uneditable, then
+	 * a Person with an Address {@link Prop}, and the Address Prop is default, then
 	 * we cannot use person.address().set(newAddress).
-	 * Also, person.address() will always return the same Address instance.
 	 * However, if that Address instance has properties of its own, and they are
 	 * changed, this means that the person's address has changed - in a deep way,
 	 * rather than a shallow way.
-	 * 
-	 *  This may seem useless to know that the property is uneditable in a shallow
-	 *  way, but in fact it can be useful, since we can keep a reference to the value
-	 *  of an uneditable property, and know that it is always the same as we would get
-	 *  from calling get() on the property again. In addition, an UneditableProp which
-	 *  contains an immutable primitive wrapper, or contains a Prop<Bean<UneditableProp>>
-	 *  is actually genuinely immutable.
 	 */
 	DEFAULT
 }
