@@ -1,0 +1,161 @@
+When reading this, bear in mind that the key element of the whole of jpropeller
+is to encapsulate the difficult logic needed for reliable management of a graph
+of connected objects with change notification, automated update in response to
+events, etc. in a multithreaded environment. As a consequence, writing of
+Prop and PropSet implementations is NOT easy, and requires considerable thought.
+This document aims to set out the requirements and considerations when implementing
+Props and PropSets, and the reasoning behind the requirements. 
+
+System consists of:
+
+	Prop Layer
+	View Layer
+	Other Layer
+	
+Prop layer consists of Beans, PropSets, and Props. 
+After construction, any change to any object in the Prop layer must
+occur by calling a Prop set() method, or by other accepted analogous 
+method - e.g. use of the List methods of a ListBean. Any state not encapsulated
+in Props is most likely an abuse of jpropeller.
+
+When a change to the Prop Layer occurs, propagation of the change occurs via events.
+The first purpose of this change propagation is to provide INTERNAL notification of changes - 
+so that other objects in the Prop layer are aware of the change. This allows them in turn
+to make any consequent changes.
+
+When objects in the Prop layer respond to a change, they can optionally fire a consequent change,
+and optionally change their own state, but they must not do anything else. 
+They may NOT read or write any other state in the  Prop layer. In fact nothing in the Prop
+layer may ever write state of anything else in the Prop layer.
+This is to allow events to propagate repeatably - if a change to the Prop layer
+is made during propagation of a change, it may influence the propagation of that change, rendering
+the change notification unreliable. For the same reason, use of setters is synchronised - only one
+setter may be in action at any given time, and change propagation must complete before another
+is called.
+
+A direct result of the illegality of changing the prop layer during change propagation is that
+caching becomes even more desirable. The best (probably also easiest, and possibly only) behaviour
+for a prop whose value depends on other props is to monitor those other props via internal change
+notification, and simply invalidate a cached value when a change occurs. When the value of the
+prop is requested, it is read from the cache, or recalculated if the cache is invalid. This leads
+to quite neat lazy evaluation of Props, and avoids the need to read other prop state.
+
+This requirement is very hard to check programmatically without affecting performance (for example,
+we could throw a runtime exception when a getter is called from within the thread performing internal
+change propagation, but this would probably be overkill). Hence the requirement for props to be
+carefully implemented - implementations may watch for changes in other props, but must NOT respond
+by reading the new state of those other props.
+
+When internal propagation of the change has completed, all objects in the Prop layer have been made
+aware of the change, and hence are in a consistent state. They may not yet have recalculated
+what their values are, but they have invalidated caches as necessary so that as soon as get() 
+methods are called, the new state will become clear.
+
+At this point, the view layer comes into play.
+
+The view layer consists of any objects which are interested in the state of the prop layer, and
+monitor that state via events, but are not PART of the prop layer. Hence in MVC terms, the view
+layer is the view (or a set of views) and the Prop layer is the model. The controller is any
+code that calls set() methods of Props.
+
+In order to ensure that the view layer is only notified of changes to the Prop layer when the
+Prop layer is in a consistent state, events passing from the Prop layer to the View layer are
+delayed until internal change propagation is complete. 
+
+For example, we may have a Prop x and two Props y and z. y and z both recalculate their state
+based on x. When x changes, y may be the first to find out that x has changed, and so it
+will invalidate its cache. Then z receives an event, and also recalculates. Now, if events were
+sent directly to the view layer, a view of y and z might be informed that y has changed, while z 
+still has its old value. This state of the Prop layer is inconsistent, because the values of
+x, y and z do not match up, and this may cause problems in the view layer. However by delaying
+events to the view layer, we ensure that y and z (and any other props) always find out about changes
+before any views in the view layer.
+
+To go off on a bit of a tangent - what do we actually guarantee to the View layer? Actually this
+is quite simple:
+	1) Whenever an event is fired to a listener in the View layer, the Prop layer is in a 
+	consistent state. Until all events are handled, CONTINUE####
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+Sets and gets are synchronized. When a set is called, a single PropSystem-wide master lock is acquired, 
+THEN the prop value is changed, then the change is fully internally propagated, THEN the lock is 
+released and at some time later, view layer propagation is started. Getters acquire the same master lock
+before returning their value.
+
+This means that the view layer is guaranteed it will get a notification of all changes, that the notification
+will be given to them after the change is made, but NOT that it will be given to them before another change
+occurs (which they will in turn be notified of at a still later time). Hence really the only requirement of
+views is that if they want to display multiple props, and they require that the props they display are consistent,
+they must update their entire display when they receive a change to ANY prop, rather than just updating the
+prop they see a change on. This change itself must be done after locking the prop system as described below
+to make sure they see a consistent state. If they are happy to update piecemeal and (probably for a very short time) display
+inconsistent data, they may indeed just update the data they receive a change on. This should be the case for
+any well written view. The only counter example I can think of would be something like a composite table that
+relies on multiple listbeans in the composite having the same size - the best way to rewrite this is simply
+not to rely on the listbeans having the same size! The display may then contain some blank areas between updates,
+but will always settle to a consistent display when the prop system is static for long enough to actually 
+look at properly anyway. 
+
+For users/views that must guarantee they display a consistent state of multiple Props, we need a way to
+get a "snapshot" of all the prop states. This can be done either by making the lock accessible, risking
+locking the system by forgetting to release the lock. A safer way might be by making available an actual 
+snapshot - for example a Map from props to values - we then need to consider how to values that are themselves
+mutable. Another safer way might be to use a callback system - the user provides a Callable to be executed
+while the master lock is held. As long as this Callable actually returns, we are safe. Since writing non-returning
+methods is a problem in pretty much any system, this should be quite reasonable, and easy to implement. It should
+not be required by many users of the system anyway.
+The Prop system itself is to be trusted with the master lock directly, since this allows the lock to be acquired
+by a Prop then released by a PropSet when internal propagation is finished, and we trust Prop implementors
+to get this right.
+ 
+The synchronisation is necessary/affordable because:
+1) If concurrent set()s are possible, everything WILL be breakable. I can't think of any way of making sure that
+we cannot have a set that changes the graph while another change is propagating through that graph. Any system
+would require detailed knowledge of the graph. But this is not a worthwhile use of time/complexity because the lock
+should not be held during any long-running tasks:
+2) The lock is held only while changes propagate. Properly written Props (which are the only kind we must have)
+will propagate the changes really quite quickly, since they only need to do the actual graph traversal, and
+invalidating of caches - no values are recalculated. No view layer listeners are notified - they are notified
+later when the lock has been released, so slow UI repainting does not hold the master lock
+3) Getters could hold the lock while a value is recalculated. However, thinking about this (hopefully) clearly,
+all a getter really guarantees to do is return a value for SOME consistent state of the props system. Unless the
+prop system is locked before the getter is called, there is no guarantee of WHICH state of the props system yields
+the value from the getter. By the time the value returned from the getter is used, the prop system could have
+changed again, even if it didn't change DURING the execution of the getter, so really, trying to calculated while the
+lock is held gives no additional benefits. Therefore it is best for calculated getters to:
+	a) Get the lock
+	b) Perform ALL processing necessary to render the values of source properties down to primitives/immutable values. It is VITAL that these are immutable
+	values though. In the best case, the processing is just caching the source property values. These cached values are then immutable and from a consistent
+	state.
+	c) Release the lock
+	d) Perform remaining calculations to yield the actual final value
+	e) Return that value
+
+	As long as the Prop is implemented correctly to render calculation inputs down to immutable values while the lock is held, the actual calculations can
+	occur outside the lock. This is a clear, understandable requirement, but obviously does depend on good implementation, as does any threaded system. Where
+	performance is less critical, all the calculations can be performed inside the lock and do not require any extra care compared to a single threaded
+	system.
+	If a Prop implemented in this way, it will still function fine when called by the thread holding the master lock, as long as we only release the lock
+	when we did not already hold it on entering the function (obviously). Needs to be done using the correct concurrency implementation. 
+	
+	One very very worthwhile addition to this would be to add to PropCalculation. At present, a PropCalculation must really be called entirely inside
+	the lock, since we do not know and cannot really guarantee how it will perform. However, an extended system could allow concurrency issues to be
+	dealt with for the user. By having a reliable indication of whether values returned from Props are themselves immutable, we could have a PropCalculationOnImmutable
+	that can only use immutable-returning props, and this could then have a calculate method operating on a special map from Prop keys to values of the
+	type returned by the Prop. The CalculatedProp would make a consistent map, then the calculation would query this map to get its values. By knowing that
+	the values are all immutable, this would be safe to carry out outside the master lock. This is actually a better way to implement ALL PropCalculations, really,
+	since it makes it slightly harder to accidentally use a Prop that is not in the SourceProps of the calculation - if the user is used to having to use the
+	map, they will get a missing value when trying to use an incorrect Prop.
