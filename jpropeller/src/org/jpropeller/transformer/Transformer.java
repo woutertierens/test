@@ -1,4 +1,4 @@
-package demo.altpath;
+package org.jpropeller.transformer;
 
 /**
  * Allows for transformation from one type to another
