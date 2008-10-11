@@ -1,5 +1,8 @@
 package demo.altpath;
 
+import org.jpropeller.properties.Prop;
+import org.jpropeller.transformer.Transformer;
+
 /**
  * Simple demonstration of an alternative path technique
  * @author shingoki
@@ -30,6 +33,16 @@ public class AltPathDemo {
 			}
 		};
 		*/
+		
+		Transformer<Prop<B>, Prop<C>> bToC = new Transformer<Prop<B>, Prop<C>>(){
+			@Override
+			public Prop<C> transform(Prop<B> s) {
+				return s.get().c();
+			}
+		};
+		
+		bToC.transform(a.b());
+		
 	}
 	
 }
