@@ -10,9 +10,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.reference.impl.EditableBeanReference;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.bean.impl.BeanPropListEditor;
-import org.jpropeller.view.proxy.impl.ViewProxyEditableBean;
 
 import test.example.LotsOfProps;
 
@@ -49,9 +49,9 @@ public class BeanViewDemo {
 				*/
 
 				//Make a ref to "a"
-				final ViewProxyEditableBean<LotsOfProps> proxy = ViewProxyEditableBean.create(LotsOfProps.class, a);
+				final EditableBeanReference<LotsOfProps> model = EditableBeanReference.create(LotsOfProps.class, a);
 				
-				final BeanPropListEditor<LotsOfProps> editor = BeanPropListEditor.create(proxy);
+				final BeanPropListEditor<LotsOfProps> editor = BeanPropListEditor.create(model);
 				
 				JFrame frame = new JFrame("Bean View Demo");
 				frame.setLayout(new BorderLayout());
@@ -65,7 +65,7 @@ public class BeanViewDemo {
 				newBean.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						proxy.model().set(new LotsOfProps());
+						model.value().set(new LotsOfProps());
 					}
 				});
 				panel.add(newBean);
@@ -96,7 +96,7 @@ public class BeanViewDemo {
 				printCurrent.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						System.out.println(proxy.model().get());
+						System.out.println(model.value().get());
 					}
 				});
 				panel.add(printCurrent);
@@ -105,7 +105,7 @@ public class BeanViewDemo {
 				randomChangeCurrent.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						LotsOfProps current = (LotsOfProps) proxy.model().get();
+						LotsOfProps current = (LotsOfProps) model.value().get();
 						current.stringProp().set("Random String " + Math.random()*100);
 						current.intProp().set((int)(Math.random()*100));
 						current.longProp().set((long)(Math.random()*100));
@@ -119,7 +119,7 @@ public class BeanViewDemo {
 				manyRandomChangesCurrent.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						LotsOfProps current = (LotsOfProps) proxy.model().get();
+						LotsOfProps current = (LotsOfProps) model.value().get();
 						long startTime = System.currentTimeMillis();
 						int repeats = 15360;
 						for (int i = 0; i < repeats; i++) {

@@ -12,9 +12,9 @@ import javax.swing.SwingUtilities;
 
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropListener;
+import org.jpropeller.reference.impl.EditableBeanReference;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.impl.LabelPropView;
-import org.jpropeller.view.proxy.impl.ViewProxyEditableBean;
 import org.jpropeller.view.update.impl.UpdateManagerDefault;
 
 import demo.bean.TestStringBean;
@@ -49,12 +49,12 @@ public class LabelPropViewDemo {
 				
 				final LabelPropView<String> nameView = 
 					LabelPropView.create(
-							ViewProxyEditableBean.create(TestStringBean.class, s), 
+							EditableBeanReference.create(TestStringBean.class, s), 
 							s.name().getName());
 
 				final LabelPropView<String> streetView = 
 					LabelPropView.create(
-							ViewProxyEditableBean.create(TestStringBean.class, s), 
+							EditableBeanReference.create(TestStringBean.class, s), 
 							s.street().getName());
 
 				JFrame frame = new JFrame("Label View Demo");
@@ -72,7 +72,7 @@ public class LabelPropViewDemo {
 				randomChangeCurrent.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						TestStringBean current = (TestStringBean)nameView.getProxy().model().get();
+						TestStringBean current = (TestStringBean)nameView.getModel().value().get();
 						current.name().set("Random Name " + Math.random()*100);
 						current.street().set("Random Street " + Math.random()*100);
 					}
@@ -83,7 +83,7 @@ public class LabelPropViewDemo {
 				manyRandomChangesCurrent.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						TestStringBean current = (TestStringBean)nameView.getProxy().model().get();
+						TestStringBean current = (TestStringBean)nameView.getModel().value().get();
 						long startTime = System.currentTimeMillis();
 						int repeats = 100;
 						for (int i = 0; i < repeats; i++) {

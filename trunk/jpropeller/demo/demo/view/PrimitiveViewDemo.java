@@ -8,9 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.reference.impl.EditableBeanReference;
 import org.jpropeller.view.primitive.impl.NumberSpinnerEditor;
 import org.jpropeller.view.primitive.impl.StringTextFieldEditor;
-import org.jpropeller.view.proxy.impl.ViewProxyEditableBean;
 
 import test.example.contacts.Address;
 
@@ -45,20 +45,20 @@ public class PrimitiveViewDemo {
 				});
 				*/
 				
-				//We make the proxy with "b"... 
-				ViewProxyEditableBean<Address> aViewProxy = ViewProxyEditableBean.create(Address.class, b);
+				//We make the model with "b"... 
+				EditableBeanReference<Address> aModel = EditableBeanReference.create(Address.class, b);
 				
-				//(Note also that we can share the proxy between two views)
-				NumberSpinnerEditor<Integer> hnView = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
-				StringTextFieldEditor streetView = StringTextFieldEditor.create(aViewProxy, b.street().getName());
-				NumberSpinnerEditor<Integer> hnView2 = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView3 = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView4 = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView5 = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView6 = NumberSpinnerEditor.create(aViewProxy, b.houseNumber().getName(), 1, 1000, 1);
+				//(Note also that we can share the model between two views)
+				NumberSpinnerEditor<Integer> hnView = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				StringTextFieldEditor streetView = StringTextFieldEditor.create(aModel, b.street().getName());
+				NumberSpinnerEditor<Integer> hnView2 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView3 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView4 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView5 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView6 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
 
-				//But now we set the proxy to have model "a" - note that the views display and edit "a"
-				aViewProxy.model().set(a);
+				//But now we set the model to have model "a" - note that the views display and edit "a"
+				aModel.value().set(a);
 				
 				JFrame frame = new JFrame("Primitive View Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

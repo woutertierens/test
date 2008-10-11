@@ -5,9 +5,9 @@ import javax.swing.JLabel;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 
 /**
@@ -19,14 +19,14 @@ import org.jpropeller.view.update.UpdatableView;
 public class LabelPropView<T> implements UpdatableView<Bean>, JView<Bean> {
 
 	PropViewHelp<Bean, T> help;
-	ViewProxy<? extends Bean> proxy;
+	Reference<? extends Bean> model;
 	PropName<? extends Prop<T>, T> displayedName;
 
 	JLabel label;
 
-	private LabelPropView(ViewProxy<? extends Bean> proxy, PropName<? extends Prop<T>, T> displayedName) {
+	private LabelPropView(Reference<? extends Bean> model, PropName<? extends Prop<T>, T> displayedName) {
 		super();
-		this.proxy = proxy;
+		this.model = model;
 		this.displayedName = displayedName;
 		label = new JLabel();
 
@@ -43,20 +43,20 @@ public class LabelPropView<T> implements UpdatableView<Bean>, JView<Bean> {
 	 * Create a {@link LabelPropView}
 	 * @param <T>
 	 * 		The type of value in the displayed prop 
-	 * @param proxy 
-	 * 		The {@link ViewProxy} for this {@link View}
+	 * @param model 
+	 * 		The model {@link Reference} for this {@link View}
 	 * @param displayedName
 	 * 		The name of the displayed property 
 	 * @return
 	 * 		A {@link LabelPropView} 
 	 */
-	public static <T> LabelPropView<T> create(ViewProxy<? extends Bean> proxy, PropName<? extends Prop<T>, T> displayedName) {
-		return new LabelPropView<T>(proxy, displayedName);
+	public static <T> LabelPropView<T> create(Reference<? extends Bean> model, PropName<? extends Prop<T>, T> displayedName) {
+		return new LabelPropView<T>(model, displayedName);
 	}
 	
 	@Override
-	public ViewProxy<? extends Bean> getProxy() {
-		return proxy;
+	public Reference<? extends Bean> getModel() {
+		return model;
 	}
 
 	/**

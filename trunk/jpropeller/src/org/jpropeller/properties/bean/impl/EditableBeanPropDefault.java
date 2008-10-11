@@ -25,6 +25,7 @@ package org.jpropeller.properties.bean.impl;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.bean.EditableBeanProp;
 
 /**
@@ -33,10 +34,8 @@ import org.jpropeller.properties.bean.EditableBeanProp;
  *
  * Implements deep change notification
  *
- * @author shingoki
- *
  * @param <T>
- * 		The type of the Prop value
+ * 		The type of the {@link Prop} value
  */
 public class EditableBeanPropDefault<T extends Bean> extends GenericEditableBeanPropDefault<T> implements EditableBeanProp<T> {
 

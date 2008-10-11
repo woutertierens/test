@@ -7,10 +7,10 @@ import javax.swing.event.ChangeListener;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.impl.PropViewHelp;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 
 /**
@@ -21,15 +21,15 @@ public class BooleanCheckboxEditor implements UpdatableView<Bean>, JView<Bean> {
 
 	PropViewHelp<Bean, Boolean> help;
 
-	ViewProxy<? extends Bean> proxy;
+	Reference<? extends Bean> model;
 	PropName<? extends EditableProp<Boolean>, Boolean> displayedName;
 
 	JCheckBox checkBox;
 	
-	private BooleanCheckboxEditor(ViewProxy<? extends Bean> proxy,
+	private BooleanCheckboxEditor(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Boolean>, Boolean> displayedName) {
 		super();
-		this.proxy = proxy;
+		this.model = model;
 		this.displayedName = displayedName;
 		
 		//Make a checkbox
@@ -52,21 +52,21 @@ public class BooleanCheckboxEditor implements UpdatableView<Bean>, JView<Bean> {
 
 	/**
 	 * Create a {@link BooleanCheckboxEditor}
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
 	 * @return
 	 * 		A new{@link BooleanCheckboxEditor}
 	 */
-	public static BooleanCheckboxEditor create(ViewProxy<? extends Bean> proxy,
+	public static BooleanCheckboxEditor create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Boolean>, Boolean> displayedName) {
-		return new BooleanCheckboxEditor(proxy, displayedName);
+		return new BooleanCheckboxEditor(model, displayedName);
 	}
 
 	@Override
-	public ViewProxy<? extends Bean> getProxy() {
-		return proxy;
+	public Reference<? extends Bean> getModel() {
+		return model;
 	}
 	
 	/**
