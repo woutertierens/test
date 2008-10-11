@@ -16,10 +16,10 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.impl.PropViewHelp;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 
 /**
@@ -35,7 +35,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 	
 	PropViewHelp<Bean, T> help;
 
-	ViewProxy<? extends Bean> proxy;
+	Reference<? extends Bean> model;
 	PropName<? extends EditableProp<T>, T> displayedName;
 
 	JSpinner spinner;
@@ -44,8 +44,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 
 	/**
 	 * Create a {@link NumberSpinnerEditor}
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
 	 * @param numberModel
@@ -54,11 +54,11 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 	 * @param converter 
 	 * 		Converter to move from {@link Number} to T and back
 	 */
-	public NumberSpinnerEditor(ViewProxy<? extends Bean> proxy,
+	public NumberSpinnerEditor(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<T>, T> displayedName,
 			SpinnerNumberModel numberModel, NumberConverter<T> converter) {
 		super();
-		this.proxy = proxy;
+		this.model = model;
 		this.displayedName = displayedName;
 		this.numberModel = numberModel;
 		this.converter = converter;
@@ -87,22 +87,22 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * Constructs an editor using a {@link SpinnerNumberModel} with no
      * <code>minimum</code> or <code>maximum</code> value, 
      * <code>stepSize</code> equal to one, and an initial value of zero.
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
 	 * @param converter 
 	 * 		Converter to move from {@link Number} to T and back
 	 */
-	public NumberSpinnerEditor(ViewProxy<? extends Bean> proxy,
+	public NumberSpinnerEditor(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<T>, T> displayedName,
 			NumberConverter<T> converter) {
-		this(proxy, displayedName, new SpinnerNumberModel(), converter);
+		this(model, displayedName, new SpinnerNumberModel(), converter);
 	}
 	
 	@Override
-    public ViewProxy<? extends Bean> getProxy() {
-		return proxy;
+    public Reference<? extends Bean> getModel() {
+		return model;
 	}
 
 	/**
@@ -198,8 +198,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Double} values
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The model {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param min
@@ -211,9 +211,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Double> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Double> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Double>, Double> displayedName, double min, double max, double step){
-    	return new NumberSpinnerEditor<Double>(proxy, displayedName, 
+    	return new NumberSpinnerEditor<Double>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Double(min), new Double(min), new Double(max), new Double(step)), 
     			NumberConverterDefaults.getDoubleConverter());
@@ -222,8 +222,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Float} values
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param min
@@ -235,9 +235,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Float> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Float> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Float>, Float> displayedName, float min, float max, float step){
-    	return new NumberSpinnerEditor<Float>(proxy, displayedName, 
+    	return new NumberSpinnerEditor<Float>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Float(min), new Float(min), new Float(max), new Float(step)), 
     					NumberConverterDefaults.getFloatConverter());
@@ -246,8 +246,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Integer} values
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param min
@@ -259,10 +259,10 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Integer> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Integer> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Integer>, Integer> displayedName, int min, int max, int step){
     	return new NumberSpinnerEditor<Integer>(
-    			proxy, displayedName,
+    			model, displayedName,
     			new SpinnerNumberModel(
     					new Integer(min), new Integer(min), new Integer(max), new Integer(step)), 
     			NumberConverterDefaults.getIntegerConverter());
@@ -271,8 +271,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Integer} values
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param min
@@ -284,9 +284,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Long> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Long> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Long>, Long> displayedName, long min, long max, long step){
-    	return new NumberSpinnerEditor<Long>(proxy, displayedName,
+    	return new NumberSpinnerEditor<Long>(model, displayedName,
     			new SpinnerNumberModel(
     					new Long(min),  new Long(min), new Long(max), new Long(step)), 
     					NumberConverterDefaults.getLongConverter());
@@ -296,8 +296,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Double} values, with no min/max limit
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param step
@@ -305,9 +305,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Double> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Double> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Double>, Double> displayedName, double step){
-    	return new NumberSpinnerEditor<Double>(proxy, displayedName,
+    	return new NumberSpinnerEditor<Double>(model, displayedName,
     			new SpinnerNumberModel(
     					new Double(1), null, null, new Double(step)), 
     			NumberConverterDefaults.getDoubleConverter());
@@ -316,8 +316,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Float} values, with no min/max limit
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param step
@@ -325,9 +325,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Float> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Float> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Float>, Float> displayedName, float step){
-    	return new NumberSpinnerEditor<Float>(proxy, displayedName, 
+    	return new NumberSpinnerEditor<Float>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Float(1), null, null, new Float(step)), 
     					NumberConverterDefaults.getFloatConverter());
@@ -336,8 +336,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Integer} values, with no min/max limit
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param step
@@ -345,9 +345,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Integer> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Integer> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Integer>, Integer> displayedName, int step){
-    	return new NumberSpinnerEditor<Integer>(proxy, displayedName,
+    	return new NumberSpinnerEditor<Integer>(model, displayedName,
     			new SpinnerNumberModel(
     					new Integer(1), null, null, new Integer(step)), 
     			NumberConverterDefaults.getIntegerConverter());
@@ -356,8 +356,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Integer} values, with no min/max limit
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @param step
@@ -365,9 +365,9 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Long> create(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Long> create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Long>, Long> displayedName, long step){
-    	return new NumberSpinnerEditor<Long>(proxy, displayedName,
+    	return new NumberSpinnerEditor<Long>(model, displayedName,
     			new SpinnerNumberModel(
     					new Long(1), null, null, new Long(step)), 
     					NumberConverterDefaults.getLongConverter());
@@ -376,64 +376,64 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
     /**
      * Create an editor for {@link Double} values, with no min/max limit
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * and step 0.1
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Double> createDouble(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Double> createDouble(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Double>, Double> displayedName){
-    	return create(proxy, displayedName, 0.1d);
+    	return create(model, displayedName, 0.1d);
     }
     
     /**
      * Create an editor for {@link Float} values, with no min/max limit
      * and step 0.1
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Float> createFloat(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Float> createFloat(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Float>, Float> displayedName){
-    	return create(proxy, displayedName, 0.1f);
+    	return create(model, displayedName, 0.1f);
     }
     
     /**
      * Create an editor for {@link Integer} values, with no min/max limit
      * and step 1
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Integer> createInteger(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Integer> createInteger(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Integer>, Integer> displayedName){
-    	return create(proxy, displayedName, 1);
+    	return create(model, displayedName, 1);
     }
     
     /**
      * Create an editor for {@link Integer} values, with no min/max limit
      * and step 1
      * 
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * @return
      * 		A new editor
      */
-    public static NumberSpinnerEditor<Long> createLong(ViewProxy<? extends Bean> proxy,
+    public static NumberSpinnerEditor<Long> createLong(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<Long>, Long> displayedName){
-    	return create(proxy, displayedName, 1l);
+    	return create(model, displayedName, 1l);
     }
 }

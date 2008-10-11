@@ -10,10 +10,10 @@ import javax.swing.JTextField;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.impl.PropViewHelp;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 
 /**
@@ -24,15 +24,15 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 
 	PropViewHelp<Bean, String> help;
 
-	ViewProxy<? extends Bean> proxy;
+	Reference<? extends Bean> model;
 	PropName<? extends EditableProp<String>, String> displayedName;
 	
 	JTextField field;
 	
-	private StringTextFieldEditor(ViewProxy<? extends Bean> proxy,
+	private StringTextFieldEditor(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<String>, String> displayedName) {
 		super();
-		this.proxy = proxy;
+		this.model = model;
 		this.displayedName = displayedName;
 		buildField();
 		
@@ -42,16 +42,16 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 
 	/**
 	 * Create a {@link StringTextFieldEditor}
-	 * @param proxy
-	 * 		The {@link ViewProxy} for this {@link View} 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
 	 * @return
 	 * 		A new {@link StringTextFieldEditor}
 	 */
-	public final static StringTextFieldEditor create(ViewProxy<? extends Bean> proxy,
+	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
 			PropName<? extends EditableProp<String>, String> displayedName) {
-		return new StringTextFieldEditor(proxy, displayedName);
+		return new StringTextFieldEditor(model, displayedName);
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public ViewProxy<? extends Bean> getProxy() {
-		return proxy;
+	public Reference<? extends Bean> getModel() {
+		return model;
 	}
 
 	/**

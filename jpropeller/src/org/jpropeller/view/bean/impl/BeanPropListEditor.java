@@ -16,12 +16,12 @@ import org.jpropeller.properties.GeneralProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropListener;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
 import org.jpropeller.util.PropUtils;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 import org.jpropeller.view.update.UpdateManager;
 
@@ -37,7 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JView<M>, PropListener {
 
-	private ViewProxy<M> proxy;
+	private Reference<M> model;
 	
 	private PropViewFactory factory;
 
@@ -54,9 +54,9 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 
 	private UpdateManager updateManager;
 	
-	private BeanPropListEditor(ViewProxy<M> proxy, PropViewFactory factory) {
+	private BeanPropListEditor(Reference<M> model, PropViewFactory factory) {
 		super();
-		this.proxy = proxy;
+		this.model = model;
 		this.factory = factory;
 		
 		panel = new JPanel(new BorderLayout());
@@ -64,8 +64,8 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 		updateManager = Props.getPropSystem().getUpdateManager();
 		updateManager.registerView(this);
 
-		//When proxy has a change, we require an update
-		proxy.props().addListener(this);
+		//When model has a change, we require an update
+		model.props().addListener(this);
 		
 		//Initial update
 		update();
@@ -76,39 +76,39 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 	 * Make a new editor with default prop view factory
 	 * @param <M>
 	 * 		The type of bean in the model 
-	 * @param proxy 
-	 * 		The proxy containing the bean
+	 * @param model 
+	 * 		The model containing the bean
 	 * @return
 	 * 		A new {@link BeanPropListEditor}
 	 */
-	public static <M extends Bean> BeanPropListEditor<M> create(ViewProxy<M> proxy) {
-		return new BeanPropListEditor<M>(proxy, new PropViewFactoryDefault());
+	public static <M extends Bean> BeanPropListEditor<M> create(Reference<M> model) {
+		return new BeanPropListEditor<M>(model, new PropViewFactoryDefault());
 	}
 
 	/**
 	 * Make a new editor
 	 * @param <M>
 	 * 		The type of bean in the model 
-	 * @param proxy 
-	 * 		The proxy containing the bean
+	 * @param model 
+	 * 		The model containing the bean
 	 * @param factory
 	 * 		The {@link PropViewFactory} to use to produce {@link JView}s
 	 * @return
 	 * 		A new {@link BeanPropListEditor}
 	 */
-	public static <M extends Bean> BeanPropListEditor<M> create(ViewProxy<M> proxy, PropViewFactory factory) {
-		return new BeanPropListEditor<M>(proxy, new PropViewFactoryDefault());
+	public static <M extends Bean> BeanPropListEditor<M> create(Reference<M> model, PropViewFactory factory) {
+		return new BeanPropListEditor<M>(model, new PropViewFactoryDefault());
 	}
 
 	@Override
 	public void dispose() {
 		updateManager.deregisterView(this);
-		proxy.props().removeListener(this);
+		model.props().removeListener(this);
 	}
 
 	@Override
-	public ViewProxy<M> getProxy() {
-		return proxy;
+	public Reference<M> getModel() {
+		return model;
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 
 		// Fill the grid with components
 
-		M bean = getProxy().model().get();
+		M bean = getModel().value().get();
 		
 		int y = 1;
 		for (PropName<?,?> name : subViewNameList) {
@@ -195,7 +195,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 
 		//logger.finest("update()");
 
-		M newModel = getProxy().model().get();
+		M newModel = getModel().value().get();
 		M oldModel = beanUsedForUI;
 		
 		//If we have not changed value, nothing to do
@@ -229,9 +229,9 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 		if (newModel != null) {
 			for (PropName<?, ?> newName : newViewNameList) {
 				
-				//Note that we create the view using our own proxy, so it will always
+				//Note that we create the view using our own model, so it will always
 				//(try to) display our current model
-				JView<?> newView = factory.viewFor(proxy, newName);
+				JView<?> newView = factory.viewFor(model, newName);
 				if (newView!=null) {
 					newViews.put(newName, newView);
 				}
@@ -283,7 +283,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 		//below is just to always call updateManager.updateRequiredBy(view);
 		//This optimisation will break if any events have incorrect deep/shallow status
 		
-		//We only require an update on a shallow change to proxy - that is,
+		//We only require an update on a shallow change to model - that is,
 		//when a new value of model is set, NOT when one of the props of model
 		//changes. When a prop of model changes, it will be displayed by a
 		//sub model update

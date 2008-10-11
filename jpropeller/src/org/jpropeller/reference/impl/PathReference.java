@@ -1,4 +1,4 @@
-package org.jpropeller.view.proxy.impl;
+package org.jpropeller.reference.impl;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.map.ExtendedPropMap;
@@ -7,22 +7,22 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.path.impl.PathProp;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
-import org.jpropeller.view.proxy.ViewProxy;
 
 /**
- * A {@link ViewProxy} where the {@link #model()} property is
+ * A {@link Reference} where the {@link #value()} property is
  * a {@link PathProp}
  *
  * @param <M>
- * 		The type of data in the model
+ * 		The type of value
  */
-public class ViewProxyPath<M> implements ViewProxy<M> {
+public class PathReference<M> implements Reference<M> {
 
 	ExtendedPropMap propMap = Props.getPropSystem().createExtendedPropMap(this);
 	PathProp<M> model;
 	
-	private ViewProxyPath(PathProp<M> model) {
+	private PathReference(PathProp<M> model) {
 		this.model = propMap.add(model);
 	}
 
@@ -32,12 +32,12 @@ public class ViewProxyPath<M> implements ViewProxy<M> {
 	}
 
 	@Override
-	public Prop<M> model() {
+	public Prop<M> value() {
 		return model;
 	}
 	
 	/**
-	 * This is the first stage in creating a {@link ViewProxyPath} - 
+	 * This is the first stage in creating a {@link PathReference} - 
 	 * call this method specifying the class of the end of the path,
 	 * and the {@link Bean} from which the path starts
 	 * @param <P> 
@@ -50,43 +50,43 @@ public class ViewProxyPath<M> implements ViewProxy<M> {
 	 * @param pathRoot
 	 * 		The start of the path 
 	 * @return 
-	 * 		A builder - call {@link ViewProxyPathBuilder#via(PropName)}
-	 * and {@link ViewProxyPathBuilder#toProxy(PropName)} on this builder
-	 * to build the entire path and then return the actual {@link ViewProxyPath}
+	 * 		A builder - call {@link PathReferenceBuilder#via(PropName)}
+	 * and {@link PathReferenceBuilder#toReference(PropName)} on this builder
+	 * to build the entire path and then return the actual {@link PathReference}
 	 * 
 	 */
 	public static <P extends Prop<T>, T> PathPropBuilder<P, T> from(Class<T> clazz, Bean pathRoot) {
-		return new ViewProxyPathBuilder<P, T>(clazz, pathRoot);
+		return new PathReferenceBuilder<P, T>(clazz, pathRoot);
 	}
 	
 	//FIXME would be neater to make a different visible builder interface
-	//where "to" method could return the proxy - this would still want to
+	//where "to" method could return the reference - this would still want to
 	//use a PathPropBuilder, but not subclass it, so that the
 	//"to" method name is still available 
 	/**
-	 * A class used to build a {@link ViewProxyPath}
+	 * A class used to build a {@link PathReference}
 	 *
 	 * @param <P>
-	 * 		The type of property at the end of the path for the proxy
+	 * 		The type of property at the end of the path for the reference
 	 * @param <T>
-	 * 		The type of value in the property at the end of the path for the proxy
+	 * 		The type of value in the property at the end of the path for the reference
 	 */
-	public static class ViewProxyPathBuilder<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
-		protected ViewProxyPathBuilder(Class<T> clazz, Bean pathRoot) {
+	public static class PathReferenceBuilder<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
+		protected PathReferenceBuilder(Class<T> clazz, Bean pathRoot) {
 			super("model", clazz, pathRoot);
 		}
 		
 		/**
-		 * Complete the building process and produce a {@link ViewProxyPath}
+		 * Complete the building process and produce a {@link PathReference}
 		 * instance 
 		 * @param lastName
 		 * 		The name of the last step in the path
 		 * @return
-		 * 		The {@link ViewProxyPath}
+		 * 		The {@link PathReference}
 		 */
-		public ViewProxyPath<T> toProxy(PropName<? extends P, T> lastName) {
+		public PathReference<T> toReference(PropName<? extends P, T> lastName) {
 			PathProp<T> prop = super.to(lastName);
-			return new ViewProxyPath<T>(prop);
+			return new PathReference<T>(prop);
 		}
 	}
 }

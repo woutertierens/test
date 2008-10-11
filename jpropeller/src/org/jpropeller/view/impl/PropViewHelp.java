@@ -6,8 +6,8 @@ import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropListener;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
-import org.jpropeller.view.proxy.ViewProxy;
 import org.jpropeller.view.update.UpdatableView;
 import org.jpropeller.view.update.UpdateManager;
 
@@ -24,7 +24,7 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	private PropName<? extends Prop<T>, T> name;
 	private PropName<? extends EditableProp<T>, T> editableName;
 	private UpdatableView<M> view;
-	private ViewProxy<? extends M> proxy;
+	private Reference<? extends M> model;
 	private UpdateManager updateManager;
 	private Prop<T> viewedProp = null;
 	
@@ -45,19 +45,19 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 		this.name = name;
 		this.editableName = editableName;
 		
-		this.proxy = view.getProxy();
+		this.model = view.getModel();
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
 	}
 
 	/**
-	 * This will connect the {@link UpdatableView} to the update manager, and to its own proxy.
+	 * This will connect the {@link UpdatableView} to the update manager, and to its own model.
 	 * The {@link UpdatableView} must be otherwise fully constructed, and have its
-	 * proxy set.
+	 * model set.
 	 * 
 	 * This makes sure that:
 	 * The view is registered with the update manager.
-	 * When the proxy has a prop change, the update manager is informed that the view
+	 * When the model has a prop change, the update manager is informed that the view
 	 * requires an update.
 	 * An first request is made for an update to display the initial value
 	 *
@@ -66,8 +66,8 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	public void connect() {
 		updateManager.registerView(view);
 
-		//When proxy has a change, we require an update
-		proxy.props().addListener(this);
+		//When model has a change, we require an update
+		model.props().addListener(this);
 		
 		//Initial update
 		updateManager.updateRequiredBy(view);
@@ -76,13 +76,13 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	/**
 	 * Make a {@link PropViewHelp} for a view displaying a prop not known to be editable
 	 * 
-	 * This will connect the {@link UpdatableView} to the update manager, and to its own proxy.
+	 * This will connect the {@link UpdatableView} to the update manager, and to its own model.
 	 * The {@link UpdatableView} must be otherwise fully constructed, and have its
-	 * proxy set.
+	 * model set.
 	 * 
 	 * This makes sure that:
 	 * The view is registered with the update manager.
-	 * When the proxy has a prop change, the update manager is informed that the view
+	 * When the model has a prop change, the update manager is informed that the view
 	 * requires an update.
 	 * An first request is made for an update to display the initial value
 	 *
@@ -107,13 +107,13 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	/**
 	 * Make a {@link PropViewHelp} for a view displaying an editable prop
 	 * 
-	 * This will connect the {@link UpdatableView} to the update manager, and to its own proxy.
+	 * This will connect the {@link UpdatableView} to the update manager, and to its own model.
 	 * The {@link UpdatableView} must be otherwise fully constructed, and have its
-	 * proxy set.
+	 * model set.
 	 * 
 	 * This makes sure that:
 	 * The view is registered with the update manager.
-	 * When the proxy has a prop change, the update manager is informed that the view
+	 * When the model has a prop change, the update manager is informed that the view
 	 * requires an update.
 	 * An first request is made for an update to display the initial value
 	 *
@@ -142,16 +142,16 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 		//below is just to always call updateManager.updateRequiredBy(view);
 		//This optimisation will break if any events have incorrect deep/shallow status
 		
-		//We receive events in response to changes to our proxy. If 
+		//We receive events in response to changes to our model. If 
 		//(and ONLY if) the event is shallow, we may be viewing a
 		//new model bean, and so might have a new viewed prop.
-		//In other words, if we see a deep change to the proxy,
+		//In other words, if we see a deep change to the model,
 		//it cannot have had its model() prop set to a new instance,
 		//so it is safe to assume we are still looking at the same
 		//prop in that bean
 		if ((!event.isDeep()) || viewedProp == null) {
 			//Get the model bean
-			M currentModel = view.getProxy().model().get();
+			M currentModel = view.getModel().value().get();
 			
 			//If model bean is null, prop is null
 			if (currentModel == null) {
@@ -180,7 +180,7 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	 */
 	public void dispose() {
 		updateManager.deregisterView(view);
-		proxy.props().removeListener(this);
+		model.props().removeListener(this);
 	}
 	
 	/**
@@ -191,7 +191,7 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 	 */
 	public  T getPropValue() {
 		//Get the model bean
-		M currentModel = view.getProxy().model().get();
+		M currentModel = view.getModel().value().get();
 		
 		//If model bean is null, return null
 		if (currentModel == null) {
@@ -214,7 +214,7 @@ public class PropViewHelp<M extends Bean, T> implements PropListener {
 		if (editableName == null) return;
 		
 		//Get the model bean
-		M currentModel = view.getProxy().model().get();
+		M currentModel = view.getModel().value().get();
 		
 		//If model bean is null, do nothing
 		if (currentModel == null) {

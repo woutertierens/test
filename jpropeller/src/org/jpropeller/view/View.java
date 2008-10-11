@@ -22,7 +22,7 @@
  */
 package org.jpropeller.view;
 
-import org.jpropeller.view.proxy.ViewProxy;
+import org.jpropeller.reference.Reference;
 
 /**
  *	An object handling a view of an underlying model, where the model can be changed,
@@ -62,13 +62,13 @@ import org.jpropeller.view.proxy.ViewProxy;
 public interface View<M> {
 
 	/**
-	 * Get the {@link ViewProxy} for this {@link View}.
+	 * Get the {@link Reference} that is the model for this {@link View}.
 	 * The actual value displayed/edited by this view is
-	 * accessed using the {@link ViewProxy#model()} prop.
+	 * accessed using the {@link Reference#value()} prop.
 	 * @return
-	 * 		The {@link View}'s {@link ViewProxy}
+	 * 		The {@link View}'s model
 	 */
-	public ViewProxy<? extends M> getProxy();
+	public Reference<? extends M> getModel();
 	
 	/**
 	 * @return True if any editing is in progress which has not been committed. This
