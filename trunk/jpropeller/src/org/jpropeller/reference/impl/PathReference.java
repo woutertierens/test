@@ -3,12 +3,12 @@ package org.jpropeller.reference.impl;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.map.ExtendedPropMap;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.path.impl.PathProp;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
+import org.jpropeller.transformer.Transformer;
 
 /**
  * A {@link Reference} where the {@link #value()} property is
@@ -50,8 +50,8 @@ public class PathReference<M> implements Reference<M> {
 	 * @param pathRoot
 	 * 		The start of the path 
 	 * @return 
-	 * 		A builder - call {@link PathReferenceBuilder#via(PropName)}
-	 * and {@link PathReferenceBuilder#toReference(PropName)} on this builder
+	 * 		A builder - call {@link PathReferenceBuilder#via(Transformer)}
+	 * and {@link PathReferenceBuilder#toReference(Transformer)} on this builder
 	 * to build the entire path and then return the actual {@link PathReference}
 	 * 
 	 */
@@ -79,13 +79,13 @@ public class PathReference<M> implements Reference<M> {
 		/**
 		 * Complete the building process and produce a {@link PathReference}
 		 * instance 
-		 * @param lastName
-		 * 		The name of the last step in the path
+		 * @param lastTransform
+		 * 		The {@link Transformer} of the last step in the path
 		 * @return
 		 * 		The {@link PathReference}
 		 */
-		public PathReference<T> toReference(PropName<? extends P, T> lastName) {
-			PathProp<T> prop = super.to(lastName);
+		public PathReference<T> toReference(Transformer<? super Bean, ? extends P> lastTransform) {
+			PathProp<T> prop = super.to(lastTransform);
 			return new PathReference<T>(prop);
 		}
 	}

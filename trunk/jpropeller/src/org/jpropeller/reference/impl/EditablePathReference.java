@@ -3,13 +3,13 @@ package org.jpropeller.reference.impl;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.map.ExtendedPropMap;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.path.impl.EditablePathProp;
 import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
+import org.jpropeller.transformer.Transformer;
 
 /**
  * A {@link Reference} where the {@link #value()} property is
@@ -51,8 +51,8 @@ public class EditablePathReference<M> implements Reference<M> {
 	 * @param pathRoot
 	 * 		The start of the path 
 	 * @return 
-	 * 		A builder - call {@link EditablePathReferenceBuilder#via(PropName)}
-	 * and {@link EditablePathReferenceBuilder#toReference(PropName)} on this builder
+	 * 		A builder - call {@link EditablePathReferenceBuilder#via(Transformer)}
+	 * and {@link EditablePathReferenceBuilder#toReference(Transformer)} on this builder
 	 * to build the entire path and then return the actual {@link EditablePathReference}
 	 * 
 	 */
@@ -80,13 +80,13 @@ public class EditablePathReference<M> implements Reference<M> {
 		/**
 		 * Complete the building process and produce a {@link EditablePathReference}
 		 * instance 
-		 * @param lastName
-		 * 		The name of the last step in the path
+		 * @param lastTransformer
+		 * 		The {@link Transformer} of the last step in the path
 		 * @return
 		 * 		The {@link EditablePathReference}
 		 */
-		public EditablePathReference<T> toReference(PropName<? extends P, T> lastName) {
-			EditablePathProp<T> prop = super.to(lastName);
+		public EditablePathReference<T> toReference(Transformer<? super Bean, ? extends P> lastTransformer) {
+			EditablePathProp<T> prop = super.to(lastTransformer);
 			return new EditablePathReference<T>(prop);
 		}
 	}

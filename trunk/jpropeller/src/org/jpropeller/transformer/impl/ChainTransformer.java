@@ -107,7 +107,7 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 
 		//See first suppression
 		@SuppressWarnings("unchecked")
-		public ChainIterator(Object root, LinkedList<Transformer> transformers) {
+		private ChainIterator(Object root, LinkedList<Transformer> transformers) {
 			super();
 			this.current = root;
 			this.iterator = transformers.iterator();

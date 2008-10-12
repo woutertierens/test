@@ -1,13 +1,11 @@
 /*
- *  $Id: BeanPath.java,v 1.1 2008/03/24 11:19:36 shingoki Exp $
- *
  *  Copyright (c) 2008 shingoki
  *
- *  This file is part of jpropeller, see http://jpropeller.sourceforge.net
+ *  This file is part of jpropeller, see http://code.google.com/p/jpropeller/
  *
  *    jpropeller is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
+ *    the Free Software Foundation; either version 3 of the License, or
  *    (at your option) any later version.
  *
  *    jpropeller is distributed in the hope that it will be useful,
@@ -16,23 +14,22 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with jpropeller; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ *    along with jpropeller. If not, see <http://www.gnu.org/licenses/>.
+ *    
  */
 package org.jpropeller.path;
 
 import org.jpropeller.bean.Bean;
-import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.ListProp;
+import org.jpropeller.transformer.Transformer;
 
 /**
- * A BeanPath allows for looking up of a Prop by following a series
- * of named properties through a chain of beans.
+ * A {@link BeanPath} allows for looking up of a {@link Prop} by following a series
+ * of {@link Transformer}s through a chain of beans.
  * 
- * For example, we might have Bean classes Person, Address, Street
+ * For example, we might have {@link Bean} classes Person, Address, Street
  * where a person has an address property, an address has a street
  * property, and finally a street has a name property (which has type
  * String)
@@ -47,32 +44,28 @@ import org.jpropeller.properties.list.ListProp;
  * The structure of the path is slightly unusual, since we require all 
  * steps in the path except the last to lead to a Bean - this is so that
  * we can continue to follow the path by looking up Bean properties.
- * However the last step needs to lead to type T - the type of the path,
- * which is the type of Prop we expect to end up with when we follow the
- * path.
+ * However the last step needs to lead to a {@link Prop} with value type T.
  * 
  * For this reason, the path is divided into an {@link Iterable} that gives the
- * "bean" steps of the path, and a single lastName that looks up the
- * end of the path from the last Bean.
+ * "bean" steps of the path, and a single last transform that looks up the
+ * end of the path from the last {@link Bean}.
  * 
- * BeanPaths must be immutable
+ * {@link BeanPath}s must be immutable
  * 
- * @author shingoki
- *
  * @param <P> 
- * 		The type of final prop reached by the path (e.g. {@link Prop},
+ * 		The type of final {@link Prop} reached by the path (e.g. {@link Prop},
  * {@link EditableProp}, {@link ListProp} etc.)
  * @param <T>
- * 		The type of data in the final prop reached by the path
+ * 		The type of data in the final {@link Prop} reached by the path
  */
-public interface BeanPath<P extends Prop<T>, T> extends Iterable<PropName<? extends Prop<? extends Bean>, ? extends Bean>> {
+public interface BeanPath<P extends Prop<T>, T> extends Iterable<Transformer<? super Bean, Prop<? extends Bean>>> {
 
 	/**
-	 * The name of the last step in the path - this is taken from the
+	 * The transform for the last step in the path - this transforms from the
 	 * last bean in the path, to the actual property we are looking for
 	 * @return
-	 * 		The lastName
+	 * 		The last transform
 	 */
-	public PropName<? extends P, T> getLastName();
+	public Transformer<? super Bean, ? extends P> getLastTransform();
 	
 }
