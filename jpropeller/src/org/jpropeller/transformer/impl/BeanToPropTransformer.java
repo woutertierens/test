@@ -7,12 +7,14 @@ import org.jpropeller.transformer.Transformer;
 
 /**
  * A {@link Transformer} from a {@link Bean} to a named {@link Prop} of that {@link Bean}
+ * @param <P>
+ * 		The type of {@link Prop} 
  * @param <T>
  * 		The type of value in the {@link Prop} 
  */
-public class BeanToPropTransformer<T> implements Transformer<Bean, Prop<T>>{
+public class BeanToPropTransformer<P extends Prop<T>, T> implements Transformer<Bean, P>{
 
-	private PropName<? extends Prop<T>, T> name;
+	private PropName<P, T> name;
 
 	/**
 	 * Make a {@link Transformer} that looks up a {@link Prop} using the name
@@ -20,13 +22,13 @@ public class BeanToPropTransformer<T> implements Transformer<Bean, Prop<T>>{
 	 * 		The name to use for lookup
 	 */
 	public BeanToPropTransformer(
-			PropName<? extends Prop<T>, T> name) {
+			PropName<P, T> name) {
 		super();
 		this.name = name;
 	}
 
 	@Override
-	public Prop<T> transform(Bean s) {
+	public P transform(Bean s) {
 		return s.props().get(name);
 	}
 

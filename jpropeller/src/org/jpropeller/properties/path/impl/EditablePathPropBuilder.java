@@ -8,6 +8,9 @@ import org.jpropeller.path.impl.PathNameListDefault;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.ListProp;
+import org.jpropeller.transformer.Transformer;
+import org.jpropeller.transformer.impl.BeanToBeanPropTransformer;
+import org.jpropeller.transformer.impl.BeanToPropTransformer;
 
 /**
  * This is a temporary builder object that is used to make an {@link EditablePathProp}
@@ -46,7 +49,7 @@ public class EditablePathPropBuilder<P extends EditableProp<T>, T> {
 
 	/**
 	 * Start a {@link EditablePathPropBuilder} that can be used to build an {@link EditablePathProp}
-	 * by use of {@link #via(PropName)} and {@link #to(PropName)} methods.
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * For example, to make an {@link EditablePathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
@@ -70,7 +73,7 @@ public class EditablePathPropBuilder<P extends EditableProp<T>, T> {
 	
 	/**
 	 * Start a {@link EditablePathPropBuilder} that can be used to build an {@link EditablePathProp}
-	 * by use of {@link #via(PropName)} and {@link #to(PropName)} methods.
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * For example, to make an {@link EditablePathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
@@ -96,26 +99,50 @@ public class EditablePathPropBuilder<P extends EditableProp<T>, T> {
 	/**
 	 * Produce a {@link BeanPathDefault} using the {@link PropName}s used to create this
 	 * object, then the last name specified
-	 * @param lastName
-	 * 		The last {@link PropName} in the path
+	 * @param lastTransform
+	 * 		The last {@link Transformer} in the path
 	 * @return
 	 * 		The path itself
 	 */
-	public EditablePathProp<T> to(PropName<? extends P, T> lastName) {
-		BeanPathDefault<P, T> path = new BeanPathDefault<P, T>(list, lastName);
+	public EditablePathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+		BeanPathDefault<P, T> path = new BeanPathDefault<P, T>(list, lastTransform);
 		return new EditablePathProp<T>(name, pathRoot, path);
 	}
 	
 	/**
 	 * Add another name to this path, and return this
-	 * instance (to allow chaining of calls to {@link #via(PropName)})
+	 * instance (to allow chaining of calls to {@link #via(Transformer)})
+	 * @param nextTransformer
+	 * 		The next{@link Transformer} in the path
+	 * @return
+	 * 		The path itself
+	 */
+	public EditablePathPropBuilder<P, T> via(Transformer<? super Bean, Prop<? extends Bean>> nextTransformer) {
+		list.add(nextTransformer);
+		return this;
+	}
+	
+	/**
+	 * Produce a {@link BeanPathDefault} using the {@link PropName}s used to create this
+	 * object, then the last name specified
+	 * @param lastName
+	 * 		The last {@link PropName} in the path
+	 * @return
+	 * 		The path itself
+	 */
+	public EditablePathProp<T> to(PropName<P, T> lastName) {
+		return to(new BeanToPropTransformer<P, T>(lastName));
+	}
+	
+	/**
+	 * Add another name to this path, and return this
+	 * instance (to allow chaining of calls to {@link #via(Transformer)})
 	 * @param nextName
-	 * 		The next{@link PropName} in the path
+	 * 		The next {@link PropName} in the path
 	 * @return
 	 * 		The path itself
 	 */
 	public EditablePathPropBuilder<P, T> via(PropName<? extends Prop<? extends Bean>, ? extends Bean> nextName) {
-		list.add(nextName);
-		return this;
+		return via(new BeanToBeanPropTransformer(nextName));
 	}
 }

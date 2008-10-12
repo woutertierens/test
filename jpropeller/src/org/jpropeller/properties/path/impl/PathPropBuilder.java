@@ -8,6 +8,9 @@ import org.jpropeller.path.impl.PathNameListDefault;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.ListProp;
+import org.jpropeller.transformer.Transformer;
+import org.jpropeller.transformer.impl.BeanToBeanPropTransformer;
+import org.jpropeller.transformer.impl.BeanToPropTransformer;
 
 /**
  * This is a temporary builder object that is used to make a {@link PathProp}
@@ -29,7 +32,6 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	PropName<Prop<T>, T> name;
 	Bean pathRoot;
 	PathNameList list;
-
 	
 	protected PathPropBuilder(PropName<Prop<T>, T> name, Bean pathRoot) {
 		super();
@@ -44,7 +46,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 
 	/**
 	 * Start a {@link PathPropBuilder} that can be used to build an {@link PathProp}
-	 * by use of {@link #via(PropName)} and {@link #to(PropName)} methods.
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * For example, to make an {@link PathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
@@ -68,7 +70,7 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	
 	/**
 	 * Start a {@link PathPropBuilder} that can be used to build a {@link PathProp}
-	 * by use of {@link #via(PropName)} and {@link #to(PropName)} methods.
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * For example, to make a {@link PathProp} starting from bean b and progressing
 	 * via properties x, y, z in order, use:
 	 * <pre>
@@ -94,26 +96,50 @@ public class PathPropBuilder<P extends Prop<T>, T> {
 	/**
 	 * Produce a {@link BeanPathDefault} using the {@link PropName}s used to create this
 	 * object, then the last name specified
+	 * @param lastTransform
+	 * 		The last {@link Transformer} in the path
+	 * @return
+	 * 		The path itself
+	 */
+	public PathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+		BeanPathDefault<P, T> path = new BeanPathDefault<P, T>(list, lastTransform);
+		return new PathProp<T>(name, pathRoot, path);
+	}
+	
+	/**
+	 * Add another transform to this path, and return this
+	 * instance (to allow chaining of calls to {@link #via(Transformer)})
+	 * @param nextTransform
+	 * 		The next {@link Transformer} in the path
+	 * @return
+	 * 		The path itself
+	 */
+	public PathPropBuilder<P, T> via(Transformer<? super Bean, Prop<? extends Bean>> nextTransform) {
+		list.add(nextTransform);
+		return this;
+	}
+	
+	/**
+	 * Produce a {@link BeanPathDefault} using the {@link PropName}s used to create this
+	 * object, then the last name specified
 	 * @param lastName
 	 * 		The last {@link PropName} in the path
 	 * @return
 	 * 		The path itself
 	 */
-	public PathProp<T> to(PropName<? extends P, T> lastName) {
-		BeanPathDefault<P, T> path = new BeanPathDefault<P, T>(list, lastName);
-		return new PathProp<T>(name, pathRoot, path);
+	public PathProp<T> to(PropName<P, T> lastName) {
+		return to(new BeanToPropTransformer<P, T>(lastName));
 	}
 	
 	/**
 	 * Add another name to this path, and return this
-	 * instance (to allow chaining of calls to {@link #via(PropName)})
+	 * instance (to allow chaining of calls to {@link #via(Transformer)})
 	 * @param nextName
-	 * 		The next{@link PropName} in the path
+	 * 		The next {@link PropName} in the path
 	 * @return
 	 * 		The path itself
 	 */
 	public PathPropBuilder<P, T> via(PropName<? extends Prop<? extends Bean>, ? extends Bean> nextName) {
-		list.add(nextName);
-		return this;
+		return via(new BeanToBeanPropTransformer(nextName));
 	}
 }

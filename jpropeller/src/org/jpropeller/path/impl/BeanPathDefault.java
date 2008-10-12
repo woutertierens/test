@@ -33,11 +33,13 @@ import org.jpropeller.path.PathNameList;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.ListProp;
+import org.jpropeller.transformer.Transformer;
+import org.jpropeller.transformer.impl.BeanToBeanPropTransformer;
+import org.jpropeller.transformer.impl.BeanToPropTransformer;
 
 /**
- * Simple implementation of BeanPath, using a List as
+ * Simple implementation of {@link BeanPath}, using a {@link List} as
  * source for iterator
- * @author shingoki
  *
  * @param <P> 
  * 		The type of final prop reached by the path (e.g. {@link Prop},
@@ -47,39 +49,39 @@ import org.jpropeller.properties.list.ListProp;
  */
 public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 
-	List<PropName<? extends Prop<? extends Bean>, ? extends Bean>> names;
-	PropName<? extends P, T> lastName;
+	List<Transformer<? super Bean, Prop<? extends Bean>>> transforms;
+	Transformer<? super Bean, ? extends P> lastTransform;
 	
 	/**
 	 * Create a BeanPath
 	 * The iterable portion of the path will be taken from the list
-	 * @param names
-	 * 		The names to iterate in the BeanPath, this will be copied so
+	 * @param transforms
+	 * 		The transforms to iterate in the BeanPath, this will be copied so
 	 * that changes will not affect the path (since path is immutable)
-	 * @param lastName
+	 * @param lastTransform
 	 * 		The last step of the path
 	 */
-	public BeanPathDefault(List<PropName<? extends Prop<? extends Bean>, ? extends Bean>> names, PropName<? extends P, T> lastName) {
+	public BeanPathDefault(List<Transformer<? super Bean, Prop<? extends Bean>>> transforms, Transformer<? super Bean, ? extends P> lastTransform) {
 		super();
-		this.names = new LinkedList<PropName<? extends Prop<? extends Bean>, ? extends Bean>>(names);
-		this.lastName = lastName;
+		this.transforms = new LinkedList<Transformer<? super Bean, Prop<? extends Bean>>>(transforms);
+		this.lastTransform = lastTransform;
 	}
 	
 	@Override
-	public PropName<? extends P, T> getLastName() {
-		return lastName;
+	public Transformer<? super Bean, ? extends P> getLastTransform() {
+		return lastTransform;
 	}
 
 	@Override
-	public Iterator<PropName<? extends Prop<? extends Bean>, ? extends Bean>> iterator() {
-		return names.iterator();
+	public Iterator<Transformer<? super Bean, Prop<? extends Bean>>> iterator() {
+		return transforms.iterator();
 	}
 
 	/**
 	 * This is a temporary object that is used to make a {@link BeanPathDefault} using
-	 * the {@link #to(PropName)} method. It stores the first part of the path - 
+	 * the {@link #to(Transformer)} method. It stores the first part of the path - 
 	 * the list of {@link PropName}s excluding the last name. This first part of the
-	 * path can be grown using {@link #via(PropName)}
+	 * path can be grown using {@link #via(Transformer)}
 	 * 
 	 * This class is not useful in itself, only as part of the easy way of making
 	 * a {@link BeanPathDefault}:
@@ -87,8 +89,6 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 	 * BeanPathDefault.via(a, b, c).then(d)
 	 * </pre>
 	 * 
-	 * @author bwebster
-	 *
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},
 	 * {@link EditableProp}, {@link ListProp} etc.)
@@ -98,10 +98,22 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 	public static class TemporaryPath<P extends Prop<T>, T> {  
 		PathNameList list;
 		
-		private TemporaryPath(PropName<? extends Prop<? extends Bean>, ? extends Bean> firstName) {
+		private TemporaryPath(Transformer<? super Bean, Prop<? extends Bean>> firstTransform) {
 			super();
 			list = new PathNameListDefault();
-			via(firstName);
+			via(firstTransform);
+		}
+
+		/**
+		 * Produce a {@link BeanPathDefault} using the {@link PropName}s used to create this
+		 * object, then the last name specified
+		 * @param lastTransform
+		 * 		The last {@link Transformer} in the path
+		 * @return
+		 * 		The path itself
+		 */
+		public BeanPathDefault<P, T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+			return new BeanPathDefault<P, T>(list, lastTransform);
 		}
 
 		/**
@@ -112,10 +124,23 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 		 * @return
 		 * 		The path itself
 		 */
-		public BeanPathDefault<P, T> to(PropName<? extends P, T> lastName) {
-			return new BeanPathDefault<P, T>(list, lastName);
+		public BeanPathDefault<P, T> to(PropName<P, T> lastName) {
+			return to(new BeanToPropTransformer<P, T>(lastName));
 		}
-		
+
+		/**
+		 * Add another transform to this path, and return this
+		 * instance (to allow chaining of calls to {@link #via(Transformer)})
+		 * @param nextTransform
+		 * 		The next{@link Transformer} in the path
+		 * @return
+		 * 		The path itself
+		 */
+		public TemporaryPath<P, T> via(Transformer<? super Bean, Prop<? extends Bean>> nextTransform) {
+			list.add(nextTransform);
+			return this;
+		}
+
 		/**
 		 * Add another name to this path, and return this
 		 * instance (to allow chaining of calls to {@link #via(PropName)})
@@ -125,15 +150,36 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 		 * 		The path itself
 		 */
 		public TemporaryPath<P, T> via(PropName<? extends Prop<? extends Bean>, ? extends Bean> nextName) {
-			list.add(nextName);
-			return this;
+			return via(new BeanToBeanPropTransformer(nextName));
 		}
-		
+
 	}
 	
 	/**
-	 * This returns a {@link TemporaryPath} that can then be used to make a {@link BeanPathDefault} via
-	 * {@link TemporaryPath#via(PropName)} and {@link TemporaryPath#to(PropName)}
+	 * This returns a {@link TemporaryPath} that can then be used to make a {@link BeanPathDefault} using
+	 * {@link TemporaryPath#via(Transformer)} and {@link TemporaryPath#to(Transformer)}
+	 * This sounds complicated - but in practice it is actually much easier - if you want a 
+	 * {@link BeanPathDefault} that follows names "a, b, c, d" you just need to call:
+	 * <pre>
+	 * BeanPathDefault.via(a).via(b).via(c).to(d)
+	 * </pre>
+	 * @param <P> 
+	 * 		The type of final prop reached by the path (e.g. {@link Prop},
+	 * {@link EditableProp}, {@link ListProp} etc.)
+	 * @param <T>
+	 * 		The type of data in the final prop reached by the path
+	 * @param firstTransform
+	 * 		The first {@link Transformer} in the path
+	 * @return
+	 * 		A {@link TemporaryPath} that can be used to produce a {@link BeanPathDefault}
+	 */
+	public static <P extends Prop<T>, T> TemporaryPath<P, T> via(Transformer<? super Bean, Prop<? extends Bean>> firstTransform) {
+		return new TemporaryPath<P, T>(firstTransform);
+	}
+
+	/**
+	 * This returns a {@link TemporaryPath} that can then be used to make a {@link BeanPathDefault} using
+	 * {@link TemporaryPath#via(Transformer)} and {@link TemporaryPath#to(Transformer)}
 	 * This sounds complicated - but in practice it is actually much easier - if you want a 
 	 * {@link BeanPathDefault} that follows names "a, b, c, d" you just need to call:
 	 * <pre>
@@ -150,7 +196,23 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 	 * 		A {@link TemporaryPath} that can be used to produce a {@link BeanPathDefault}
 	 */
 	public static <P extends Prop<T>, T> TemporaryPath<P, T> via(PropName<? extends Prop<? extends Bean>, ? extends Bean> firstName) {
-		return new TemporaryPath<P, T>(firstName);
+		return via(new BeanToBeanPropTransformer(firstName));
+	}
+	
+	/**
+	 * Produce a {@link BeanPathDefault} using a path with only one link
+	 * @param <P> 
+	 * 		The type of final prop reached by the path (e.g. {@link Prop},
+	 * {@link EditableProp}, {@link ListProp} etc.)
+	 * @param <T>
+	 * 		The type of data in the final prop reached by the path
+	 * @param lastTransform
+	 * 		The last {@link Transformer} in the path
+	 * @return
+	 * 		The path itself
+	 */
+	public static <P extends Prop<T>, T> BeanPathDefault<P, T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+		return new BeanPathDefault<P, T>(new PathNameListDefault(), lastTransform);
 	}
 	
 	/**
@@ -161,12 +223,11 @@ public class BeanPathDefault<P extends Prop<T>, T> implements BeanPath<P, T> {
 	 * @param <T>
 	 * 		The type of data in the final prop reached by the path
 	 * @param lastName
-	 * 		The last {@link PropName} in the path
+	 * 		The last {@link Transformer} in the path
 	 * @return
 	 * 		The path itself
 	 */
-	public static <P extends Prop<T>, T> BeanPathDefault<P, T> to(PropName<? extends P, T> lastName) {
-		return new BeanPathDefault<P, T>(new PathNameListDefault(), lastName);
+	public static <P extends Prop<T>, T> BeanPathDefault<P, T> to(PropName<P, T> lastName) {
+		return to(new BeanToPropTransformer<P, T>(lastName));
 	}
-
 }

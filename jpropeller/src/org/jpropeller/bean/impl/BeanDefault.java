@@ -6,7 +6,6 @@ import java.util.Map;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.map.ExtendedPropMap;
 import org.jpropeller.map.PropMap;
-import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.GeneralProp;
 import org.jpropeller.properties.Prop;
@@ -20,6 +19,7 @@ import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.properties.primitive.impl.EditablePropPrimitive;
 import org.jpropeller.properties.primitive.impl.PropPrimitive;
 import org.jpropeller.system.Props;
+import org.jpropeller.transformer.Transformer;
 
 /**
  * A default {@link Bean} with no properties, designed to be
@@ -156,8 +156,8 @@ public abstract class BeanDefault implements Bean {
 			super(name, clazz, BeanDefault.this);
 		}
 		@Override
-		public EditablePathProp<T> to(PropName<? extends P, T> lastName) {
-			EditablePathProp<T> prop = super.to(lastName);
+		public EditablePathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+			EditablePathProp<T> prop = super.to(lastTransform);
 			addProp(prop);
 			return prop;
 		}
@@ -181,8 +181,8 @@ public abstract class BeanDefault implements Bean {
 			super(name, clazz, BeanDefault.this);
 		}
 		@Override
-		public PathProp<T> to(PropName<? extends P, T> lastName) {
-			PathProp<T> prop = super.to(lastName);
+		public PathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+			PathProp<T> prop = super.to(lastTransform);
 			addProp(prop);
 			return prop;
 		}

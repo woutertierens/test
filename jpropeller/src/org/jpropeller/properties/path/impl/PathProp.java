@@ -37,6 +37,7 @@ import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropEventOrigin;
 import org.jpropeller.properties.event.PropInternalListener;
 import org.jpropeller.properties.event.impl.PropEventDefault;
+import org.jpropeller.transformer.Transformer;
 
 /**
  * A {@link Prop} that mirrors the value of another {@link Prop}. The clever
@@ -173,9 +174,9 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 		
 		cachedPathProps.clear();
 		
-		for (PropName<? extends Prop<? extends Bean>, ? extends Bean> name : path) {
+		for (Transformer<? super Bean, Prop<? extends Bean>> transform : path) {
 
-			//logger.finest("Following name " + name);
+			//logger.finest("Following transform " + transform);
 			
 			//If we reach a null bean, give up
 			if (currentBean == null) {
@@ -188,7 +189,7 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 			//<? extends Bean>, so we know that the Prop has some type extending
 			//Bean also.
 			
-			Prop<? extends Bean> prop = currentBean.props().get(name);
+			Prop<? extends Bean> prop = transform.transform(currentBean);
 			
 
 			//If we fail to look up a property, give up
@@ -215,7 +216,7 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 
 		//The final step - again, we know that the lastName has type T,
 		//so we will get a Prop<T> from getProp
-		Prop<T> finalProp = currentBean.props().get(path.getLastName());
+		Prop<T> finalProp = path.getLastTransform().transform(currentBean);
 
 		//logger.finest("last name '" + path.getLastName() + "' to value '" + finalProp.get() + "'");
 
