@@ -21,6 +21,7 @@ package org.jpropeller.path;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.GenericProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.transformer.Transformer;
@@ -52,20 +53,27 @@ import org.jpropeller.transformer.Transformer;
  * 
  * {@link BeanPath}s must be immutable
  * 
+ * Note that the Transformers we iterate over MUST each produce a type that is
+ * acceptable to the next, and the last one in the iteration must produce
+ * 
+ * @param <R>
+ * 		The root type - starts the path
  * @param <P> 
  * 		The type of final {@link Prop} reached by the path (e.g. {@link Prop},
  * {@link EditableProp}, {@link ListProp} etc.)
- * @param <T>
- * 		The type of data in the final {@link Prop} reached by the path
+ * @param <D>
+ * 		The type of data in the final {@link GenericProp} reached by the path
  */
-public interface BeanPath<P extends Prop<T>, T> extends Iterable<Transformer<? super Bean, Prop<? extends Bean>>> {
+public interface BeanPath<R, P extends GenericProp<D>, D> {
 
 	/**
-	 * The transform for the last step in the path - this transforms from the
-	 * last bean in the path, to the actual property we are looking for
+	 * Iterate the properties of the {@link BeanPath}, starting from
+	 * a defined root. 
+	 * @param root
+	 * 		The root of the path
 	 * @return
-	 * 		The last transform
+	 * 		An iterator through the path.
 	 */
-	public Transformer<? super Bean, ? extends P> getLastTransform();
+	public BeanPathIterator<P, D> iteratorFrom(R root);
 	
 }

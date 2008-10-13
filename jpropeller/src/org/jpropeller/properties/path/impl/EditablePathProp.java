@@ -38,15 +38,16 @@ import org.jpropeller.properties.Prop;
  * is looked up, and so this {@link Prop} is itself an {@link EditableProp}
  * 
  * @author shingoki
- *
+ * @param <R>
+ * 		The type of {@link Bean} the path starts from
  * @param <T>
  * 		The type of value in the property
  */
-public class EditablePathProp<T> extends PathProp<T> implements EditableProp<T> {
+public class EditablePathProp<R extends Bean, T> extends PathProp<R, T> implements EditableProp<T> {
 
 	PropName<EditableProp<T>, T> editableName;
 	
-	BeanPath<? extends EditableProp<T>, T> path;
+	BeanPath<R, ? extends EditableProp<T>, T> path;
 
 	/**
 	 * Create a prop which always has the same value as, and reports changes to,
@@ -61,8 +62,8 @@ public class EditablePathProp<T> extends PathProp<T> implements EditableProp<T> 
 	 */
 	public EditablePathProp(
 			PropName<EditableProp<T>, T> name, 
-			Bean pathRoot, 
-			BeanPath<? extends EditableProp<T>, T> path) {
+			R pathRoot, 
+			BeanPath<R, ? extends EditableProp<T>, T> path) {
 		super(name, pathRoot, path);
 		editableName = name;
 	}
