@@ -1,8 +1,12 @@
 package demo.altpath;
 
 import org.jpropeller.bean.impl.BeanDefault;
+import org.jpropeller.name.PropName;
+import org.jpropeller.path.BeanPath;
+import org.jpropeller.path.impl.BeanPathBuilder;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.path.impl.EditablePathProp;
 import org.jpropeller.transformer.BeanPathToEditable;
 import org.jpropeller.transformer.BeanPathVia;
 
@@ -42,12 +46,27 @@ public class A extends BeanDefault {
 	};
 
 	private EditableProp<B> b = editable(B.class, "b", null);
-	
-	//private EditableProp<D> d = from("d", D.class).via(aToB);
-	
+
 	/**
 	 * B property
 	 * @return b
 	 */
 	public EditableProp<B> b() {return b;} 
+	
+	private EditableProp<D> d;
+
+	/**
+	 * D property
+	 * @return d
+	 */
+	public EditableProp<D> d() {return d;}
+
+	/**
+	 * Make a new instance of A
+	 */
+	public A() {
+		BeanPath<A, EditableProp<D>, D> pathForD = BeanPathBuilder.createVia(aToB).via(bToC).to(cToD);
+		d = addProp(new EditablePathProp<A, D>(PropName.editable("d", D.class), this, pathForD));
+	} 
+	
 }

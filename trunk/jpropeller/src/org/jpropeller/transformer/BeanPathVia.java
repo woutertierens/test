@@ -2,7 +2,7 @@ package org.jpropeller.transformer;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.path.BeanPath;
-import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.GenericProp;
 
 /**
  * The type of {@link Transformer} needed for a "via" step in a {@link BeanPath}.
@@ -12,5 +12,5 @@ import org.jpropeller.properties.Prop;
  * @param <T> 
  *		The type of bean transformed to 
  */
-public interface BeanPathVia<S extends Bean, T extends Bean> extends Transformer<S, Prop<T>>{
+public interface BeanPathVia<S extends Bean, T extends Bean> extends Transformer<S, GenericProp<T>>{
 }

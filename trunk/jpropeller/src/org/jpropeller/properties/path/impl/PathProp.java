@@ -31,13 +31,14 @@ import org.jpropeller.info.PropInfo;
 import org.jpropeller.map.PropMap;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.BeanPath;
+import org.jpropeller.path.BeanPathIterator;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.GeneralProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropEventOrigin;
 import org.jpropeller.properties.event.PropInternalListener;
 import org.jpropeller.properties.event.impl.PropEventDefault;
-import org.jpropeller.transformer.Transformer;
 
 /**
  * A {@link Prop} that mirrors the value of another {@link Prop}. The clever
@@ -47,25 +48,27 @@ import org.jpropeller.transformer.Transformer;
  * Note this does not expose a setter - if you want to expose the
  * set method of an {@link EditableProp}, use an {@link EditablePathProp}.
  * 
+ * @param <R>
+ * 		The type of root bean we must start from
  * @param <T>
  * 		Type of value of the prop
  */
-public class PathProp<T> implements Prop<T>, PropInternalListener {
+public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListener {
 
 	private final static Logger logger = Logger.getLogger(PathProp.class.toString());
 	
 	PropMap propMap;
 	PropName<? extends Prop<T>, T> name;
 	
-	Bean pathRoot;
+	R pathRoot;
 	
-	BeanPath<? extends Prop<T>, T> path;
+	BeanPath<R, ? extends Prop<T>, T> path;
 	
 	Prop<T> cachedProp = null;
 	boolean cacheValid = false;
 	boolean errored = false;
 
-	Set<Prop<?>> cachedPathProps = new HashSet<Prop<?>>();
+	Set<GeneralProp<?>> cachedPathProps = new HashSet<GeneralProp<?>>();
 	
 	/**
 	 * Create a prop which always has the same value as, and reports changes to,
@@ -80,8 +83,8 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 	 */
 	public PathProp(
 			PropName<? extends Prop<T>, T> name, 
-			Bean pathRoot, 
-			BeanPath<? extends Prop<T>, T> path) {
+			R pathRoot, 
+			BeanPath<R, ? extends Prop<T>, T> path) {
 		this.name = name;
 		this.pathRoot = pathRoot;
 		this.path = path;
@@ -102,9 +105,6 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 		if (!cacheValid || errored) {
 			
 			logger.warning("PathProp has invalid path, responding to propChanged, firing consequent change for safety");
-			
-			//Try to rebuild the cache
-			rebuildCache();
 			
 			props().propChanged(new PropEventDefault<T>(this, PropEventOrigin.CONSEQUENCE));
 			return;
@@ -171,52 +171,28 @@ public class PathProp<T> implements Prop<T>, PropInternalListener {
 		if (currentBean == null) {
 			logger.warning("pathRoot null");
 		}
-		
+
+		//Clear old cache
 		cachedPathProps.clear();
 		
-		for (Transformer<? super Bean, Prop<? extends Bean>> transform : path) {
+		//Iterate the path from our root
+		BeanPathIterator<? extends Prop<T>, T> iterator = path.iteratorFrom(pathRoot);
 
-			//logger.finest("Following transform " + transform);
-			
-			//If we reach a null bean, give up
-			if (currentBean == null) {
-				logger.warning("Reached null bean");
-				return;
-			}
-			
-			//We know that getProp always returns a Prop with a type the same
-			//as the type of the PropName, and that all PropNames have type
-			//<? extends Bean>, so we know that the Prop has some type extending
-			//Bean also.
-			
-			Prop<? extends Bean> prop = transform.transform(currentBean);
-			
+		//Go through all but last stage, caching each prop we visit.
+		while (iterator.hasNext()) {
+			GeneralProp<?> prop = iterator.next();
 
 			//If we fail to look up a property, give up
 			if (prop == null) {
-				logger.warning("Failed to look up property via name '" + name + "' from bean '" + currentBean + "'");
+				logger.warning("Failed to look up property in path");
 				return;
 			}
-
-			//Store the props we follow
+			
 			cachedPathProps.add(prop);
-			
-			//Move current bean to next step in path
-			currentBean = prop.get();
-
-			//logger.finest("Moved along path by name " + name + " to bean " + currentBean);
-			
 		}
 		
-		//If we reach a null bean, give up
-		if (currentBean == null) {
-			logger.warning("Reached null bean on penultimate step");
-			return;
-		}
-
-		//The final step - again, we know that the lastName has type T,
-		//so we will get a Prop<T> from getProp
-		Prop<T> finalProp = path.getLastTransform().transform(currentBean);
+		//Follow the last stage
+		Prop<T> finalProp = iterator.finalProp();
 
 		//logger.finest("last name '" + path.getLastName() + "' to value '" + finalProp.get() + "'");
 
