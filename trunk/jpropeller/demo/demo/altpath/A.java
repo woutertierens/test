@@ -16,6 +16,11 @@ import org.jpropeller.transformer.BeanPathVia;
 public class A extends BeanDefault {
 
 	/**
+	 * The {@link PropName} of the {@link B} property
+	 */
+	public final static PropName<EditableProp<B>, B> B_NAME = PropName.editable("b", B.class); 
+	
+	/**
 	 * Transform from {@link A} to its {@link #b()} property
 	 */
 	public static BeanPathVia<A, B> aToB = new BeanPathVia<A, B>(){
@@ -46,27 +51,41 @@ public class A extends BeanDefault {
 	};
 
 	private EditableProp<B> b = editable(B.class, "b", null);
-
 	/**
 	 * B property
 	 * @return b
 	 */
 	public EditableProp<B> b() {return b;} 
 	
-	private EditableProp<D> d;
-
+	
+	private EditableProp<D> dByTransforms;
 	/**
-	 * D property
-	 * @return d
+	 * {@link D} property, via transforms
+	 * @return dByTransforms
 	 */
-	public EditableProp<D> d() {return d;}
+	public EditableProp<D> dByTransforms() {return dByTransforms;}
+
+	
+	private EditableProp<D> dByNames;
+	/**
+	 * {@link D} property, via names
+	 * @return dByNames
+	 */
+	public EditableProp<D> dByNames() {return dByNames;}
 
 	/**
-	 * Make a new instance of A
+	 * Make a new instance of {@link A}
 	 */
 	public A() {
-		BeanPath<A, EditableProp<D>, D> pathForD = BeanPathBuilder.createVia(aToB).via(bToC).to(cToD);
-		d = addProp(new EditablePathProp<A, D>(PropName.editable("d", D.class), this, pathForD));
+		
+		//Build path and pathprop by transforms
+		BeanPath<A, EditableProp<D>, D> pathForDByTransforms = BeanPathBuilder.createVia(aToB).via(bToC).to(cToD);
+		dByTransforms = addProp(new EditablePathProp<A, D>(PropName.editable("dByTransforms", D.class), this, pathForDByTransforms));
+		
+		//Build path and pathprop by names
+		BeanPath<? super A, EditableProp<D>, D> pathForDByNames = BeanPathBuilder.createVia(B_NAME).via(B.C_NAME).to(C.D_NAME);
+		dByNames = addProp(new EditablePathProp<A, D>(PropName.editable("dByNames", D.class), this, pathForDByNames));
+
 	} 
 	
 }

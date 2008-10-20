@@ -12,14 +12,9 @@ import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.bean.EditableBeanProp;
 import org.jpropeller.properties.list.EditableListProp;
 import org.jpropeller.properties.map.EditableMapProp;
-import org.jpropeller.properties.path.impl.EditablePathProp;
-import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
-import org.jpropeller.properties.path.impl.PathProp;
-import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.properties.primitive.impl.EditablePropPrimitive;
 import org.jpropeller.properties.primitive.impl.PropPrimitive;
 import org.jpropeller.system.Props;
-import org.jpropeller.transformer.Transformer;
 
 /**
  * A default {@link Bean} with no properties, designed to be
@@ -138,54 +133,54 @@ public abstract class BeanDefault implements Bean {
 
 	//Present a slightly easier interface for building path props
 
-	/**
-	 * Create an editable path property relative to this bean
-	 * @param name	
-	 * 		The string name of the property
-	 * @param clazz
-	 * 		The class of the property at the end of the
-	 * path (the one that is mirrored by the path property)
-	 * 
-	 */
-	protected <P extends EditableProp<T>, T> EditablePathPropBuilderForBean<P, T> editableFrom(String name, Class<T> clazz) {
-		return new EditablePathPropBuilderForBean<P, T>(name, clazz);
-	}
+//	/**
+//	 * Create an editable path property relative to this bean
+//	 * @param name	
+//	 * 		The string name of the property
+//	 * @param clazz
+//	 * 		The class of the property at the end of the
+//	 * path (the one that is mirrored by the path property)
+//	 * 
+//	 */
+//	protected <P extends EditableProp<T>, T> EditablePathPropBuilderForBean<P, T> editableFrom(String name, Class<T> clazz) {
+//		return new EditablePathPropBuilderForBean<P, T>(name, clazz);
+//	}
+//	
+//	protected class EditablePathPropBuilderForBean<P extends EditableProp<T>, T> extends EditablePathPropBuilder<P, T> {
+//		protected EditablePathPropBuilderForBean(String name, Class<T> clazz) {
+//			super(name, clazz, BeanDefault.this);
+//		}
+//		@Override
+//		public EditablePathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+//			EditablePathProp<T> prop = super.to(lastTransform);
+//			addProp(prop);
+//			return prop;
+//		}
+//	}
 	
-	protected class EditablePathPropBuilderForBean<P extends EditableProp<T>, T> extends EditablePathPropBuilder<P, T> {
-		protected EditablePathPropBuilderForBean(String name, Class<T> clazz) {
-			super(name, clazz, BeanDefault.this);
-		}
-		@Override
-		public EditablePathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
-			EditablePathProp<T> prop = super.to(lastTransform);
-			addProp(prop);
-			return prop;
-		}
-	}
-	
-	/**
-	 * Create a path property relative to this bean
-	 * @param name	
-	 * 		The string name of the property
-	 * @param clazz
-	 * 		The class of the property at the end of the
-	 * path (the one that is mirrored by the path property)
-	 * 
-	 */
-	protected <P extends Prop<T>, T> PathPropBuilderForBean<P, T> from(String name, Class<T> clazz) {
-		return new PathPropBuilderForBean<P, T>(name, clazz);
-	}
-	
-	protected class PathPropBuilderForBean<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
-		protected PathPropBuilderForBean(String name, Class<T> clazz) {
-			super(name, clazz, BeanDefault.this);
-		}
-		@Override
-		public PathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
-			PathProp<T> prop = super.to(lastTransform);
-			addProp(prop);
-			return prop;
-		}
-	}
+//	/**
+//	 * Create a path property relative to this bean
+//	 * @param name	
+//	 * 		The string name of the property
+//	 * @param clazz
+//	 * 		The class of the property at the end of the
+//	 * path (the one that is mirrored by the path property)
+//	 * 
+//	 */
+//	protected <P extends Prop<T>, T> PathPropBuilderForBean<P, T> from(String name, Class<T> clazz) {
+//		return new PathPropBuilderForBean<P, T>(name, clazz);
+//	}
+//	
+//	protected class PathPropBuilderForBean<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
+//		protected PathPropBuilderForBean(String name, Class<T> clazz) {
+//			super(name, clazz, BeanDefault.this);
+//		}
+//		@Override
+//		public PathProp<T> to(Transformer<? super Bean, ? extends P> lastTransform) {
+//			PathProp<T> prop = super.to(lastTransform);
+//			addProp(prop);
+//			return prop;
+//		}
+//	}
 
 }
