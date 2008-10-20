@@ -63,7 +63,7 @@ public class EditablePathProp<R extends Bean, T> extends PathProp<R, T> implemen
 	public EditablePathProp(
 			PropName<EditableProp<T>, T> name, 
 			R pathRoot, 
-			BeanPath<R, ? extends EditableProp<T>, T> path) {
+			BeanPath<? super R, ? extends EditableProp<T>, T> path) {
 		super(name, pathRoot, path);
 		editableName = name;
 	}

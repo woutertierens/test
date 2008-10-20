@@ -2,6 +2,7 @@ package org.jpropeller.transformer.impl;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.GenericProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.transformer.Transformer;
 
@@ -12,7 +13,7 @@ import org.jpropeller.transformer.Transformer;
  * @param <T>
  * 		The type of value in the {@link Prop} 
  */
-public class BeanToPropTransformer<P extends Prop<T>, T> implements Transformer<Bean, P>{
+public class BeanToPropTransformer<P extends GenericProp<T>, T> implements Transformer<Bean, P>{
 
 	private PropName<P, T> name;
 

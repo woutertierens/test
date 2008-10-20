@@ -35,8 +35,8 @@ public class AltPathDemo {
 				
 				a.b().set(b);
 				b.c().set(c);
-				//c.d().set(d);
-				//d.i().set(42);
+				c.d().set(d);
+				d.i().set(42);
 
 				System.out.println(a);
 				System.out.println(a.b());
@@ -45,11 +45,11 @@ public class AltPathDemo {
 				
 				//System.out.println(b.c());
 				
-				System.out.println(a.d().get());
-				//System.out.println(a.d().get().i().get());
+				System.out.println(a.dByTransforms().get());
+				System.out.println(a.dByTransforms().get().i().get());
 		
-				FIXME fix problem with paths that lead to null - we need to have a consistent response to any stage of the path
-				being broken - run time exception or just return null?
+				//FIXME fix problem with paths that lead to null - we need to have a consistent response to any stage of the path
+				//being broken - run time exception or just return null?
 				
 			}
 		

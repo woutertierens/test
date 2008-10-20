@@ -34,6 +34,7 @@ import org.jpropeller.path.BeanPath;
 import org.jpropeller.path.BeanPathIterator;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.GeneralProp;
+import org.jpropeller.properties.GenericProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.event.PropEvent;
 import org.jpropeller.properties.event.PropEventOrigin;
@@ -62,9 +63,9 @@ public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListene
 	
 	R pathRoot;
 	
-	BeanPath<R, ? extends Prop<T>, T> path;
+	BeanPath<? super R, ? extends GenericProp<T>, T> path;
 	
-	Prop<T> cachedProp = null;
+	GenericProp<T> cachedProp = null;
 	boolean cacheValid = false;
 	boolean errored = false;
 
@@ -84,7 +85,7 @@ public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListene
 	public PathProp(
 			PropName<? extends Prop<T>, T> name, 
 			R pathRoot, 
-			BeanPath<R, ? extends Prop<T>, T> path) {
+			BeanPath<? super R, ? extends GenericProp<T>, T> path) {
 		this.name = name;
 		this.pathRoot = pathRoot;
 		this.path = path;
@@ -106,6 +107,11 @@ public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListene
 			
 			logger.warning("PathProp has invalid path, responding to propChanged, firing consequent change for safety");
 			
+			//FIXME
+			//We need to check this behaviour - in fact we only really change when the path becomes complete again.
+			//However we can't actually check whether the path is complete without calling getters, which is
+			//forbidden. However, if we always respond to a change by firing one, we can get cycles of
+			//firing between pathprops
 			props().propChanged(new PropEventDefault<T>(this, PropEventOrigin.CONSEQUENCE));
 			return;
 		}
@@ -176,7 +182,7 @@ public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListene
 		cachedPathProps.clear();
 		
 		//Iterate the path from our root
-		BeanPathIterator<? extends Prop<T>, T> iterator = path.iteratorFrom(pathRoot);
+		BeanPathIterator<? extends GenericProp<T>, T> iterator = path.iteratorFrom(pathRoot);
 
 		//Go through all but last stage, caching each prop we visit.
 		while (iterator.hasNext()) {
@@ -192,7 +198,7 @@ public class PathProp<R extends Bean, T> implements Prop<T>, PropInternalListene
 		}
 		
 		//Follow the last stage
-		Prop<T> finalProp = iterator.finalProp();
+		GenericProp<T> finalProp = iterator.finalProp();
 
 		//logger.finest("last name '" + path.getLastName() + "' to value '" + finalProp.get() + "'");
 
