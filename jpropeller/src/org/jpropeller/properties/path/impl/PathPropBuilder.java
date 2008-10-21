@@ -4,7 +4,6 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.BeanPath;
 import org.jpropeller.path.impl.BeanPathBuilder;
-import org.jpropeller.path.impl.BeanPathBuilder.BeanPathDefault;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.GenericProp;
 import org.jpropeller.properties.Prop;
@@ -56,8 +55,6 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * </pre>
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
-	 * @param <D> 
-	 * 		The type of the current destination value we have built to
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},
 	 * {@link EditableProp}, {@link ListProp} etc.)
@@ -71,7 +68,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * 		A builder to be used to make an {@link PathProp}
 	 */
 	public static <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, P, T> from(PropName<Prop<T>, T> name, R pathRoot) {
-		return new PathPropBuilder<R, R, P, T>(name, pathRoot, null);
+		return new PathPropBuilder<R, R, P, T>(name, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
 	/**
@@ -84,8 +81,6 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * </pre>
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
-	 * @param <D> 
-	 * 		The type of the current destination value we have built to
 	 * @param <P> 
 	 * 		The type of final prop reached by the path (e.g. {@link Prop},
 	 * {@link EditableProp}, {@link ListProp} etc.)
@@ -100,7 +95,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
-		return new PathPropBuilder<R, R, P, T>(name, clazz, pathRoot, null);
+		return new PathPropBuilder<R, R, P, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
 	/**
@@ -112,9 +107,6 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * 		The path itself
 	 */
 	public PathProp<R, T> to(Transformer<? super D, ? extends P> lastTransform) {
-		BeanPath<D,P,T> createTo = BeanPathBuilder.createTo(lastTransform);
-		
-		return new PathProp<R, T>(name, pathRoot, createTo);
 		return new PathProp<R, T>(name, pathRoot, builder.to(lastTransform));
 	}
 
