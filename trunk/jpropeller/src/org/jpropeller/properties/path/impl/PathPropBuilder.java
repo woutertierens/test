@@ -67,7 +67,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * @return
 	 * 		A builder to be used to make an {@link PathProp}
 	 */
-	public static <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, P, T> from(PropName<Prop<T>, T> name, R pathRoot) {
+	public static <R extends Bean, P extends GenericProp<T>, T> PathPropBuilder<R, R, P, T> from(PropName<Prop<T>, T> name, R pathRoot) {
 		return new PathPropBuilder<R, R, P, T>(name, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
@@ -94,7 +94,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericPr
 	 * @return
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
-	public static <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
+	public static <R extends Bean, P extends GenericProp<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
 		return new PathPropBuilder<R, R, P, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
