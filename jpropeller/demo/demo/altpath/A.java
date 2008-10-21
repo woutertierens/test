@@ -79,12 +79,12 @@ public class A extends BeanDefault {
 	public A() {
 		
 		//Build path and pathprop by transforms
-		BeanPath<A, EditableProp<D>, D> pathForDByTransforms = BeanPathBuilder.createVia(aToB).via(bToC).to(cToD);
+		BeanPath<A, EditableProp<D>, D> pathForDByTransforms = BeanPathBuilder.<A>create().via(aToB).via(bToC).to(cToD);
 		dByTransforms = addProp(new EditablePathProp<A, D>(PropName.editable("dByTransforms", D.class), this, pathForDByTransforms));
 		
 		//Build path and pathprop by names
-		BeanPath<? super A, EditableProp<D>, D> pathForDByNames = BeanPathBuilder.createVia(B_NAME).via(B.C_NAME).to(C.D_NAME);
-		dByNames = addProp(new EditablePathProp<A, D>(PropName.editable("dByNames", D.class), this, pathForDByNames));
+		//BeanPath<? super A, EditableProp<D>, D> pathForDByNames = BeanPathBuilder.<A>create().via(B_NAME).via(B.C_NAME).to(C.D_NAME);
+		//dByNames = addProp(new EditablePathProp<A, D>(PropName.editable("dByNames", D.class), this, pathForDByNames));
 
 	} 
 	
