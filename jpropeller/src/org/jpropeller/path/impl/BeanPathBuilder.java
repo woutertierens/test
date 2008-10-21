@@ -41,81 +41,19 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	 */
 	//See first suppression
 	@SuppressWarnings("unchecked")
-	private BeanPathBuilder(Transformer<? super R, ? extends GenericProp<D>> initial) {
+	private BeanPathBuilder() {
 		transformers = new LinkedList<Transformer>();
-		transformers.add(initial);
 	}
 
 	/**
-	 * Create a builder, which goes first via a specified transformer
+	 * Create a builder, which has no {@link Transformer}s yet
 	 * @param <R>
 	 * 		The type of the root of the path to be built
-	 * @param <D>
-	 * 		The type of the next step on the path
-	 * @param initial
-	 * 		The {@link Transformer} to take the initial step of the path
 	 * @return
 	 * 		A new {@link BeanPathBuilder}
 	 */
-	public static <R extends Bean, D extends Bean> BeanPathBuilder<R, D> createVia(Transformer<? super R, ? extends GenericProp<D>> initial) {
-		return new BeanPathBuilder<R, D>(initial);
-	}
-
-	/**
-	 * Create a builder, which goes first via a transformer automatically
-	 * created to go from a {@link Bean} to a named {@link Prop} of that {@link Bean}
-	 * @param <R>
-	 * 		The type of the root of the path to be built
-	 * @param <D>
-	 * 		The type of the next step on the path
-	 * @param <G>
-	 * 		The type of {@link Prop} the initialName points to 
-	 * @param initialName
-	 * 		The {@link PropName} to take the initial step of the path
-	 * @return
-	 * 		A new {@link BeanPathBuilder}
-	 */
-	public static <R extends Bean, D extends Bean, G extends GenericProp<D>> BeanPathBuilder<R, D> createVia(PropName<G, D> initialName) {
-		return new BeanPathBuilder<R, D>(new BeanToPropTransformer<G, D>(initialName));
-	}
-
-	/**
-	 * Create a builder, which goes only via a single specified transformer
-	 * @param <R>
-	 * 		The type of the root of the path to be built
-	 * @param <P>
-	 * 		The type of the {@link Prop} at the end of the path
-	 * @param <D>
-	 * 		The type of value in the {@link Prop} at the end of the path
-	 * @param lastTransform
-	 * 		The {@link Transformer} to take the single step of the path
-	 * @return
-	 * 		A new {@link BeanPath}
-	 */
-	//The list is empty and will not be read or written - type does not matter
-	@SuppressWarnings("unchecked")
-	public static <R extends Bean, P extends GenericProp<D>, D> BeanPathDefault<R, P, D> createTo(Transformer<? super R, ? extends P> lastTransform) {
-		return new BeanPathDefault<R, P, D>(new LinkedList<Transformer>(), lastTransform);
-	}
-
-	/**
-	 * Create a builder, which goes via a single {@link Transformer}
-	 * automatically made using a {@link PropName}
-	 * @param <R>
-	 * 		The type of the root of the path to be built
-	 * @param <P>
-	 * 		The type of the {@link Prop} at the end of the path
-	 * @param <D>
-	 * 		The type of value in the {@link Prop} at the end of the path
-	 * @param lastName 
-	 * 		The {@link PropName} to take the single step of the path
-	 * @return
-	 * 		A new {@link BeanPath}
-	 */
-	//The list is empty and will not be read or written - type does not matter
-	@SuppressWarnings("unchecked")
-	public static <R extends Bean, P extends GenericProp<D>, D> BeanPathDefault<R, P, D> createTo(PropName<P, D> lastName) {
-		return new BeanPathDefault<R, P, D>(new LinkedList<Transformer>(), new BeanToPropTransformer<P, D>(lastName));
+	public static <R extends Bean> BeanPathBuilder<R, R> create() {
+		return new BeanPathBuilder<R, R>();
 	}
 	
 	/**
