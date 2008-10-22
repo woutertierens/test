@@ -133,6 +133,10 @@ public abstract class BeanDefault implements Bean {
 
 	//Present a slightly easier interface for building path props
 
+//	public <R extends Bean, P extends GenericEditableProp<T>, T> EditablePathPropBuilder<R, R, P, T> editableFrom(String name, Class<T> clazz, R pathRoot) {
+//		return EditablePathPropBuilder.<R, P, T>from(name, clazz, this);
+//	}
+	
 //	/**
 //	 * Create an editable path property relative to this bean
 //	 * @param name	
@@ -171,7 +175,16 @@ public abstract class BeanDefault implements Bean {
 //		return new PathPropBuilderForBean<P, T>(name, clazz);
 //	}
 //	
-//	protected class PathPropBuilderForBean<P extends Prop<T>, T> extends PathPropBuilder<P, T> {
+//	protected class PathPropBuilderForBean<R extends Bean, D extends Bean, P extends GenericProp<T>, T> extends PathPropBuilder<R, D, P, T> {
+//		
+//		public PathPropBuilderForBean(String name, Class<T> clazz, R pathRoot, BeanPathBuilder<R, D> builder) {
+//			super(PropName.create(name, clazz), BeanDefault.this, builder);
+//		}
+//		
+//		public static <R extends Bean, P extends GenericProp<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
+//			return new PathPropBuilder<R, R, P, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create());
+//		}
+//		
 //		protected PathPropBuilderForBean(String name, Class<T> clazz) {
 //			super(name, clazz, BeanDefault.this);
 //		}

@@ -27,6 +27,7 @@ import org.jpropeller.info.PropInfo;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.BeanPath;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.GenericEditableProp;
 import org.jpropeller.properties.Prop;
 
 /**
@@ -63,7 +64,7 @@ public class EditablePathProp<R extends Bean, T> extends PathProp<R, T> implemen
 	public EditablePathProp(
 			PropName<EditableProp<T>, T> name, 
 			R pathRoot, 
-			BeanPath<? super R, ? extends EditableProp<T>, T> path) {
+			BeanPath<? super R, ? extends GenericEditableProp<T>, T> path) {
 		super(name, pathRoot, path);
 		editableName = name;
 	}

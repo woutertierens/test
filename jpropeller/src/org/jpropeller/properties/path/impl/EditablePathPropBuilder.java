@@ -107,8 +107,8 @@ public class EditablePathPropBuilder<R extends Bean, D extends Bean, P extends G
 	 * @return
 	 * 		The path itself
 	 */
-	public PathProp<R, T> to(Transformer<? super D, ? extends P> lastTransform) {
-		return new PathProp<R, T>(name, pathRoot, builder.to(lastTransform));
+	public EditablePathProp<R, T> to(Transformer<? super D, ? extends P> lastTransform) {
+		return new EditablePathProp<R, T>(name, pathRoot, builder.to(lastTransform));
 	}
 
 	/**
@@ -119,8 +119,8 @@ public class EditablePathPropBuilder<R extends Bean, D extends Bean, P extends G
 	 * @return
 	 * 		The path itself
 	 */
-	public PathProp<R, T> to(PropName<P, T> lastName) {
-		return new PathProp<R, T>(name, pathRoot, builder.to(lastName));
+	public EditablePathProp<R, T> to(PropName<? extends P, T> lastName) {
+		return new EditablePathProp<R, T>(name, pathRoot, builder.to(lastName));
 	}
 
 	/**
