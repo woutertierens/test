@@ -25,6 +25,7 @@ package test.example;
 import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
+import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
 import org.jpropeller.properties.path.impl.PathProp;
 
 /**
@@ -41,7 +42,7 @@ public class Mirror extends BeanDefault {
 
 	//Set up Props
 	private EditableProp<String> s = editable("s", "default s value");
-	private EditableProp<String> sMirror = editableFrom("sMirror", String.class).to(S_NAME);
+	private EditableProp<String> sMirror = addProp(EditablePathPropBuilder.from("sMirror", String.class, this).to(S_NAME));
 	
 	/**
 	 * Access to s

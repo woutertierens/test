@@ -2,7 +2,6 @@ package demo.altpath;
 
 import javax.swing.SwingUtilities;
 
-import org.jpropeller.properties.path.impl.EditablePathProp;
 import org.jpropeller.properties.path.impl.PathProp;
 import org.jpropeller.util.GeneralUtils;
 
