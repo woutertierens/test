@@ -6,7 +6,6 @@ import org.jpropeller.properties.GeneralProp;
 
 /**
  * A calculation based on a set of Props
- * @author shingoki
  *
  * @param <T>
  * 		The type of value calculated
