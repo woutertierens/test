@@ -25,7 +25,6 @@ package test.example.settings;
 import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
-import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
 
 /**
  * Stores a user
@@ -42,9 +41,9 @@ public class User extends BeanDefault {
 	private EditableProp<String> name = editable("name", "default name");
 	private EditableProp<Group> group = editable(Group.class, "group", null);
 	private EditableProp<String> groupPermissions = 
-		addProp(EditablePathPropBuilder.from("groupPermissions", String.class, this).
+		editableFrom("groupPermissions", String.class, this).
 			via(GROUP_NAME).
-			to(Group.PERMISSIONS_NAME));
+			to(Group.PERMISSIONS_NAME);
 	
 	private EditableProp<String> permissionsOverride = editable("permissionsOverride", (String)null);
 	
