@@ -31,9 +31,9 @@ import org.jpropeller.transformer.Transformer;
  */
 public class EditablePathPropBuilder<R extends Bean, D extends Bean, P extends GenericEditableProp<T>, T> {
 
-	PropName<EditableProp<T>, T> name;
-	R pathRoot;
-	BeanPathBuilder<R, D> builder;
+	protected PropName<EditableProp<T>, T> name;
+	protected R pathRoot;
+	protected BeanPathBuilder<R, D> builder;
 	
 	protected EditablePathPropBuilder(PropName<EditableProp<T>, T> name, R pathRoot, BeanPathBuilder<R, D> builder) {
 		super();

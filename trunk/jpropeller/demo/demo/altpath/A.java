@@ -4,7 +4,6 @@ import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
 import org.jpropeller.transformer.BeanPathToEditable;
 import org.jpropeller.transformer.BeanPathVia;
 
@@ -56,15 +55,15 @@ public class A extends BeanDefault {
 	public EditableProp<B> b() {return b;} 
 	
 	
-	private EditableProp<D> dByTransforms = addProp(EditablePathPropBuilder.from("dByTransforms", D.class, this).via(aToB).via(bToC).to(cToD));
+	private EditableProp<D> dByTransforms = editableFrom("dByTransforms", D.class, this).via(aToB).via(bToC).to(cToD);
+	
 	/**
 	 * {@link D} property, via transforms
 	 * @return dByTransforms
 	 */
 	public EditableProp<D> dByTransforms() {return dByTransforms;}
 
-	
-	private EditableProp<D> dByNames = addProp(EditablePathPropBuilder.from("dByTransforms", D.class, this).via(B_NAME).via(B.C_NAME).to(C.D_NAME));
+	private EditableProp<D> dByNames = null;//editableFrom("dByNames", D.class, this).via(B_NAME).via(B.C_NAME).to(C.D_NAME);
 	/**
 	 * {@link D} property, via names
 	 * @return dByNames

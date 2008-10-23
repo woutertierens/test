@@ -30,9 +30,9 @@ import org.jpropeller.transformer.Transformer;
  */
 public class PathPropBuilder<R extends Bean, D extends Bean, P extends GenericProp<T>, T> {
 
-	PropName<Prop<T>, T> name;
-	R pathRoot;
-	BeanPathBuilder<R, D> builder;
+	protected PropName<Prop<T>, T> name;
+	protected R pathRoot;
+	protected BeanPathBuilder<R, D> builder;
 	
 	protected PathPropBuilder(PropName<Prop<T>, T> name, R pathRoot, BeanPathBuilder<R, D> builder) {
 		super();

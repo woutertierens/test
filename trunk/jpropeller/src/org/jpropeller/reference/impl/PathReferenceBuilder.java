@@ -111,5 +111,4 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, P extends Gene
 		return new PathReferenceBuilder<R, E, P, T>(pathRoot, builder.via(nextName));
 	}
 	
-	
 }
