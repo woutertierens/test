@@ -55,7 +55,7 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public void dispose() {
+	public void disposeNow() {
 		help.dispose();
 	}
 
@@ -94,7 +94,7 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 	@Override
 	public void cancel() {
 		//Just reset the text field to the actual prop value to cancel editing
-		update();
+		updateNow();
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class StringTextFieldEditor implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public void update() {
+	public void updateNow() {
 		//If the text field is not already showing prop value, update it
 		if (isEditing()) {
 			field.setText(help.getPropValue());

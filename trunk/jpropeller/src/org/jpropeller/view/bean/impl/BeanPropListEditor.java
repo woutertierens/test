@@ -68,7 +68,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 		model.props().addListener(this);
 		
 		//Initial update
-		update();
+		updateNow();
 		
 	}
 	
@@ -101,7 +101,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 	}
 
 	@Override
-	public void dispose() {
+	public void disposeNow() {
 		updateManager.deregisterView(this);
 		model.props().removeListener(this);
 	}
@@ -191,7 +191,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 	}
 
 	@Override
-	public void update() {
+	public void updateNow() {
 
 		//logger.finest("update()");
 
@@ -242,7 +242,7 @@ public class BeanPropListEditor<M extends Bean> implements UpdatableView<M>, JVi
 
 		//Dispose of the old views
 		for (JView<?> oldView : subViews.values()) {
-			oldView.dispose();
+			oldView.disposeNow();
 		}
 		
 		//Use the new views

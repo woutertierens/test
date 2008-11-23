@@ -13,23 +13,6 @@ import org.jpropeller.view.View;
  * @param <M>
  * 		The type of model
  */
-public interface UpdatableView<M> extends View<M> {
-
-	/**
-	 * Update the display of the view to reflect any changes
-	 * since the last {@link #update()}
-	 * 
-	 * The thread from which this is called depends on the {@link UpdateManager} - the
-	 * default {@link UpdateManager} calls {@link #update()} from the Swing thread (EDT)
-	 * 
-	 */
-	public void update();
-
-	/**
-	 * Dispose of the view. This tells it to stop listening to properties, etc.
-	 * so that it can be garbage collected. The view will no longer function
-	 * properly after this is called - it should no longer be in any user interface.
-	 */
-	public void dispose();
+public interface UpdatableView<M> extends View<M>, Updatable {
 	
 }

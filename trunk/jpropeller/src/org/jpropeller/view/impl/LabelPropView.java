@@ -35,7 +35,7 @@ public class LabelPropView<T> implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public void dispose() {
+	public void disposeNow() {
 		help.dispose();
 	}
 
@@ -85,7 +85,7 @@ public class LabelPropView<T> implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public void update() {
+	public void updateNow() {
 		T t = help.getPropValue();
 		
 		String s = (t==null) ? "" : t.toString();
