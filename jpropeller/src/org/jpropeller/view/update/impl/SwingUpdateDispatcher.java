@@ -6,12 +6,13 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.view.update.Updatable;
 import org.jpropeller.view.update.UpdatableView;
 import org.jpropeller.view.update.UpdateDispatcher;
 
 /**
  * An {@link UpdateDispatcher} that provides invokes the
- * {@link UpdatableView#update()} method of views in the
+ * {@link UpdatableView#updateNow()} method of views in the
  * Swing thread (EDT).
  * 
  * {@link SwingUtilities#invokeLater(Runnable)} is used to ensure
@@ -21,7 +22,7 @@ import org.jpropeller.view.update.UpdateDispatcher;
  * pending will be dealt with at once. 
  * 
  * Note that if this dispatcher has {@link #dispatch(Collection)} or 
- * {@link #dispatch(UpdatableView)} called from the EDT itself, it will
+ * {@link #dispatch(Updatable)} called from the EDT itself, it will
  * not use {@link SwingUtilities#invokeLater(Runnable)} but will still
  * function. It may be very slightly less efficient than another
  * {@link UpdateDispatcher} since it will check
@@ -31,20 +32,20 @@ import org.jpropeller.view.update.UpdateDispatcher;
 public class SwingUpdateDispatcher implements UpdateDispatcher {
 
 	//Store views waiting for update
-	private Set<UpdatableView<?>> pendingViewsReceive = new HashSet<UpdatableView<?>>(200);
-	private Set<UpdatableView<?>> pendingViewsTransmit = new HashSet<UpdatableView<?>>(200);
+	private Set<Updatable> pendingViewsReceive = new HashSet<Updatable>(200);
+	private Set<Updatable> pendingViewsTransmit = new HashSet<Updatable>(200);
 	
 	//Store whether we have a swing invokeLater pending
 	private boolean invokePending = false;
 	
 	@Override
-	public synchronized void dispatch(UpdatableView<?> view) {
+	public synchronized void dispatch(Updatable view) {
 		pendingViewsReceive.add(view);
 		invoke();
 	}
 
 	@Override
-	public synchronized void dispatch(Collection<UpdatableView<?>> views) {
+	public synchronized void dispatch(Collection<Updatable> views) {
 		pendingViewsReceive.addAll(views);
 		invoke();
 	}
@@ -87,8 +88,8 @@ public class SwingUpdateDispatcher implements UpdateDispatcher {
 			//requests for updates during the dispatch will be added to the
 			//receive set
 			if (!pendingViewsTransmit.isEmpty()) {
-				for (UpdatableView<?> view : pendingViewsTransmit) {
-					view.update();
+				for (Updatable view : pendingViewsTransmit) {
+					view.updateNow();
 				}
 				pendingViewsTransmit.clear();
 			}
@@ -110,7 +111,7 @@ public class SwingUpdateDispatcher implements UpdateDispatcher {
 	
 	//Swap the receive and transmit changed views set
 	private synchronized void swapSets() {
-		Set<UpdatableView<?>> temp = pendingViewsReceive;
+		Set<Updatable> temp = pendingViewsReceive;
 		pendingViewsReceive = pendingViewsTransmit;
 		pendingViewsTransmit = temp;
 	}

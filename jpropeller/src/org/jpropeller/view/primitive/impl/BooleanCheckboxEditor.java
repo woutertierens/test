@@ -46,7 +46,7 @@ public class BooleanCheckboxEditor implements UpdatableView<Bean>, JView<Bean> {
 	}
 
 	@Override
-	public void dispose() {
+	public void disposeNow() {
 		help.dispose();
 	}
 
@@ -80,7 +80,7 @@ public class BooleanCheckboxEditor implements UpdatableView<Bean>, JView<Bean> {
 	
 	@Override
 	public void cancel() {
-		update();
+		updateNow();
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class BooleanCheckboxEditor implements UpdatableView<Bean>, JView<Bean> {
 	}
 	
 	@Override
-	public void update() {
+	public void updateNow() {
 		if (isEditing()) {
 			checkBox.setSelected(help.getPropValue());
 		}

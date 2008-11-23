@@ -79,7 +79,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 	}
 
 	@Override
-	public void dispose() {
+	public void disposeNow() {
 		help.dispose();
 	}
 
@@ -117,7 +117,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 	@Override
 	public void cancel() {
 		//Just reset the spinner to the actual prop value to cancel editing
-		update();
+		updateNow();
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements Up
 	//We need to use the raw Comparable provided by NumberModel
 	@SuppressWarnings("unchecked")
 	@Override
-	public void update() {
+	public void updateNow() {
 		/*if (logger.isLoggable(Level.FINEST)) {
 			logger.finest("update()");
 			logger.finest("prop value " + help.getPropValue());

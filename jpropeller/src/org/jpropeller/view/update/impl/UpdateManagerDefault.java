@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.jpropeller.concurrency.DaemonThreadFactory;
-import org.jpropeller.view.update.UpdatableView;
+import org.jpropeller.view.update.Updatable;
 import org.jpropeller.view.update.UpdateDispatcher;
 import org.jpropeller.view.update.UpdateManager;
 
@@ -35,10 +35,10 @@ public class UpdateManagerDefault implements UpdateManager {
 	private long fusionInterval;
 	
 	//A set to receive incoming requests for updates. Swapped with changedViewsTransmit.
-	private Set<UpdatableView<?>> changedViewsReceive = new HashSet<UpdatableView<?>>(200);
+	private Set<Updatable> changedViewsReceive = new HashSet<Updatable>(200);
 	
 	//A set to read from for dispatching updates. Swapped with changedViewsReceive.
-	private Set<UpdatableView<?>> changedViewsTransmit = new HashSet<UpdatableView<?>>(200);
+	private Set<Updatable> changedViewsTransmit = new HashSet<Updatable>(200);
 
 	//Executor used to schedule regular update
 	private ScheduledExecutorService executor;
@@ -94,17 +94,17 @@ public class UpdateManagerDefault implements UpdateManager {
 	}
 	
 	@Override
-	public synchronized void registerView(UpdatableView<?> view) {
+	public synchronized void registerView(Updatable view) {
 		//Nothing much to do as yet
 	}
 
 	@Override
-	public synchronized void deregisterView(UpdatableView<?> view) {
+	public synchronized void deregisterView(Updatable view) {
 		//Nothing much to do as yet
 	}
 
 	@Override
-	public synchronized void updateRequiredBy(UpdatableView<?> view) {
+	public synchronized void updateRequiredBy(Updatable view) {
 		
 		//logger.finest("updateRequiredBy(" + view + ")");
 		
@@ -147,7 +147,7 @@ public class UpdateManagerDefault implements UpdateManager {
 	
 	//Swap the receive and transmit changed views set
 	private synchronized void swapSets() {
-		Set<UpdatableView<?>> temp = changedViewsReceive;
+		Set<Updatable> temp = changedViewsReceive;
 		changedViewsReceive = changedViewsTransmit;
 		changedViewsTransmit = temp;
 	}

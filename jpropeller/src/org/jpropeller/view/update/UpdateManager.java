@@ -52,11 +52,11 @@ import org.jpropeller.view.View;
 public interface UpdateManager {
 
 	/**
-	 * Register an {@link UpdatableView}
+	 * Register an {@link Updatable}
 	 * This view will be updated when appropriate. It must
 	 * notify the {@link UpdateManager} when it requires an update
-	 * by calling {@link #updateRequiredBy(UpdatableView)}. 
-	 * The {@link UpdatableView} will be updated at some point after this notification,
+	 * by calling {@link #updateRequiredBy(Updatable)}. 
+	 * The {@link Updatable} will be updated at some point after this notification,
 	 * possibly with one update after several notifications.
 	 * 
 	 * Implementations must be thread safe, and accept calls to this
@@ -65,15 +65,15 @@ public interface UpdateManager {
 	 * @param view
 	 * 		The view to register
 	 */
-	public void registerView(UpdatableView<?> view);
+	public void registerView(Updatable view);
 
 	/**
-	 * Deregister an {@link UpdatableView}
+	 * Deregister an {@link Updatable}
 	 * This view will now be ignored by the update manager
 	 * @param view
 	 * 		The view to deregister
 	 */
-	public void deregisterView(UpdatableView<?> view);
+	public void deregisterView(Updatable view);
 
 	/**
 	 * Notify the {@link UpdateManager} that a view requires
@@ -85,6 +85,6 @@ public interface UpdateManager {
 	 * @param view
 	 * 		The view that requires an update
 	 */
-	public void updateRequiredBy(UpdatableView<?> view);
+	public void updateRequiredBy(Updatable view);
 	
 }
