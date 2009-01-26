@@ -28,7 +28,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 	
 	private UndoDelegateSource delegateSource;
 	private Map<Changeable, State> knownPreStates = new IdentityHashMap<Changeable, State>();
-	
+
 	private List<UndoRedoStates> past = new LinkedList<UndoRedoStates>();
 	private List<UndoRedoStates> future = new LinkedList<UndoRedoStates>();
 	
@@ -94,7 +94,9 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 		//If we have no undo/redo states, this means that all the changes we have just seen
 		//are a result of our actions (undoing/redoing), or cannot be undone, so we don't 
-		//need another state
+		//need another state - we will keep the prestates so that when we DO create an
+		//undo state, it includes all changed state since the last undo (even outside
+		//the root-referenced state).
 		if (undoStates.isEmpty()) return;
 		
 		//Make the total states
@@ -131,6 +133,13 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 		}
 	}
 
+	private void undoPending() {
+		//FIXME This is not the correct order
+		for (State state : knownPreStates.values()) {
+			state.restore();
+		}
+	}
+	
 	public void undo() {
 
 		Props.getPropSystem().getChangeSystem().acquire();
@@ -146,6 +155,9 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			
 			//Actually undo, making sure we don't track any changes
 			acting = true;
+			//First, undo any pending changes (these must be changes to the
+			//non-root-referenced state)
+			undoPending();
 			undo.undo();
 			acting = false;
 			
@@ -165,6 +177,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			
 			if (future.isEmpty()) return;
 			
+			
 			//Get the first future state - we will redo this one
 			UndoRedoStates redo = future.remove(0);
 			
@@ -173,6 +186,9 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			
 			//Actually redo, making sure we don't track any changes
 			acting = true;
+			//First, undo any pending changes (these must be changes to the
+			//non-root-referenced state)
+			undoPending();
 			redo.redo();
 			acting = false;
 
@@ -230,6 +246,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			//is nothing to undo
 			if (state != null) {
 				knownPreStates.put(changed, new State(changed, delegate, state));
+				//System.out.println("Added " + changed + ", class " + changed.getClass() + " to " + state);
 			}
 		} catch (UndoDelegateSourceException e) {
 			//If we fail to save the state, then we need to make sure we don't
@@ -303,6 +320,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 		@SuppressWarnings("unchecked")
 		public void restore() {
+			//System.out.println("Restored " + changeable + ", class " + changeable.getClass() + " to " + state);
 			delegate.restore(changeable, state);
 		}
 
