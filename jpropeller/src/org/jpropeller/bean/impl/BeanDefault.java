@@ -204,7 +204,7 @@ public abstract class BeanDefault implements Bean {
 	 * @return
 	 * 		A builder for a new property.
 	 */
-	public <R extends Bean, P extends GenericEditableProp<T>, T> EditablePathPropBuilder<R, R, P, T> editableFrom(String name, Class<T> clazz, R pathRoot) {
+	protected <R extends Bean, P extends GenericEditableProp<T>, T> EditablePathPropBuilder<R, R, P, T> editableFrom(String name, Class<T> clazz, R pathRoot) {
 		return new BeanEditablePathPropBuilder<R, R, P, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
@@ -275,7 +275,7 @@ public abstract class BeanDefault implements Bean {
 	 * @return
 	 * 		A builder for a new property.
 	 */
-	public <R extends Bean, P extends GenericProp<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
+	protected <R extends Bean, P extends GenericProp<T>, T> PathPropBuilder<R, R, P, T> from(String name, Class<T> clazz, R pathRoot) {
 		return new BeanPathPropBuilder<R, R, P, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create());
 	}
 	
