@@ -89,7 +89,7 @@ public class Tabs implements JView<String>, ChangeListener{
 	 */
 	private class TabSelectionModel extends BeanDefault implements Reference<String> {
 
-		//The (unusued) value prop
+		//The (unused) value prop
 		private final Prop<String> value = create("value", "tabs default value");
 		
 		//The actual point of the reference - the currently selected tab index
