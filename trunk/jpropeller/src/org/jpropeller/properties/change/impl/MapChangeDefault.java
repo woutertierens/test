@@ -57,8 +57,8 @@ public class MapChangeDefault implements MapChange {
 	@Override
 	public Change extend(Change existing) {
 		
-		if (existing.type() != ChangeType.LIST) {
-			throw new IllegalArgumentException("A LIST Change can only extend another LIST change");
+		if (existing.type() != ChangeType.MAP) {
+			throw new IllegalArgumentException("A MAP Change can only extend another MAP change");
 		}
 		
 		MapChange mapExisting = (MapChange)existing;
