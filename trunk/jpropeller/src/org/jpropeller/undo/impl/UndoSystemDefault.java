@@ -134,7 +134,8 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 	}
 
 	private void undoPending() {
-		//FIXME This is not the correct order
+		//FIXME This is not the correct order - shouldn't matter for valid props, but
+		//might be nice to use correct order
 		for (State state : knownPreStates.values()) {
 			state.restore();
 		}
@@ -253,8 +254,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			//allow undoing of the next change, since we may get it wrong
 			missingDelegate = true;
 			logger.severe("Could not find an UndoDelegate for " + changed + ", will clear undo history, and will not undo this stage");
-		}
-		
+		}		
 	}
 
 	/**
@@ -282,7 +282,8 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 		 * Undo the change
 		 */
 		public void undo() {
-			//FIXME is this the correct order?
+			//FIXME This might not be the correct order - shouldn't matter for valid props, but
+			//might be nice to use correct order
 			for (State state : undoStates) {
 				state.restore();
 			}
@@ -292,7 +293,8 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 		 * Redo the change
 		 */
 		public void redo() {
-			//FIXME is this the correct order?
+			//FIXME This might not be the correct order - shouldn't matter for valid props, but
+			//might be nice to use correct order
 			for (State state : redoStates) {
 				state.restore();
 			}
