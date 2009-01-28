@@ -40,47 +40,6 @@ public class ListDeltaDefault implements ListDelta {
 	int newSize;
 	CollectionChangeType type;
 	int changeSize;
-
-	//TODO remove this
-//	/**
-//	 * Make a {@link ListChangeDeltaDefault} that extends the first change
-//	 * to cover itself AND the second change. If the second change
-//	 * is already covered by the first change, then null is returned.
-//	 * @param first
-//	 * 		The first change
-//	 * @param second
-//	 * 		The second change
-//	 * @return
-//	 * 		A change covering both changes, OR null if the second
-//	 * change is already covered by the first change
-//	 */
-//	public static ListChangeDeltaDefault makeExtension(ListChangeDelta first, ListChangeDelta second) {
-//		
-//		//If we already have a complete change, we don't need to extend it, so return null
-//		if (first.getType() == CollectionChangeType.COMPLETE) {
-//			return null;
-//			
-//		//If the first and second changes are both just alterations, then we can make
-//		//another alteration that is accurate. It must contain all the changed indices
-//		//of both changes. Note that if we find that the range of changed indices does
-//		//not grow, we return null to indicate we don't need to extend it
-//		} else if (first.getType() == CollectionChangeType.ALTERATION && second.getType() == CollectionChangeType.ALTERATION) {
-//			int size = first.getOldSize();
-//			int firstChangedIndex = Math.min(first.getFirstChangedIndex(), second.getFirstChangedIndex());
-//			int lastChangedIndex = Math.min(first.getLastChangedIndex(), second.getLastChangedIndex());
-//			if ( (firstChangedIndex < first.getFirstChangedIndex())
-//					|| (lastChangedIndex > first.getLastChangedIndex()) ) {
-//				return new ListChangeDeltaDefault(CollectionChangeType.ALTERATION, firstChangedIndex, lastChangedIndex, size, size);				
-//			} else {
-//				return null;
-//			}
-//			
-//		//Finally, if we have any other combination of changes, we can only reliably represent them as
-//		//a complete change, so we return one
-//		} else {
-//			return new ListChangeDeltaDefault(CollectionChangeType.COMPLETE, -1, -1, -1, -1);
-//		}
-//	}
 	
 	/**
 	 * Make a {@link ListDelta} for adding to the end of a 
@@ -304,10 +263,12 @@ public class ListDeltaDefault implements ListDelta {
 
 	@Override
 	public String toString() {
-		return "List Change Extents, type " + getType() + 
-			" on indices " + getFirstChangedIndex() + " to " + getLastChangedIndex() + 
-			" inclusive, size changed by " + getChangeSize() + 
-			" from " + getOldSize() + " to " + getNewSize();		
+		return "List Delta, type " + getType() + 
+			" on indices " + getFirstChangedIndex() + 
+			" to " + getLastChangedIndex() + 
+			" inclusive, change size " + getChangeSize() + 
+			", old size " + getOldSize() + 
+			" to new size " + getNewSize();		
 	}
 	
 }
