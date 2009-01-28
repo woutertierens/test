@@ -3,6 +3,7 @@ package org.jpropeller.bean;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.jpropeller.properties.EditableProp;
@@ -15,6 +16,8 @@ import org.jpropeller.properties.list.EditableListProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.map.EditableMapProp;
 import org.jpropeller.properties.map.MapProp;
+import org.jpropeller.properties.set.EditableSetProp;
+import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.ui.ImmutableIcon;
 
 /**
@@ -260,6 +263,37 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 */
 	public <J, S> EditableMapProp<J, S> editableMap(Class<S> clazz, String name);
 
+
+	/**
+	 * Make a new {@link SetProp} and add to this bean
+	 * @param <S>
+	 * 		The type of the set contents. 
+	 * @param clazz 
+	 * 		The type of the set contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @param data
+	 * 		The data contents for the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> EditableSetProp<S> editableSet(Class<S> clazz, String name,
+			Set<S> data);
+
+	/**
+	 * Make a new {@link SetProp} from empty default set, and add to this bean
+	 * @param <S>
+	 * 		The type of the set contents. 
+	 * @param clazz 
+	 * 		The type of the set contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> EditableSetProp<S> editableSet(Class<S> clazz, String name);
+
+	
 	/**
 	 * Make a new prop and add to this bean
 	 * @param name
