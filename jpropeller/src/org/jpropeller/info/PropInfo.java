@@ -30,7 +30,15 @@ public enum PropInfo {
 	/**
 	 * Default map prop 
 	 */
-	DEFAULT_MAP(PropEditability.DEFAULT, PropAccessType.MAP);
+	DEFAULT_MAP(PropEditability.DEFAULT, PropAccessType.MAP),
+	/**
+	 * Editable set prop
+	 */
+	EDITABLE_SET(PropEditability.EDITABLE, PropAccessType.SET),
+	/**
+	 * Default set prop
+	 */
+	DEFAULT_SET(PropEditability.DEFAULT, PropAccessType.SET);
 	
 	private PropEditability editability;
 	private PropAccessType type;
