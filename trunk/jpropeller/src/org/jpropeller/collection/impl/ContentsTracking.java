@@ -2,14 +2,12 @@ package org.jpropeller.collection.impl;
 
 import java.util.Map;
 
-import org.jpropeller.bean.Bean;
 import org.jpropeller.properties.change.Changeable;
 
 /**
  * Assist with the tracking of contents in a collection, by
  * adding/removing a listener as contents are added and removed, etc.
- * @author shingoki
- *
+ * 
  * @param <E>
  * 		The type of element in the collection
  */
@@ -42,11 +40,10 @@ public class ContentsTracking<E> {
 		boolean elementAlreadyPresent = refs.addReference(e);
 		
 		//TODO is instanceof here a performance issue?
-		//TODO Should we listen to any Changeable instead?
-		//If the element is new and a bean, we need to listen to it
+		//If the element is new and changeable, we need to listen to it
 		if (!elementAlreadyPresent) {
-			if (e instanceof Bean) {
-				((Bean)e).features().addChangeableListener(listener);
+			if (e instanceof Changeable) {
+				((Changeable)e).features().addChangeableListener(listener);
 			}
 		}
 	}
@@ -67,12 +64,11 @@ public class ContentsTracking<E> {
 		boolean elementStillPresent = refs.removeReference(e);
 		
 		//TODO is instanceof here a performance issue?
-		//TODO Should we listen to any Changeable instead?
-		//If the element is no longer in the list, and is a bean, 
+		//If the element is no longer in the list, and is changeable, 
 		//we need to stop listening to it
 		if (!elementStillPresent) {
-			if (e instanceof Bean) {
-				((Bean)e).features().removeChangeableListener(listener);
+			if (e instanceof Changeable) {
+				((Changeable)e).features().removeChangeableListener(listener);
 			}
 		}
 	}
@@ -90,10 +86,9 @@ public class ContentsTracking<E> {
 		//Stop listening to all elements that have a reference count
 		for (Object e : refs.getReferenceCounts().keySet()) {
 			//TODO is instanceof here a performance issue?
-			//TODO Should we listen to any Changeable instead?
-			//If the element is a bean, we need to stop listening to it
-			if (e instanceof Bean) {
-				((Bean)e).features().removeChangeableListener(listener);
+			//If the element is a changeable, we need to stop listening to it
+			if (e instanceof Changeable) {
+				((Changeable)e).features().removeChangeableListener(listener);
 			}
 		}
 		
