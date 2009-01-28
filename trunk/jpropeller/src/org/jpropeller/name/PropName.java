@@ -31,6 +31,7 @@ import org.jpropeller.properties.list.EditableListProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.map.EditableMapProp;
 import org.jpropeller.properties.map.MapProp;
+import org.jpropeller.properties.set.EditableSetProp;
 
 /**
  * The name of a Prop&lt;T&gt;
@@ -153,6 +154,21 @@ public final class PropName<P extends GeneralProp<T>, T> extends GenericPropName
 	 */
 	public static <T> PropName<EditableListProp<T>, T> editableList(String s, Class<T> clazz) {
 		return new PropName<EditableListProp<T>, T>(s, clazz, PropInfo.EDITABLE_LIST);
+	}
+
+	/**
+	 * Make a {@link PropName}
+	 * @param <T>
+	 * 		Type of value in the {@link Prop}
+	 * @param s
+	 * 		String value of name
+	 * @param clazz
+	 * 		Class of value in the {@link Prop}
+	 * @return
+	 * 		A new name
+	 */
+	public static <T> PropName<EditableSetProp<T>, T> editableSet(String s, Class<T> clazz) {
+		return new PropName<EditableSetProp<T>, T>(s, clazz, PropInfo.EDITABLE_SET);
 	}
 
 	/**
