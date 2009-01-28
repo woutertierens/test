@@ -2,6 +2,7 @@ package org.jpropeller.properties.change;
 
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.map.MapProp;
+import org.jpropeller.properties.set.SetProp;
 
 /**
  * The types of {@link Change} 
@@ -20,5 +21,10 @@ public enum ChangeType {
 	/**
 	 * Change applies to a {@link MapProp}
 	 */
-	MAP
+	MAP,
+
+	/**
+	 * Change applies to a {@link SetProp}
+	 */
+	SET
 }
