@@ -38,32 +38,6 @@ public class MapDeltaDefault implements MapDelta {
 	int oldSize;
 	int newSize;
 	CollectionChangeType type;
-
-	//TODO remove
-//	/**
-//	 * Make a {@link MapDeltaDefault} that extends the first change
-//	 * to cover itself AND the second change. If the second change
-//	 * is already covered by the first change, then null is returned.
-//	 * @param first
-//	 * 		The first change
-//	 * @param second
-//	 * 		The second change
-//	 * @return
-//	 * 		A change covering both changes, OR null if the second
-//	 * change is already covered by the first change
-//	 */
-//	public static MapDeltaDefault makeExtension(MapDelta first, MapDelta second) {
-//		
-//		//If we already have a complete change, we don't need to extend it, so return null
-//		if (first.getType() == CollectionChangeType.COMPLETE) {
-//			return null;
-//			
-//		//If we have any other combination of changes, we can only reliably represent them as
-//		//a complete change, so we return one
-//		} else {
-//			return new MapDeltaDefault(null, CollectionChangeType.COMPLETE, -1, -1);
-//		}
-//	}
 	
 	/**
 	 * Make a {@link MapDelta} for inserting a single mapping. The map must have
@@ -197,10 +171,10 @@ public class MapDeltaDefault implements MapDelta {
 
 	@Override
 	public String toString() {
-		String s = "Map Change Extents, type " + getType() +  
-			" from size " + getOldSize() + " to size " + getNewSize();
+		String s = "Map Delta, type " + getType() +  
+			" from old size " + getOldSize() + " to new size " + getNewSize();
 		if (isKeyValid()) {
-			s += " affecting only key '" + getKey() + "'";
+			s += ", affecting only key '" + getKey() + "'";
 		}
 		return s;
 	}
