@@ -43,22 +43,24 @@ import org.jpropeller.properties.change.impl.ListChangeDefault;
 import org.jpropeller.system.Props;
 
 /**
- * A ListBeanShell wraps an underlying List implementation, delegating actual storage
- * of elements to this core list, and adding tracking of the elements so that events
- * are generated as required for ListBean compliance.
+ * An {@link ObservableListDefault} wraps an underlying {@link List} 
+ * implementation, delegating actual storage of elements to this 
+ * core {@link List}, and adding tracking of the elements so that events
+ * are generated as required for {@link ObservableList} compliance.
  * 
- * As an implementation note, this {@link Changeable} does NOT use {@link ChangeSystem#prepareRead(Changeable)}
- * or {@link ChangeSystem#concludeRead(Changeable)}, since it knows that it does NOT read the values of any
- * other {@link Changeable}s, or modify its own state, when it is read. (Reading state of other 
- * {@link Changeable}s without preparing is prohibited, since it can lead to these {@link Changeable}s
- * reading inconsistent state, regenerating cache at the wrong time, etc.) 
- * The list that is wrapped is synchronised so that it is not possible to have synchronization problems
- * within the list itself.
+ * As an implementation note, this {@link Changeable} does NOT use 
+ * {@link ChangeSystem#prepareRead(Changeable)} or 
+ * {@link ChangeSystem#concludeRead(Changeable)}, since it knows 
+ * that it does NOT read the values of any other {@link Changeable}s, 
+ * or modify its own state, when it is read. (Reading state of other 
+ * {@link Changeable}s without preparing is prohibited, since it can 
+ * lead to these {@link Changeable}s reading inconsistent state, 
+ * regenerating cache at the wrong time, etc.) The list that is 
+ * wrapped is synchronised so that it is not possible to have 
+ * synchronisation problems within the list itself.
  * 
  * TODO assess whether it is possible to use {@link ChangeSystem#prepareRead(Changeable)} anyway.
  * 
- * @author shingoki
- *
  * @param <E>
  * 		The type of element in the list
  */
@@ -164,7 +166,7 @@ public class ObservableListDefault<E> implements ObservableList<E> {
 	 * clearAllTracking() is called, then all elements
 	 * are passed to startTrackingElement(e);
 	 */
-	public void retrackAll() {
+	private void retrackAll() {
 		//Stop tracking all elements
 		tracking.clearAllTracking();
 		
