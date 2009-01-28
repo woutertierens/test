@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
@@ -25,6 +26,8 @@ import org.jpropeller.properties.list.EditableListProp;
 import org.jpropeller.properties.list.impl.EditableListPropDefault;
 import org.jpropeller.properties.map.EditableMapProp;
 import org.jpropeller.properties.map.impl.EditableMapPropDefault;
+import org.jpropeller.properties.set.EditableSetProp;
+import org.jpropeller.properties.set.impl.EditableSetPropDefault;
 import org.jpropeller.ui.ImmutableIcon;
 
 /**
@@ -137,6 +140,14 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	
 	public <J, S> EditableMapProp<J, S> editableMap(Class<S> clazz, String name) {
 		return add(EditableMapPropDefault.<J, S>create(name, clazz));
+	}
+
+	public <S> EditableSetProp<S> editableSet(Class<S> clazz, String name, Set<S> data) {
+		return add(EditableSetPropDefault.create(name, clazz, data));
+	}
+	
+	public <S> EditableSetProp<S> editableSet(Class<S> clazz, String name) {
+		return add(EditableSetPropDefault.create(name, clazz));
 	}
 
 	/////////////////////////////////////////////////////////////////
