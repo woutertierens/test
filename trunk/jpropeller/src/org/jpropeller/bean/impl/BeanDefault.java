@@ -3,6 +3,7 @@ package org.jpropeller.bean.impl;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.BeanFeatures;
@@ -24,6 +25,7 @@ import org.jpropeller.properties.path.impl.EditablePathProp;
 import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
 import org.jpropeller.properties.path.impl.PathProp;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
+import org.jpropeller.properties.set.EditableSetProp;
 import org.jpropeller.system.Props;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.ui.ImmutableIcon;
@@ -61,6 +63,15 @@ public abstract class BeanDefault implements Bean {
 		return features.editableList(clazz, name, data);
 	}
 
+	protected <S> EditableSetProp<S> editableSet(Class<S> clazz, String name) {
+		return features.editableSet(clazz, name);
+	}
+
+	protected <S> EditableSetProp<S> editableSet(Class<S> clazz, String name,
+			Set<S> data) {
+		return features.editableSet(clazz, name, data);
+	}
+	
 	protected <S extends Enum<S>> EditablePropImmutable<S> editable(Class<S> clazz, String name, S value) {
 		return features.editable(clazz, name, value);
 	}
