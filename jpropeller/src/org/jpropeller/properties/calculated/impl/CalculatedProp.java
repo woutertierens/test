@@ -99,7 +99,8 @@ public class CalculatedProp<T> implements Prop<T> {
 		Props.getPropSystem().getChangeSystem().prepareRead(this);
 		try {
 			if (!cacheValid) {
-				calculateValue();
+				cachedValue = calculation.calculate();
+				cacheValid = true;
 			}
 			return cachedValue;
 		} finally {
@@ -107,11 +108,6 @@ public class CalculatedProp<T> implements Prop<T> {
 		}
 	}
 
-	private void calculateValue() {
-		cachedValue = calculation.calculate();
-		cacheValid = true;
-	}
-	
 	@Override
 	public String toString() {
 		return "Calculated Prop '" + getName().getString() + "' = '" + get() + "'";
