@@ -1,4 +1,4 @@
-package test.changesystem;
+package test.properties.change;
 
 import java.util.List;
 import java.util.Map;
@@ -9,12 +9,12 @@ import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.impl.ChangeSystemDefault;
 import test.example.contacts.Address;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Test the {@link ChangeSystemDefault} implementation
- * @author shingoki
  */
 public class TestChangeSystemDefault {
 
@@ -48,11 +48,12 @@ public class TestChangeSystemDefault {
 		ChangeListener invalidListener = new ChangeListener() {
 			@Override
 			public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
-				System.out.println("About to set houseNumber");
 				try {
 					address.houseNumber().set(42);
+					Assert.fail("Succeeded in setting in response to an event - this should not be allowed");
 				} catch (Exception e) {
-					e.printStackTrace();
+					//Exception is expected
+					Assert.assertEquals(IllegalArgumentException.class, e.getClass());
 				}
 			}
 		};
@@ -60,39 +61,6 @@ public class TestChangeSystemDefault {
 		address.features().addListener(invalidListener);
 		
 		address.houseNumber().set(3);
-	}
-
-	/**
-	 * Simple test case
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		final Address address = new Address();
-		
-		System.out.println("Started");
-		
-		
-		ChangeListener invalidListener = new ChangeListener() {
-			@Override
-			public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
-				System.out.println("About to set houseNumber");
-				try {
-					System.out.println(address);
-					System.out.println(address.houseNumber().get());
-					address.features().removeListener(this);
-					System.out.println("Removed self as listener");
-					//address.houseNumber().set(42);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		
-		address.features().addListener(invalidListener);
-		
-		address.houseNumber().set(3);
-		address.houseNumber().set(4);
-
 	}
 	
 }
