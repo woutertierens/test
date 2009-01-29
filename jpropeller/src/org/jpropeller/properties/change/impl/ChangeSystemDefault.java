@@ -39,16 +39,66 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	private List<Changeable> initial = new LinkedList<Changeable>();
 	
 	/**
+	 * This stores the changes made during the CURRENT propagation process, while that
+	 * propagation is being performed. Since this map is cleared after the end of
+	 * each propagation event, and is used to work out when propagation is complete,
+	 * it ensures that even when we coalesce the changes caused by multiple propagations,
+	 * we still fully propagate each one.
+	 * To give an example, say we have a {@link Changeable} X, and a {@link Changeable} C
+	 * that is calculated based on X. Now we do the following:
+	 * 
+	 * 1. Change X
+	 * 2. Read C
+	 * 3. Change X again
+	 * 4. Read C
+	 * 
+	 * If these actions are all done quickly, then changes will be coalesced - the changes
+	 * from step 2 and step 4 will be added together in the allChanges map. This is required
+	 * since we want to dispatch at some stage after 4, passing all changes that have happened
+	 * up to that point.
+	 * 
+	 * Note how C works - when stage 2 occurs, we will cause C to recalculate itself (it will have noticed
+	 * the change in X at stage 1, invalidating its state, so 2 causes recalculation). At this point,
+	 * C now has a valid cache. 
+	 * 
+	 * Now consider what can go wrong. When stage 3 occurs - if we were to look at ONLY the allChanges map,
+	 * we would now see that we already had a change to X, so we don't bother to propagate the new
+	 * change. Hence X never sees the new change, and does not invalidate its cache again at stage 3.
+	 * Now when we read C at stage 4, it gives us the old, out of date value it calculated at stage 2,
+	 * NOT the new value from the value of X set in stage 3.
+	 * 
+	 * To avoid this, we start with a fresh, empty currentChanges map on every propagation. Then in
+	 * stage 3, this map does NOT have a change for X, and when we get the new change to X, we propagate
+	 * it fully. As we do this, the new changes that are part of the propagation are built up in the
+	 * currentChanges map. When the propagation is complete, these new changes are then used to extend
+	 * the coalesced changes in allChanges. The contract for {@link Change} specifies that change extension
+	 * must be associative, so it is safe to combine the changes in the "wrong" operation order (obviously NOT
+	 * in the wrong order of operands, since change extension is NOT required to be commutative).
+	 * 
 	 * We use an {@link IdentityHashMap} so that we show the change to each INSTANCE,
 	 * we don't care about equality, we need identicality
 	 */
-	private Map<Changeable, Change> changes = new IdentityHashMap<Changeable, Change>();
+	private Map<Changeable, Change> currentChanges = 
+		new IdentityHashMap<Changeable, Change>();
+	
+	/**
+	 * This stores all changes made to each {@link Changeable} since the last successful
+	 * dispatch. Where the changes from multiple propagations (of multiple initial changes)
+	 * are coalesced, the merging of changes is performed into this map, from currentChanges,
+	 * at the end of propagation. See the docs for the currentChanges map for a more detailed
+	 * explanation of this process, and the reason it is necessary. 
+	 * 
+	 * We use an {@link IdentityHashMap} so that we show the change to each INSTANCE,
+	 * we don't care about equality, we need identicality
+	 */
+	private Map<Changeable, Change> allChanges =
+		new IdentityHashMap<Changeable, Change>();
 
 	//Make unmodifiable views of lists and maps to pass out (to ChangeDispatcher). We don't
 	//want to let the dispatcher or the listeners themselves modify anything. Change instances
 	//are already immutable.
 	private List<Changeable> umInitial;
-	private Map<Changeable, Change> umChanges;
+	private Map<Changeable, Change> umAllChanges;
 
 	/**
 	 * User to actually call change method on {@link ChangeListener}s
@@ -90,7 +140,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		this.dispatcher = dispatcher;
 		dispatcher.setSource(this);
 		this.umInitial = Collections.unmodifiableList(initial);
-		this.umChanges = Collections.unmodifiableMap(changes);
+		this.umAllChanges = Collections.unmodifiableMap(allChanges);
 	}
 
 	@Override
@@ -107,7 +157,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		try {
 			//Clear the changes we have just dispatched
 			initial.clear();
-			changes.clear();
+			allChanges.clear();
 		} finally {		
 			//Release locks in reverse order
 			dispatchingLock.unlock();
@@ -137,7 +187,8 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	//This method and firePendingChanges() are both synchronized, since they manipulate the pending changes
 	@Override
 	public void propagateChange(Changeable changed, Change change) {
-		
+
+		//TODO use specific exception here
 		//We must have the necessary lock here
 		if (!mainLock.isHeldByCurrentThread()) {
 			throw new IllegalMonitorStateException("Cannot propagateChange without first calling prepareChange (i.e. lock is not held when calling propagateChange)");
@@ -149,17 +200,41 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 			return;
 		}
 		
+		//TODO use specific exception here
+		//Check that the current changes map is empty - should have 
+		//been cleared at end of last propagation
+		if (!currentChanges.isEmpty()) {
+			logger.severe("IMPLEMENTATION: Non-empty current changes when propagation started - invalid state.");
+			throw new IllegalArgumentException("Non-empty current changes when propagation started - invalid state.");
+		}
+		
 		initial.add(changed);
 
-		//Extend change to initial
-		Change extendedInitialChange = extendChange(changed, change);
+		//Extend change to initial, using current changes map
+		Change extendedInitialChange = extendChange(changed, change, currentChanges);
 
 		//If the initial has actually got an extended change, start recursive processing from initial
 		if (extendedInitialChange != null) { 
 			processListeners(initial, changed, change);
 		}
+		
+		//Propagation is complete - we need to coalesce the currentChanges into allChanges
+		currentChangesToAllChanges();
 	}
 
+	private void currentChangesToAllChanges() {
+		
+		for (Changeable key : currentChanges.keySet()) {
+			Change currentChange = currentChanges.get(key);
+			
+			//Extend the change in the allChanges map
+			extendChange(key, currentChange, allChanges);
+		}
+		
+		//We have now coalesced the changes, can clear current changes map
+		currentChanges.clear();
+	}
+	
 	@Override
 	public void concludeChange(Changeable changed) {
 		//Release necessary lock
@@ -201,7 +276,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 			
 			//Tell listener about the change to something it was listening to, 
 			//and get any change it itself makes in response
-			Change newChange = listener.features().internalChange(changed, change, initial, changes);
+			Change newChange = listener.features().internalChange(changed, change, initial, currentChanges);
 
 			//If the listener has actually changed, deal with the change
 			if (newChange != null) {
@@ -216,8 +291,8 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 				//Deal with valid changes
 				} else {
 
-					//Extend the change for the listener to cover the new change as well
-					Change extendedChange = extendChange(listener, newChange);
+					//Extend the change for the listener to cover the new change as well, using current changes map
+					Change extendedChange = extendChange(listener, newChange, currentChanges);
 					
 					//If we have extended the change then notify listeners of the listener
 					if (extendedChange != null) {
@@ -239,13 +314,15 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	 * 		The listener whose change is to be extended
 	 * @param newChange
 	 * 		The new change for the listener
+	 * @param changes
+	 * 		The change map
 	 * @return
 	 * 		If the change for the listener is extended, the
 	 * change it was extended to is returned.
 	 * If the existing change already covered the new change (so
 	 * no extension needs to take place), null is returned
 	 */
-	private Change extendChange(Changeable listener, Change newChange) {
+	private static Change extendChange(Changeable listener, Change newChange, Map<Changeable, Change> changes) {
 		//See if we have a current change for this listener
 		Change currentChange = changes.get(listener);
 		
@@ -296,7 +373,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public Map<Changeable, Change> changes() {
-		return umChanges;
+		return umAllChanges;
 	}
 
 	@Override
