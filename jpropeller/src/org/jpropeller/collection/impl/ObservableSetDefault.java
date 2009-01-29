@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.Callable;
 
 import org.jpropeller.bean.BeanFeatures;
@@ -47,6 +48,11 @@ import org.jpropeller.system.Props;
  * implementation, delegating actual storage of elements to this 
  * core {@link Set}, and adding tracking of the elements so that events
  * are generated as required for {@link ObservableSet} compliance.
+ * 
+ * Any {@link Set} can be wrapped, however {@link SortedSet} behaviour
+ * is NOT exposed by an {@link ObservableSetDefault} - the set will still
+ * be sorted when iterated, but it is not possible to access 
+ * {@link SortedSet#subSet(Object, Object)}, etc.
  * 
  * As an implementation note, this {@link Changeable} does NOT 
  * use {@link ChangeSystem#prepareRead(Changeable)} or 
