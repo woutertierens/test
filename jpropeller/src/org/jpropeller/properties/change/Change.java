@@ -7,11 +7,11 @@ import org.jpropeller.properties.GeneralProp;
 import org.jpropeller.view.View;
 
 /**
- * Carries details of any change that a {@link Bean} or {@link GeneralProp}
- * may have.
+ * Carries details of any change that a {@link Changeable} may have.
+ * 
  * Subinterfaces carry specific details of changes associated with
- * specific types of Bean/prop - this interface deals with the minimum
- * information for any change. 
+ * specific types of {@link Changeable} - this interface deals 
+ * with the minimum information for any change. 
  */
 public interface Change {
 
@@ -65,9 +65,9 @@ public interface Change {
 	public boolean sameInstances();
 	
 	/**
-	 * This is true only for the first change in any {@link GeneralProp}.
+	 * This is true only for the first change in any {@link Changeable}.
 	 * Such a change will nearly always cause changes in other 
-	 * {@link GeneralProp}s and/or {@link Bean}s - this is known as
+	 * {@link Changeable}s - this is known as
 	 * propagation of the change. All changes that are triggered in
 	 * this "chain reaction" are NOT initial changes. When propagation
 	 * is finished, another initial change may spark another change propagation.
@@ -86,9 +86,37 @@ public interface Change {
 	/**
 	 * Extend an existing change, to return a new {@link Change} that encompasses
 	 * all changes made by the existing change AND this change.
-	 * If this change is already covered by the existing change, then null should
-	 * be returned. If this change already covers the existing change, then the
-	 * change may return itself to avoid creating a new change.
+	 * 
+	 * Referring to THIS change as "NEW" and the existing change as "OLD", then:
+	 * 
+	 * If OLD and NEW are identical, null should be returned.
+	 * If OLD covers NEW, null should be returned.
+	 * If NEW covers OLD, this method may return NEW to avoid creating a new change.
+	 * 
+	 * 
+	 * Note that this extension must give the following property (Associativity):
+	 * 
+	 * The following two actions must yield the same Change for ABC:
+	 * 
+	 * 1. Extend an existing A using a new B, to give AB, then extend AB
+	 * by C to give ABC
+	 * 
+	 * 2. Extend an existing B using a new C to give BC, then extend an
+	 * existing A by BC to give ABC
+	 * 
+	 * This is analogous to how:
+	 * 
+	 * (3 * 4) * 5 = 3 * (4 * 5)
+	 * 
+	 * This property is what allows {@link ChangeSystem} implementations to
+	 * coalesce changes together in a valid way.
+	 * 
+	 * Note for those interested - extension does not need to be commutative,
+	 * for example a change may incorporate a sequence of operations, in which
+	 * case it may rely on being extended in such a way that the existing change
+	 * is always the older one. This is not compatible with commutation, but is
+	 * compatible with association.
+	 * 
 	 * @param existing
 	 * 		An existing change
 	 * @return
