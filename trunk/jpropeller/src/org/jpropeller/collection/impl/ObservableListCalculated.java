@@ -91,8 +91,6 @@ public class ObservableListCalculated<E> implements ObservableList<E> {
 				//Mark the cache as invalid - it will need to be recalculated
 				cacheValid = false;
 
-				System.out.println(">>>>Cache invalidated");
-				
 				//Since we only listen to the actual props we are calculated
 				//from, we don't need to filter here, we always have a
 				//change
@@ -126,15 +124,11 @@ public class ObservableListCalculated<E> implements ObservableList<E> {
 	 * </pre>
 	 */
 	private void start() {
-		System.out.println("start()");
-
 		Props.getPropSystem().getChangeSystem().prepareRead(this);
-		System.out.println("prepared Read");
+		
 		if (!cacheValid) {
-			System.out.println("recalculating");
 
 			core = calculation.calculate();
-			System.out.println("recalculated");
 			
 			//Null values are not acceptable - throw exception sooner rather than later
 			if (core == null) {
@@ -143,8 +137,6 @@ public class ObservableListCalculated<E> implements ObservableList<E> {
 			
 			//We now have a usable value
 			cacheValid = true;
-		} else {
-			System.out.println("No recalculation needed");
 		}
 	}
 	
@@ -247,7 +239,6 @@ public class ObservableListCalculated<E> implements ObservableList<E> {
 
 	@Override
 	public int size() {
-		System.out.println("Checking size");
 		try {
 			start();
 			return core.size();
