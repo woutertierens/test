@@ -14,7 +14,20 @@ public class TableRowViewDirect<T> implements TableRowView<T> {
 
 	Class<T> clazz;
 	String columnName;
-	
+
+	/**
+	 * Create a {@link TableRowViewDirect}
+	 * @param clazz
+	 * 		The class of the displayed elements
+	 * @param columnName
+	 * 		The name of the single column
+	 */
+	public TableRowViewDirect(Class<T> clazz, String columnName) {
+		super();
+		this.clazz = clazz;
+		this.columnName = columnName;
+	}
+
 	@Override
 	public Object getColumn(T row, int column) {
 		return row;
