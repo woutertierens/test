@@ -14,7 +14,6 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.ObservableList;
 import org.jpropeller.properties.list.ListSelectionEditableValueReference;
 import org.jpropeller.properties.list.impl.ListSelectionEditableValueReferenceDefault;
-import org.jpropeller.reference.Reference;
 import org.jpropeller.reference.impl.PathReference;
 import org.jpropeller.reference.impl.PathReferenceBuilder;
 import org.jpropeller.transformer.BeanPathToEditable;
@@ -23,7 +22,7 @@ import org.jpropeller.util.Source;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
-import org.jpropeller.view.bean.impl.BeanPropListEditor;
+import org.jpropeller.view.bean.impl.BeanEditor;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.impl.ListAddAction;
 import org.jpropeller.view.table.impl.ListDeleteAction;
@@ -37,7 +36,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A {@link JView} for {@link ObservableList}s of {@link Bean}s, displaying
  * the entire list as a table, and using
- * a {@link BeanPropListEditor} to edit the selected instance, and providing
+ * a {@link BeanEditor} to edit the selected instance, and providing
  * buttons to allow list elements to be added, deleted, and moved.
  * @param <T>
  * 		The type of {@link Bean} in the {@link ListEditView}
@@ -52,7 +51,7 @@ public class ListEditView<T extends Bean> implements JView<ObservableList<T>>{
 	JComponent panel;
 	private JComponent buttonPanel;
 	private JComponent editorPanel;
-	private BeanPropListEditor<T> selectedEditor;
+	private BeanEditor<T> selectedEditor;
 	private ListMoveAction<T> moveUpAction;
 	private ListMoveAction<T> moveDownAction;
 	private ListDeleteAction deleteAction;
@@ -60,6 +59,48 @@ public class ListEditView<T extends Bean> implements JView<ObservableList<T>>{
 	private JPanel tablePanel;
 	
 	List<View<?>> views = new LinkedList<View<?>>();
+
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListSelectionEditableValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param list
+	 * 		The list to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S extends Bean> ListEditView<S> create(ObservableList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source) {
+		ListSelectionEditableValueReference<S> model = 
+			new ListSelectionEditableValueReferenceDefault<S>(list, clazz);
+		return new ListEditView<S>(model, clazz, rowView, source);
+	}
+	
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListSelectionEditableValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S extends Bean> ListEditView<S> create(ListSelectionEditableValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source) {
+		return new ListEditView<S>(model, clazz, rowView, source);
+	}
 	
 	/**
 	 * Create a {@link ListEditView}
@@ -72,7 +113,7 @@ public class ListEditView<T extends Bean> implements JView<ObservableList<T>>{
 	 * @param source
 	 * 		The source for new elements to add to the list
 	 */
-	public ListEditView(ListSelectionEditableValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source) {
+	private ListEditView(ListSelectionEditableValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -143,7 +184,7 @@ public class ListEditView<T extends Bean> implements JView<ObservableList<T>>{
 		
 		//Editor for current selection
 		final PathReference<T> selectedReference = PathReferenceBuilder.from(model, clazz).to(refToSelected);
-		selectedEditor = BeanPropListEditor.create(selectedReference);
+		selectedEditor = BeanEditor.create(selectedReference);
 		JScrollPane selectedEditorScroll = new JScrollPane(selectedEditor.getComponent());
 		selectedEditorScroll.setBorder(null);
 		
@@ -207,7 +248,7 @@ public class ListEditView<T extends Bean> implements JView<ObservableList<T>>{
 	}
 
 	@Override
-	public Reference<? extends ObservableList<T>> getModel() {
+	public ListSelectionEditableValueReference<T> getModel() {
 		return model;
 	}
 

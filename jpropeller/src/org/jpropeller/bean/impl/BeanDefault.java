@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.BeanFeatures;
 import org.jpropeller.bean.ExtendedBeanFeatures;
+import org.jpropeller.collection.ObservableList;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.impl.BeanPathBuilder;
 import org.jpropeller.properties.EditableProp;
@@ -20,6 +21,7 @@ import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.immutable.impl.EditablePropImmutable;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
 import org.jpropeller.properties.list.EditableListProp;
+import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.map.EditableMapProp;
 import org.jpropeller.properties.path.impl.EditablePathProp;
 import org.jpropeller.properties.path.impl.EditablePathPropBuilder;
@@ -44,6 +46,10 @@ public abstract class BeanDefault implements Bean {
 	public BeanFeatures features() {
 		return features;
 	}
+
+	//TODO provide toString() implementation listing prop values?
+	
+	//Methods for making and adding props
 	
 	protected <J, S> EditableMapProp<J, S> editableMap(Class<S> clazz,
 			String name, Map<J, S> data) {
@@ -61,6 +67,25 @@ public abstract class BeanDefault implements Bean {
 	protected <S> EditableListProp<S> editableList(Class<S> clazz, String name,
 			List<S> data) {
 		return features.editableList(clazz, name, data);
+	}
+
+	protected <S> EditableListProp<S> editableList(Class<S> clazz, String name,
+			ObservableList<S> data) {
+		return features.editableList(clazz, name, data);
+	}
+
+	protected <S> ListProp<S> createList(Class<S> clazz, String name) {
+		return features.createList(clazz, name);
+	}
+
+	protected <S> ListProp<S> createList(Class<S> clazz, String name,
+			List<S> data) {
+		return features.createList(clazz, name, data);
+	}
+
+	protected <S> ListProp<S> createList(Class<S> clazz, String name,
+			ObservableList<S> data) {
+		return features.createList(clazz, name, data);
 	}
 
 	protected <S> EditableSetProp<S> editableSet(Class<S> clazz, String name) {

@@ -24,7 +24,7 @@ import org.jpropeller.undo.delegates.impl.UndoDelegateSourceDefault;
 import org.jpropeller.undo.impl.UndoSystemDefault;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.Source;
-import org.jpropeller.view.bean.impl.BeanPropListEditor;
+import org.jpropeller.view.bean.impl.BeanEditor;
 import org.jpropeller.view.table.impl.BeanRowView;
 import org.jpropeller.view.table.impl.ListAddAction;
 import org.jpropeller.view.table.impl.ListDeleteAction;
@@ -188,7 +188,7 @@ public class SingleSelectionListTableViewDemo {
 				
 				//Editor for current selection
 				final PathReference<LotsOfProps> selectedReference = PathReferenceBuilder.from(reference, LotsOfProps.class).to(refToSelected);
-				final BeanPropListEditor<LotsOfProps> selectedEditor = BeanPropListEditor.create(selectedReference);
+				final BeanEditor<LotsOfProps> selectedEditor = BeanEditor.create(selectedReference);
 				JScrollPane selectedEditorScroll = new JScrollPane(selectedEditor.getComponent());
 				selectedEditorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 

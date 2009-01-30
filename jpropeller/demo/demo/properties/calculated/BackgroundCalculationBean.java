@@ -16,7 +16,7 @@ import org.jpropeller.properties.calculated.impl.PropCalculationDefault;
 import org.jpropeller.properties.calculated.impl.PropListCalculation;
 import org.jpropeller.reference.impl.EditableReferenceToChangeable;
 import org.jpropeller.util.GeneralUtils;
-import org.jpropeller.view.bean.impl.BeanPropListEditor;
+import org.jpropeller.view.bean.impl.BeanEditor;
 
 /**
  * Demonstrate the use of a slow background calculated property
@@ -97,7 +97,7 @@ public class BackgroundCalculationBean extends BeanDefault {
 
 				final EditableReferenceToChangeable<BackgroundCalculationBean> model = EditableReferenceToChangeable.create(BackgroundCalculationBean.class, x);
 				
-				final BeanPropListEditor<BackgroundCalculationBean> editor = BeanPropListEditor.create(model);
+				final BeanEditor<BackgroundCalculationBean> editor = BeanEditor.create(model);
 				
 				JFrame frame = new JFrame("Background Addition View Demo");
 				frame.setLayout(new BorderLayout());

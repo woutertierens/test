@@ -19,12 +19,12 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.reference.impl.EditableReferenceToChangeable;
 import org.jpropeller.ui.ImmutableIcon;
 import org.jpropeller.util.GeneralUtils;
-import org.jpropeller.view.bean.impl.BeanPropListEditor;
+import org.jpropeller.view.bean.impl.BeanEditor;
 
 import test.example.LotsOfProps;
 
 /**
- * Demonstration of {@link BeanPropListEditor}
+ * Demonstration of {@link BeanEditor}
  */
 public class BeanViewDemo {
 
@@ -58,7 +58,7 @@ public class BeanViewDemo {
 				//Make a ref to "a"
 				final EditableReferenceToChangeable<Bean> model = EditableReferenceToChangeable.create(Bean.class, a);
 				
-				final BeanPropListEditor<Bean> editor = BeanPropListEditor.create(model);
+				final BeanEditor<Bean> editor = BeanEditor.create(model);
 				
 				final JFrame frame = new JFrame("Bean View Demo");
 				frame.setLayout(new BorderLayout());

@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 import org.jpropeller.collection.ObservableList;
 import org.jpropeller.collection.impl.ObservableListDefault;
 import org.jpropeller.properties.list.ListSelectionEditableValueReference;
-import org.jpropeller.properties.list.impl.ListSelectionEditableValueReferenceDefault;
 import org.jpropeller.undo.UndoSystem;
 import org.jpropeller.undo.delegates.impl.UndoDelegateSourceDefault;
 import org.jpropeller.undo.impl.RedoAction;
@@ -73,10 +72,12 @@ public class ListEditViewDemo {
 				JFrame frame = new JFrame("BeanListTableModel Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-				final ListSelectionEditableValueReference<LotsOfProps> reference = new ListSelectionEditableValueReferenceDefault<LotsOfProps>(l, LotsOfProps.class);
+				//final ListSelectionEditableValueReference<LotsOfProps> reference = new ListSelectionEditableValueReferenceDefault<LotsOfProps>(l, LotsOfProps.class);
+				//ListEditView<LotsOfProps> view = new ListEditView<LotsOfProps>(reference, LotsOfProps.class, new BeanRowView(example), source);
 
-				ListEditView<LotsOfProps> view = new ListEditView<LotsOfProps>(reference, LotsOfProps.class, new BeanRowView(example), source);
-
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source);
+				final ListSelectionEditableValueReference<LotsOfProps> reference = view.getModel();
+				
 				JPanel buttons = new JPanel();
 
 				JButton undo = new JButton(UndoAction.create(undoSystem));
