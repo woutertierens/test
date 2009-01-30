@@ -12,8 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.jpropeller.collection.ObservableList;
 import org.jpropeller.collection.impl.ObservableListDefault;
-import org.jpropeller.properties.list.ListSelectionEditableValueReference;
-import org.jpropeller.properties.list.impl.ListSelectionEditableValueReferenceDefault;
 import org.jpropeller.ui.Tabs;
 import org.jpropeller.undo.UndoSystem;
 import org.jpropeller.undo.delegates.impl.UndoDelegateSourceDefault;
@@ -81,11 +79,8 @@ public class TabsDemo {
 				JFrame frame = new JFrame("BeanListTableModel Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-				final ListSelectionEditableValueReference<LotsOfProps> reference = new ListSelectionEditableValueReferenceDefault<LotsOfProps>(l, LotsOfProps.class);
-				ListEditView<LotsOfProps> view = new ListEditView<LotsOfProps>(reference, LotsOfProps.class, new BeanRowView(example), source);
-
-				final ListSelectionEditableValueReference<LotsOfProps> reference2 = new ListSelectionEditableValueReferenceDefault<LotsOfProps>(l2, LotsOfProps.class);
-				ListEditView<LotsOfProps> view2 = new ListEditView<LotsOfProps>(reference2, LotsOfProps.class, new BeanRowView(example), source);
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source);
+				ListEditView<LotsOfProps> view2 = ListEditView.create(l2, LotsOfProps.class, new BeanRowView(example), source);
 
 				Tabs tabs = new Tabs();
 				JTabbedPane tabbedPane = tabs.getComponent();

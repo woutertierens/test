@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.jpropeller.collection.ObservableList;
 import org.jpropeller.properties.EditableProp;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Changeable;
@@ -202,7 +203,7 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	public EditableProp<DateTime> editable(String name, DateTime value);
 	
 	/**
-	 * Make a new {@link ListProp} with and add to this bean
+	 * Make a new {@link ListProp} and add to this bean
 	 * @param <S>
 	 * 		The type of the list contents. 
 	 * @param clazz 
@@ -218,7 +219,23 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 			List<S> data);
 
 	/**
-	 * Make a new {@link ListProp} with and add to this bean
+	 * Make a new {@link ListProp} and add to this bean
+	 * @param <S>
+	 * 		The type of the list contents. 
+	 * @param clazz 
+	 * 		The type of the list contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @param data
+	 * 		The data contents for the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> EditableListProp<S> editableList(Class<S> clazz, String name,
+			ObservableList<S> data);
+
+	/**
+	 * Make a new {@link ListProp} and add to this bean
 	 * @param <S>
 	 * 		The type of the list contents. 
 	 * @param clazz 
@@ -230,6 +247,51 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 */
 	public <S> EditableListProp<S> editableList(Class<S> clazz, String name);
 
+	/**
+	 * Make a new {@link ListProp} and add to this bean
+	 * @param <S>
+	 * 		The type of the list contents. 
+	 * @param clazz 
+	 * 		The type of the list contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @param data
+	 * 		The data contents for the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> ListProp<S> createList(Class<S> clazz, String name,
+			List<S> data);
+
+	/**
+	 * Make a new {@link ListProp} and add to this bean
+	 * @param <S>
+	 * 		The type of the list contents. 
+	 * @param clazz 
+	 * 		The type of the list contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @param data
+	 * 		The data contents for the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> ListProp<S> createList(Class<S> clazz, String name,
+			ObservableList<S> data);
+
+	/**
+	 * Make a new {@link ListProp} and add to this bean
+	 * @param <S>
+	 * 		The type of the list contents. 
+	 * @param clazz 
+	 * 		The type of the list contents.
+	 * @param name
+	 * 		The name of the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public <S> ListProp<S> createList(Class<S> clazz, String name);
+	
 	/**
 	 * Make a new {@link MapProp} with given data and add to this bean
 	 * @param <J> 

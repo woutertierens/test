@@ -34,7 +34,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * @param <M> 
  * 		The type of model
  */
-public class BeanPropListEditor<M extends Bean> implements JView<M>, ChangeListener {
+public class BeanEditor<M extends Bean> implements JView<M>, ChangeListener {
 
 	private Reference<M> model;
 	
@@ -53,7 +53,7 @@ public class BeanPropListEditor<M extends Bean> implements JView<M>, ChangeListe
 
 	private UpdateManager updateManager;
 	
-	private BeanPropListEditor(Reference<M> model, PropViewFactory factory) {
+	private BeanEditor(Reference<M> model, PropViewFactory factory) {
 		super();
 		this.model = model;
 		this.factory = factory;
@@ -78,10 +78,10 @@ public class BeanPropListEditor<M extends Bean> implements JView<M>, ChangeListe
 	 * @param model 
 	 * 		The model containing the bean
 	 * @return
-	 * 		A new {@link BeanPropListEditor}
+	 * 		A new {@link BeanEditor}
 	 */
-	public static <M extends Bean> BeanPropListEditor<M> create(Reference<M> model) {
-		return new BeanPropListEditor<M>(model, new PropViewFactoryDefault());
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model) {
+		return new BeanEditor<M>(model, new PropViewFactoryDefault());
 	}
 
 	/**
@@ -93,10 +93,10 @@ public class BeanPropListEditor<M extends Bean> implements JView<M>, ChangeListe
 	 * @param factory
 	 * 		The {@link PropViewFactory} to use to produce {@link JView}s
 	 * @return
-	 * 		A new {@link BeanPropListEditor}
+	 * 		A new {@link BeanEditor}
 	 */
-	public static <M extends Bean> BeanPropListEditor<M> create(Reference<M> model, PropViewFactory factory) {
-		return new BeanPropListEditor<M>(model, new PropViewFactoryDefault());
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, PropViewFactory factory) {
+		return new BeanEditor<M>(model, new PropViewFactoryDefault());
 	}
 
 	@Override

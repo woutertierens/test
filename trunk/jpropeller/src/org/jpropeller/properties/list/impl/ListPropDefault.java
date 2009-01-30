@@ -14,21 +14,20 @@ import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.properties.change.impl.ChangeDefault;
 import org.jpropeller.properties.change.impl.ChangeableFeaturesDefault;
 import org.jpropeller.properties.change.impl.InternalChangeImplementation;
-import org.jpropeller.properties.list.EditableListProp;
+import org.jpropeller.properties.list.ListProp;
 
 /**
- * An implementation of an {@link EditableListProp} that uses an {@link ObservableList}
+ * An implementation of an {@link ListProp} that uses an {@link ObservableList}
  * to back the data.
- * @author shingoki
  *
  * @param <T>
  * 		The type of value in the prop
  */
-public class EditableListPropDefault<T> implements EditableListProp<T> {
+public class ListPropDefault<T> implements ListProp<T> {
 
 	ChangeableFeatures features;
 	private ObservableList<T> list;
-	PropName<EditableListProp<T>, T> name;
+	PropName<ListProp<T>, T> name;
 	
 	/**
 	 * Create a prop
@@ -38,7 +37,7 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	 * @param data
 	 * 		The wrapped list
 	 */
-	private EditableListPropDefault(PropName<EditableListProp<T>, T> name, List<T> data) {
+	private ListPropDefault(PropName<ListProp<T>, T> name, List<T> data) {
 		this(name, new ObservableListDefault<T>(data));
 	}
 	
@@ -48,7 +47,7 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	 * @param data
 	 * 		The wrapped list
 	 */
-	private EditableListPropDefault(PropName<EditableListProp<T>, T> name, ObservableList<T> data) {
+	private ListPropDefault(PropName<ListProp<T>, T> name, ObservableList<T> data) {
 		features = new ChangeableFeaturesDefault(new InternalChangeImplementation() {
 			@Override
 			public Change internalChange(Changeable changed, Change change,
@@ -69,7 +68,7 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	}
 
 	/**
-	 * Create a new {@link EditableListPropDefault}
+	 * Create a new {@link ListPropDefault}
 	 * @param name 
 	 * 		The string value of the property name
 	 * @param clazz
@@ -79,14 +78,14 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	 * @param data
 	 * 		The data to contain
 	 * @return
-	 * 		The new {@link EditableListPropDefault}
+	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> EditableListPropDefault<S> create(String name, Class<S> clazz, List<S> data) {
-		return new EditableListPropDefault<S>(PropName.editableList(name, clazz), data);
+	public static <S> ListPropDefault<S> create(String name, Class<S> clazz, List<S> data) {
+		return new ListPropDefault<S>(PropName.createList(name, clazz), data);
 	}
 
 	/**
-	 * Create a new {@link EditableListPropDefault}
+	 * Create a new {@link ListPropDefault}
 	 * @param name 
 	 * 		The string value of the property name
 	 * @param clazz
@@ -96,28 +95,28 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	 * @param data
 	 * 		The data to contain
 	 * @return
-	 * 		The new {@link EditableListPropDefault}
+	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> EditableListPropDefault<S> create(String name, Class<S> clazz, ObservableList<S> data) {
-		return new EditableListPropDefault<S>(PropName.editableList(name, clazz), data);
+	public static <S> ListPropDefault<S> create(String name, Class<S> clazz, ObservableList<S> data) {
+		return new ListPropDefault<S>(PropName.createList(name, clazz), data);
 	}
 	
 	/**
-	 * Create a new {@link EditableListPropDefault}
+	 * Create a new {@link ListPropDefault}
 	 * @param name 
 	 * 		The string value of the property name
-	 * @param clazz
+	 * @param clazz	
 	 * 		The class of data in the list/indexed property
 	 * @param <S> 
 	 * 		The type of data in the list/indexed property
 	 * @return
-	 * 		The new {@link EditableListPropDefault}
+	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> EditableListPropDefault<S> create(String name, Class<S> clazz) {
-		return new EditableListPropDefault<S>(PropName.editableList(name, clazz), null);
+	public static <S> ListPropDefault<S> create(String name, Class<S> clazz) {
+		return new ListPropDefault<S>(PropName.createList(name, clazz), null);
 	}
 	
-	public PropName<EditableListProp<T>, T> getName() {
+	public PropName<ListProp<T>, T> getName() {
 		return name;
 	}
 	
@@ -128,21 +127,16 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 
 	@Override
 	public PropInfo getInfo() {
-		return PropInfo.EDITABLE_LIST;
+		return PropInfo.DEFAULT_LIST;
 	}
 
 	@Override
 	public String toString() {
-		return "Editable List Prop '" + getName().getString() + "' = '" + get() + "'";
+		return "List Prop '" + getName().getString() + "' = '" + get() + "'";
 	}
 	
 	//List-style methods, delegated to list
 	
-	@Override
-	public T set(int key, T value) {
-		return list.set(key, value);
-	}
-
 	@Override
 	public T get(int index) {
 		return list.get(index);
@@ -156,16 +150,6 @@ public class EditableListPropDefault<T> implements EditableListProp<T> {
 	@Override
 	public int size() {
 		return list.size();
-	}
-
-	@Override
-	public void add(T value) {
-		list.add(value);
-	}
-
-	@Override
-	public void replace(Iterable<T> newContents) {
-		list.replace(newContents);
 	}
 
 	@Override

@@ -46,7 +46,7 @@ import org.jpropeller.properties.list.ListSelectionEditableValueReference;
 import org.jpropeller.properties.list.impl.ListSelectionEditableValueReferenceDefault;
 import org.jpropeller.reference.impl.EditableReferenceToChangeable;
 import org.jpropeller.util.GeneralUtils;
-import org.jpropeller.view.bean.impl.BeanPropListEditor;
+import org.jpropeller.view.bean.impl.BeanEditor;
 import org.jpropeller.view.table.impl.ListTableView;
 import org.jpropeller.view.table.impl.TableRowViewDirect;
 import org.junit.Assert;
@@ -237,8 +237,8 @@ public class TestObservableListCalculated {
 		listScroll.setMinimumSize(new Dimension(100, 100));
 		listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		BeanPropListEditor<LotsOfProps> aEditor = BeanPropListEditor.create(EditableReferenceToChangeable.create(LotsOfProps.class, a));
-		BeanPropListEditor<LotsOfProps> bEditor = BeanPropListEditor.create(EditableReferenceToChangeable.create(LotsOfProps.class, b));
+		BeanEditor<LotsOfProps> aEditor = BeanEditor.create(EditableReferenceToChangeable.create(LotsOfProps.class, a));
+		BeanEditor<LotsOfProps> bEditor = BeanEditor.create(EditableReferenceToChangeable.create(LotsOfProps.class, b));
 		
 		//Layout the editors in a frame
 		FormLayout layout = new FormLayout(

@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.ExtendedBeanFeatures;
 import org.jpropeller.bean.MutableBeanFeatures;
+import org.jpropeller.collection.ObservableList;
 import org.jpropeller.name.GenericPropName;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.EditableProp;
@@ -23,7 +24,9 @@ import org.jpropeller.properties.changeable.impl.EditableChangeablePropDefault;
 import org.jpropeller.properties.immutable.impl.EditablePropImmutable;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
 import org.jpropeller.properties.list.EditableListProp;
+import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.impl.EditableListPropDefault;
+import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.EditableMapProp;
 import org.jpropeller.properties.map.impl.EditableMapPropDefault;
 import org.jpropeller.properties.set.EditableSetProp;
@@ -129,9 +132,25 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	public <S> EditableListProp<S> editableList(Class<S> clazz, String name, List<S> data) {
 		return add(EditableListPropDefault.create(name, clazz, data));
 	}
-	
+
+	public <S> EditableListProp<S> editableList(Class<S> clazz, String name, ObservableList<S> data) {
+		return add(EditableListPropDefault.create(name, clazz, data));
+	}
+
 	public <S> EditableListProp<S> editableList(Class<S> clazz, String name) {
 		return add(EditableListPropDefault.create(name, clazz));
+	}
+
+	public <S> ListProp<S> createList(Class<S> clazz, String name, List<S> data) {
+		return add(ListPropDefault.create(name, clazz, data));
+	}
+
+	public <S> ListProp<S> createList(Class<S> clazz, String name, ObservableList<S> data) {
+		return add(ListPropDefault.create(name, clazz, data));
+	}
+
+	public <S> ListProp<S> createList(Class<S> clazz, String name) {
+		return add(ListPropDefault.create(name, clazz));
 	}
 	
 	public <J, S> EditableMapProp<J, S> editableMap(Class<S> clazz, String name, Map<J, S> data) {

@@ -37,6 +37,29 @@ public class ListSelectionEditableValueReferenceDefault<T> extends BeanDefault i
 		};
 	}
 	
+	
+	/**
+	 * Make a new {@link ListSelectionEditableValueReferenceDefault},
+	 * using a specific prop for the value, rather than just an initial
+	 * list.
+	 * @param valueProp
+	 * 		The prop to be used as the value of the reference. 
+	 * 		(returned by {@link #value()}).
+	 * 		Normally expected to be named "value", but this is not
+	 * required.
+	 * @param clazz
+	 * 		The class of value in the list 
+	 */
+	public ListSelectionEditableValueReferenceDefault(GenericEditableProp<ObservableList<T>> valueProp, Class<T> clazz) {
+		value = addProp(valueProp);
+		
+		//Tracks selection within whichever list is in the "list" prop
+		selection = addProp(new ListSelectionReferenceProp<T>(PropName.editable("selection", Integer.class), value));
+		
+		//Tracks the actual selected value by looking up the selection index in the list
+		selectedValue = addProp(new EditableListIndexProp<T>(PropName.editable("selectedValue", clazz), value, selection));
+	}
+	
 	/**
 	 * Make a new {@link ListSelectionEditableValueReferenceDefault}
 	 * @param list

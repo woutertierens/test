@@ -55,7 +55,32 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, P extends Gene
 	 * 		A builder to be used to make an {@link PathReference}
 	 */
 	public static <R extends Bean, P extends GenericProp<T>, T> PathReferenceBuilder<R, R, P, T> from(R pathRoot, Class<T> clazz) {
-		return new PathReferenceBuilder<R, R, P, T>(pathRoot, PathPropBuilder.<R, P, T>from("model", clazz, pathRoot));
+		return new PathReferenceBuilder<R, R, P, T>(pathRoot, PathPropBuilder.<R, P, T>from("value", clazz, pathRoot));
+	}
+	
+	/**
+	 * Start a {@link PathReferenceBuilder} that can be used to build a {@link PathReference}
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
+	 * @param <R>
+	 * 		The type of the root bean for the {@link BeanPath} 
+	 * @param <P> 
+	 * 		The type of final prop reached by the path (e.g. {@link Prop},
+	 * {@link EditableProp}, {@link ListProp} etc.)
+	 * @param <T>
+	 * 		The type of data in the final prop reached by the path
+	 * @param name
+	 * 		The name of the model prop - must be appropriate type
+	 * of name, with string value "value" 
+	 * @param pathRoot
+	 * 		The root of the path
+	 * @return
+	 * 		A builder to be used to make an {@link PathReference}
+	 */
+	public static <R extends Bean, P extends GenericProp<T>, T> PathReferenceBuilder<R, R, P, T> from(PropName<Prop<T>, T> name, R pathRoot) {
+		if (!"value".equals(name.getString())) {
+			throw new IllegalArgumentException("Value property of PathReference must be 'value'");
+		}
+		return new PathReferenceBuilder<R, R, P, T>(pathRoot, PathPropBuilder.<R, P, T>from(name, pathRoot));
 	}
 	
 	/**
