@@ -37,16 +37,18 @@ public class CardBorderDemo implements Runnable {
 		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JPanel panel = new JPanel(new BorderLayout());
+		
+		FormLayout layout = new FormLayout("fill:pref:grow, 4px, pref", "fill:pref:grow, 4px, fill:pref:grow");
+		DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+		
+		builder.append(makeCard(), 3);
+		builder.nextRow();
+		builder.append(makeCard());
+		builder.append(makeCard());
+		
+		JPanel panel = builder.getPanel();
 		panel.setBackground(Color.DARK_GRAY);
-		panel.setBorder(new EmptyBorder(20,20,20,20));
-		JPanel panel2 = new JPanel(new BorderLayout());
-		JPanel contents = makeCard();
 
-		panel2.setBorder(new CardBorder());
-		panel2.setBackground(Color.DARK_GRAY);
-		panel2.add(contents);
-		panel.add(panel2);
 		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);
@@ -58,6 +60,7 @@ public class CardBorderDemo implements Runnable {
 		JPanel title = makeTitle();
 		panel.add(title, BorderLayout.NORTH);
 		panel.add(makeContents(), BorderLayout.CENTER);
+		panel.setBorder(new CardBorder());
 		return panel;
 	}
 	
