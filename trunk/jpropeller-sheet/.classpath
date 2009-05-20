@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="demo"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jpropeller"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jpropeller-tango-icons"/>
+	<classpathentry kind="lib" path="/jpropeller/lib/forms-1.2.1.jar" sourcepath="/jpropeller/libsrc/forms-1.2.1-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
