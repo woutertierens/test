@@ -53,7 +53,7 @@ public class CardBorder extends AbstractBorder {
 					yp = image.getHeight(null) - size;
 				}
 				
-				System.out.println("x " + x + ", y " + y + ", xp "+ xp + ", yp " + yp);
+				//System.out.println("x " + x + ", y " + y + ", xp "+ xp + ", yp " + yp);
 				
 				tiles[x][y] = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D g = (Graphics2D)tiles[x][y].getGraphics();
