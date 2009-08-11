@@ -1,0 +1,77 @@
+The motivation for the JPropeller library comes mainly from thinking about how we handle changes to objects.
+
+One common and familiar concept is "immutability" - we say that something is Immutable when it never changes. 
+In a more detailed sense, the Immutable interface in jpropeller guarantees that if an object is Immutable, nothing about it will ever change in any detectible way - the result of calling any methods of the object, or any methods of methods will always be the same. Lets say we have a Person:
+
+public interface Person extends Immutable {
+	public String getName();
+	public Address getAddress();
+}
+
+public interface Address extends Immutable {
+	public int getHouseNumber();
+	public String getStreet();
+}
+
+Now, Person is guaranteeing that calling person.getName() will always return an equal String value, and calling person.getAddress() will always return the same Address instance. In addition, because we are guaranteeing that all information reachable from a Person will stay the same, we know that Address must be Immutable too - so that calling person.getAddress().getHouseNumber() will always return the same int value.
+
+Examples of existing immutable data (although it is not nice enough to implement an interface to tell us!) include primitive wrapper types like Integer, Double etc, Strings, Colors etc. Some data really SHOULD be immutable, but isn't, like Date and Calendar. In JPropeller, anything implementing Immutable guarantees it is immutable.
+So what has this got to do with handling changes? Immutability is one (partial) answer to the difficulty of handling data that changes - we simply stop the data from ever changing. This solves the immediate problem, but can be difficult to work with - what happens if the person changes their name, or moves house? Sometimes we can just create a new Person with the new data, and throw the old Person away, but this is not always possible or practical. Hence we get to the core of JPropeller - the concept of a "Changeable" value.
+
+Changeable is another interface, and essentially it guarantees that whenever any data accessible from a Changeable instance changes, you can receive a notification. An Immutable object never changes, a Changeable object may change, but will tell you. When we add Changeable to the system, we have a complete strategy for dealing with changes. Say we are interested in an object X. We now know that:
+
+1) If X is Immutable (or is an immutable class that doesn't implement Immutable, like Double, String etc.) we do not need to worry about changes - the value will never change in any detectible way.
+
+2) If X is Changeable, we can simply add ourselves as a listener, and be notified whenever it changes, so we can respond appropriately, for example by updating a GUI, etc.
+
+3) If X is neither Immutable nor Changeable, we may be in trouble. However we may also be able to access X via a Changeable Y - in this case we know that Y will tell us when X changes, since X is data accessible from Y. For example, consider a Changeable Y that has a method "List<String> getList()". The List returned by that method is not Changeable or Immutable, but we know from the contract for the Changeable Y that if we listen to Y, we will receive a notification whenever that List changes.
+
+Generally, data models in JPropeller consist ENTIRELY of Changeable and Immutable data, so every item of data is either incapable of changing, or can be listened to, to detect any changes. Occasionally (generally for performance reasons), data may not be Changeable or Immutable - in this case the data should be referenced via a Changeable, and checked when that Changeable changes. An example is when Lists are used - generally these lists will be immutable, but it is hard to mark them as such. In this case, the most convenient Changeable that references the List should be watched.
+
+In general terms, the above discussion covers how to use JPropeller - you can fairly easily build systems that contain changing data, and keep displays of that data etc. up to date simply by listening to Changeables. The rules 1 to 3 above show how to deal with any type of data.
+
+More specifically, changes are handled in two ways, depending on where they occur in the data system - changes are first spread through a Model layer that contains all data, then a View layer is notified of the complete set of changes afterwards. The Model layer is further split into two partitions - hence the entire system consists of:
+
+DataModel - This layer contains the actual data of interest to the application. It should contain no "presentation" data, and has no knowledge of the user interface, etc.
+
+ViewModel - This layer contains the state of the view layer. For example, which elements are selected in a given list or table, which pane is shown in a tabbed pane, etc. This layer also contains the References used by Views to track which data they are displaying, and to handle the relationships between the elements of data shown by different Views.
+
+View - This layer consists of View implementations, each displaying the value of a Reference. This is often a Swing GUI, although any GUI or text interface etc. will be in this layer.
+
+In contrast to a standard Model-View-Controller (MVC) system, this system has no explicit Controller layer (this is similar to Swing). In addition, the Model layer is split into two partitions, the DataModel and the ViewModel. These partitions use the same code, and are both built from Changeable and Immutable data,
+they are only distinguished by their contents - the DataModel contains the universal data that would be used by any possible View of the data, whereas the ViewModel contains additional state for a particular View. Often, ViewModel data is transient.
+
+The ViewModel exists in order to allow the View to take advantage of features of the Model layer. For example, JPropeller allows for data to be accessed via Paths, using rules to navigate from one Changeable to another - for example, from a Person to their Address to the Address's street name. Using this facility in the ViewModel means we can set up a View "V" that displays a Person, but has a child View "W" that always displays that Person's Address's street name. If the Person has a new Address set, or the Address has its street name changed, that change is always reflected automatically. If we display a new Person in V, this automatically causes W to display the new person's street name.
+
+As mentioned above, changes are first propagated within the Model layer (including the DataModel AND ViewModel). This ensures that all Changeable data is up to date and in a consistent state before it is accessed by the View. When changes have been propagated, all affected listeners (ChangeListeners) are notified of all changes. For efficiency, it is possible for multiple changes to be coalesced into a single notification, allowing large batches of changes to be quickly processed. Often, ChangeListeners are notified in a specific way - for example, the default system will notify ChangeListeners in the Swing thread (EDT) to allow for simple implementation of Swing views.
+
+Many of the clever features of JPropeller are implemented in the model layer - for example, Changeables may have values calculated based on the values of other Changeables, and automatically updated to reflect those values. This becomes possible since the Changeables may listen to each other, updating themselves fully as changes are propagated through the Model layer. Hence the View layer sees a consistent state, with all values calculated consistently, when it is notified of a change. Other examples include Changeables that reflect data that is accessed from another Changeable by calling a series of methods - as in the example of a Path leading from 
+a Person, to their Address, to their street name.
+
+Some key implementations of Changeable are:
+
+Beans - these replace normal "JavaBeans", providing the value of each property via a Prop object (See below). Whenever any property value changes, listeners are notified. Even when a property of a property changes (for example the street name of an Address of a Person), listeners are notified. This change is a "deep" change, since it affects data that is accessed via a second Changeable, instead of directly.
+
+Props - these provide access to the values in the properties of Beans. Each Bean has a Prop per property. For example, to get a Person's name, we would get the name Prop of the Person, then get the value of that Prop:
+
+	public interface Person() {
+		Prop<String> name();
+	}
+	
+	//To get and set name:
+	person.name().get();
+	person.name().set("bob");
+
+		Different implementations of Prop provide for different behaviours - e.g. props that can be read and written, or just read, or props that have values calculated from other Changeable values, or looked up from other Changeables via a path.
+	
+CList, CMap and CSet - These are implementations of List, Map and Set where all data in the List, Map or Set is monitored, and listeners notified when data changes. As for Beans, this covers both shallow changes (e.g. when list.add(object) is called), or deep changes where a change is made to a Changeable held in the List - e.g. for a CList<Person> list, we might have list.get(0).name().set("alice");
+
+Using JPropeller is generally fairly easy - most data will be a Bean, and Beans can be easily implemented by extending BeanDefault (implementation without subclassing is very nearly as easy). Changeables are internally synchronized, so data can be read and written from any thread. Even so, ChangeListeners are notified in the Swing thread, so Views can be written easily in Swing - just respond to changes by reading the state you wish to display. The only requirement is that you do NOT attempt to change the state of Changeables when responding to changes - this is detected and causes a runtime exception, since otherwise it can cause cycles and unpredictable behaviour. Data structures created using Changeables may contain cycles (e.g. where Changeable X references Y, and Y references X). This is detected by the system, and dealt with efficiently. Where calculated values are used, it is still necessary to ensure that there are no cycles - you may not have a value X that is based on Y, and also have Y based on X - this obviously cannot be calculated, and will cause a stack overflow. (This may be detected and result in a runtime exception in future.)
+
+Views are provided to easily (and mostly automatically) display different common data types in Beans, Props and CList/CMap/CSet.
+
+Metadata
+
+Metadata may be attached to any Changeable, in the form of a mapping from String to String. This may be used to represent any attributes of the data that are relevant to how it is dealt with by the Changeable system, views etc., but which is NOT actual model data. Metadata is not really considered to be "state" of a Changeable - it should never be stored, only set programmatically. Equally, it shouldn't be displayed by views, there is no notification (deep or shallow) when it changes, etc. Notification of changes would be pointless, since metadata should only become relevant when a change to the actual data occurs - for example, an Undo system would listen for changes to the actual data, and might then check metadata to see whether the Changeables that have changed are suitable for undo/redo. A persistence system will only check the metadata as it reads the data it is saving, etc. Metadata should not be overused as a substitute for real data.
+
+Metadata values are mapped by String keys - there are some standard key values in the Changeable interface, for example for DO_NOT_UNDO and TRANSIENT. These are both examples of keys that are essentially "boolean" - if the key has any value mapped, then the associated attribute is considered to apply. DO_NOT_UNDO specifies data that it is not meaningful to undo - like logs or other accumulated data, data that comes from an external source or reflects the world (e.g. current time, state that is external to the software, etc.). TRANSIENT specifies data that should not be saved (or does not need to be saved). 
