@@ -23,6 +23,7 @@ import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.changeable.impl.ChangeablePropDefault;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
+import org.jpropeller.properties.impl.SuperClassProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.MapProp;
@@ -151,6 +152,11 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 
 	public <S extends Changeable> Prop<S> create(Class<S> clazz, String name, S value) {
 		return add(ChangeablePropDefault.create(name, clazz, value));
+	}
+
+	public <S> Prop<S> createSuper(Class<S> clazz,
+			String name, Prop<? extends S> core){
+		return add(new SuperClassProp<S>(PropName.create(name, clazz), core));
 	}
 
 	/////////////////////////////////////////////////////////////////

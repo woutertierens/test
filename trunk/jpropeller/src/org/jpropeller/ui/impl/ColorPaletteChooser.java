@@ -155,11 +155,11 @@ public class ColorPaletteChooser implements ActionListener {
 					saturation = 1f;
 					brightness = 1f;
 				} else if (var == 2){
-					saturation = 0.5f;
-					brightness = 1f;
+					saturation = 0.3f;
+					brightness = 0.8f;
 				} else if (var == 3){
-					saturation = 1f;
-					brightness = 0.5f;					
+					saturation = 0.8f;
+					brightness = 0.4f;					
 				}
 				for(int sh=0; sh<shades; sh++) {
 					float shFrac = sh/(float)shades;
