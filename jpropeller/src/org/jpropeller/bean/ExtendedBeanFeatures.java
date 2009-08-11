@@ -12,6 +12,7 @@ import org.jpropeller.properties.calculated.impl.ListCalculation;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
+import org.jpropeller.properties.impl.SuperClassProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.MapProp;
@@ -60,6 +61,18 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	public <S extends Enum<S>> PropImmutable<S> editable(
 			Class<S> clazz, String name, S value);
 
+	/**
+	 * Make a new {@link SuperClassProp} with a given
+	 * core prop and name, and add to this bean.
+	 * @param <S>		The type of value
+	 * @param clazz		The class of value
+	 * @param name		The name of the {@link Prop}
+	 * @param core		The core for the {@link SuperClassProp}
+	 * @return			The new {@link Prop}
+	 */
+	public <S> Prop<S> createSuper(Class<S> clazz,
+			String name, Prop<? extends S> core);
+	
 	/**
 	 * Make a new {@link Prop} with an {@link Changeable} value
 	 * and add to this bean

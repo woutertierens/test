@@ -164,6 +164,11 @@ public abstract class BeanDefault implements Bean {
 		return features.editable(clazz, name, value);
 	}
 
+	protected <S> Prop<S> createSuper(Class<S> clazz,
+			String name, Prop<? extends S> core) {
+		return features.createSuper(clazz, name, core);
+	}
+
 	protected <S extends Changeable> Prop<S> editable(
 			Class<S> clazz, String name, S value) {
 		return features.editable(clazz, name, value);
