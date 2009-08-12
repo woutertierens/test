@@ -3,6 +3,7 @@ package org.jpropeller.view.table.impl;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.list.selection.MultiSelectionReference;
@@ -75,7 +76,13 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 			}
 		};
 		
-		table = new JTableImproved(tableModel, null, new IntegersListSelectionModel(model.selection(), filter));
+		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
+		
+		table = new JTableImproved(tableModel);
+		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(model.selection(), filter, table);
+		table.setSelectionModel(listSelectionModel);
+		
+		table.setRowSorter(sorter);
 	}
 	
 	/**
