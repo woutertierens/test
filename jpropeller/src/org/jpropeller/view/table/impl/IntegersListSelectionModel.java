@@ -25,9 +25,6 @@ import org.jpropeller.view.View;
  * Changes are reflected both ways - when the selection model changes,
  * the {@link CList} is updated, and vice versa. Thus this is essentially
  * a {@link ListSelectionModel} as a {@link View} of a {@link CList}
- * 
- * TODO this does not handle filtering of the table, since then it cannot
- * select rows that have been hidden.
  */
 class IntegersListSelectionModel implements ListSelectionModel {
 
