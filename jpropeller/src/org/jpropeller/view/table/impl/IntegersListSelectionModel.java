@@ -112,7 +112,7 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 */
 	private void handleDelegateChange() {
 		
-		//Skip when we are actually adjusting delegate, so we
+		//Skip when we are actually adjusting delegate in this class, so we
 		//don't respond to our own changes.
 		if (adjustingDelegate) return;
 		

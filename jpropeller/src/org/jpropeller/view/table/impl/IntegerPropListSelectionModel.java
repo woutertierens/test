@@ -45,6 +45,8 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 */
 	private JTable table;
 
+	private boolean adjustingDelegate = false;
+
 	/**
 	 * Create an {@link IntegerPropListSelectionModel}
 	 * 
@@ -95,44 +97,51 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 * Respond to a change to the delegate {@link ListSelectionModel}
 	 */
 	private void handleDelegateChange() {
+		
+		//Skip when we are actually adjusting delegate in this class, so we
+		//don't respond to our own changes.
+		if (adjustingDelegate) return;
+		
 		//Update state of prop to match selection delegate, if possible,
 		//or update delegate to match prop otherwise.
 		
 		//If we can set selection, update the prop to match the delegate
 		if (setFilter.canSet()) {
-			updatePropRunnable.run();
-			
+			int index = table.convertRowIndexToModel(delegate.getMinSelectionIndex());
+			if (indexProp.get() != index) {
+				indexProp.set(index);
+			} 
 		//If we are ignoring changes to the delegate, then we need to 
 		//revert the delegate back to mirroring the prop
 		} else {
 			handlePropChange();
 		}
 	}
-	private Runnable updatePropRunnable = new Runnable() {
-		@Override
-		public void run() {
-			int index = table.convertRowIndexToModel(delegate.getMinSelectionIndex());
-			if (indexProp.get() != index) {
-				indexProp.set(index);
-			} 
-		}
-	};
 	
 	/**
 	 * Respond to a change to the prop  
 	 */
 	private void handlePropChange() {
-		int index = table.convertRowIndexToView(indexProp.get());
-		//TODO Only select a row if it is visible
-		//if (tableRow != -1) {
-
-		//If necessary, update the delegate to match the indexProp
-		if (delegate.getMinSelectionIndex() != index) {
-			if (index >= 0) {
-				delegate.setSelectionInterval(index, index);				
-			} else {
-				delegate.clearSelection();
+		adjustingDelegate = true;
+		try {
+	
+			int index = table.convertRowIndexToView(indexProp.get());
+	
+			//Note that index may be -1 if the model row is not visible
+			//in the table, due to filtering. However this still works since
+			//index = -1 is used to indicate no selection, and will be handled
+			//appropriately.
+	
+			//If necessary, update the delegate to match the indexProp
+			if (delegate.getMinSelectionIndex() != index) {
+				if (index >= 0) {
+					delegate.setSelectionInterval(index, index);				
+				} else {
+					delegate.clearSelection();
+				}
 			}
+		} finally {
+			adjustingDelegate = false;
 		}
 	}
 
