@@ -51,55 +51,6 @@ public class SpreadsheetTableView<T> implements TableView {
 	//private static final Cursor CURSOR;
 	private static final Color selectionBackground = new Color(155, 155, 200, 100);
 	
-	/*static {
-		int s = 16;
-		BufferedImage cursorImg = new BufferedImage(s+2, s+2, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = cursorImg.createGraphics();
-		Path2D.Float path = new Path2D.Float();
-		
-		int in = 4;
-		int out = in+1;
-		
-		path.moveTo(in, 0);
-		
-		path.lineTo(s-out, 0);
-		path.lineTo(s-out, in);
-		path.lineTo(s-1, in);
-		path.lineTo(s-1, s-out);
-		path.lineTo(s-out, s-out);
-		
-		path.lineTo(s-out, s-1);
-		path.lineTo(in, s-1);
-		path.lineTo(in, s-out);
-		path.lineTo(0, s-out);
-		path.lineTo(0, in);
-		path.lineTo(in, in);
-		path.closePath();
-		
-		g.setColor(Color.white);
-		g.fill(path);
-		
-		g.setColor(Color.black);
-		g.draw(path);
-		
-		g.setColor(Color.darkGray);
-		g.drawLine(s-in, s-in, s, s-in);
-		g.drawLine(s-in, s-in, s-in, s);
-		
-		g.drawLine(s, out, s, s-in);
-		g.drawLine(out, s, s-in, s);
-		
-		g.drawLine(1, s-in, in, s-in);
-		g.drawLine(s-in, 1, s-in, in);
-		
-		
-		
-		g.dispose();
-		CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(8, 8), "Spreadsheet");	
-	}*/
-	
-	
-	
 	/**
 	 * Make a new {@link SpreadsheetTableView}
 	 * @param tableModel		The table model to be displayed
@@ -243,30 +194,10 @@ public class SpreadsheetTableView<T> implements TableView {
 			public void columnSelectionChanged(ListSelectionEvent e) {
 				table.getTableHeader().repaint();
 			}
-		
-			@Override
-			public void columnRemoved(TableColumnModelEvent e) {
-				// TODO Auto-generated method stub
-		
-			}
-		
-			@Override
-			public void columnMoved(TableColumnModelEvent e) {
-				// TODO Auto-generated method stub
-		
-			}
-		
-			@Override
-			public void columnMarginChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
-		
-			}
-		
-			@Override
-			public void columnAdded(TableColumnModelEvent e) {
-				// TODO Auto-generated method stub
-		
-			}
+			@Override public void columnRemoved(TableColumnModelEvent e) {}
+			@Override public void columnMoved(TableColumnModelEvent e) {}
+			@Override public void columnMarginChanged(ChangeEvent e) {}
+			@Override public void columnAdded(TableColumnModelEvent e) {}
 		});
 		
 		table.setGridColor(Color.lightGray);
@@ -313,45 +244,33 @@ public class SpreadsheetTableView<T> implements TableView {
 		this(new ListTableModel<T>(model, rowView));
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#getDefaultEditor(java.lang.Class)
-	 */
+	@Override
 	public TableCellEditor getDefaultEditor(Class<?> columnClass) {
 		return table.getDefaultEditor(columnClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#getDefaultRenderer(java.lang.Class)
-	 */
+	@Override
 	public TableCellRenderer getDefaultRenderer(Class<?> columnClass) {
 		return table.getDefaultRenderer(columnClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#setDefaultEditor(java.lang.Class, javax.swing.table.TableCellEditor)
-	 */
+	@Override
 	public void setDefaultEditor(Class<?> columnClass, TableCellEditor editor) {
 		table.setDefaultEditor(columnClass, editor);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#setDefaultRenderer(java.lang.Class, javax.swing.table.TableCellRenderer)
-	 */
+	@Override
 	public void setDefaultRenderer(Class<?> columnClass,
 			TableCellRenderer renderer) {
 		table.setDefaultRenderer(columnClass, renderer);
 	}
 	
-    /* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#setRowHeight(int)
-	 */
+	@Override
     public void setRowHeight(int rowHeight) {
     	table.setRowHeight(rowHeight);
     }
 	
-    /* (non-Javadoc)
-	 * @see org.jpropeller.view.table.impl.TableView#removeHeader()
-	 */
+	@Override
     public void removeHeader() {
     	table.setTableHeader(null);
     }
