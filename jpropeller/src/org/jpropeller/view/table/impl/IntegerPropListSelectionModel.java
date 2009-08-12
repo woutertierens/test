@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -14,8 +15,9 @@ import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 
 /**
- * A {@link ListSelectionModel} that uses the {@link Integer} value of
- * a {@link Prop} as the single selected index.
+ * A {@link ListSelectionModel} for {@link JTable} row selection,
+ * that uses the {@link Integer} value of a {@link Prop} as the 
+ * single selected index.
  */
 class IntegerPropListSelectionModel implements ListSelectionModel {
 
@@ -34,6 +36,11 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 * {@link ListSelectionModel} will be passed through to the indexProp, or ignored.
 	 */
 	private SelectionSetFilter setFilter;
+	
+	/**
+	 * The table we are working with, so we can translate row indices allowing for sorting
+	 */
+	private JTable table;
 
 	/**
 	 * Create an {@link IntegerPropListSelectionModel}
@@ -44,11 +51,15 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 * 						whenever an attempt is made to set a new selection
 	 * 						 - if this returns true, the selection is set,
 	 * 						otherwise the attempt is ignored 
+	 * @param table			The {@link JTable} we are working with. Must be the
+	 * 						table with which this model is used.
 	 */
-	IntegerPropListSelectionModel(Prop<Integer> indexProp, SelectionSetFilter setFilter) {
+	IntegerPropListSelectionModel(Prop<Integer> indexProp, SelectionSetFilter setFilter, JTable table) {
 		super();
 		this.indexProp = indexProp;
 		this.setFilter = setFilter;
+		this.table = table;
+		
 		indexProp.features().addListener(new ChangeListener() {
 			@Override
 			public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
@@ -97,7 +108,7 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	private Runnable updatePropRunnable = new Runnable() {
 		@Override
 		public void run() {
-			int index = delegate.getMinSelectionIndex();
+			int index = table.convertRowIndexToModel(delegate.getMinSelectionIndex());
 			if (indexProp.get() != index) {
 				indexProp.set(index);
 			} 
@@ -108,7 +119,7 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 * Respond to a change to the prop  
 	 */
 	private void handlePropChange() {
-		int index = indexProp.get();
+		int index = table.convertRowIndexToView(indexProp.get());
 		//If necessary, update the delegate to match the indexProp
 		if (delegate.getMinSelectionIndex() != index) {
 			if (index >= 0) {

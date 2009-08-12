@@ -78,6 +78,17 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 		
 		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
 		
+		//TODO this currently causes a problem, since it is not possible to make the delegate
+		//selection match the prop selection when the prop selection contains indices that are
+		//filtered out of the table. Need a solution to this before any filtering can be used.
+//		sorter.setRowFilter(new RowFilter<FiringTableModel, Integer>() {
+//			@Override
+//			public boolean include(
+//					Entry<? extends FiringTableModel, ? extends Integer> entry) {
+//				return entry.getIdentifier() % 2 == 0;
+//			}
+//		});
+		
 		table = new JTableImproved(tableModel);
 		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(model.selection(), filter, table);
 		table.setSelectionModel(listSelectionModel);
