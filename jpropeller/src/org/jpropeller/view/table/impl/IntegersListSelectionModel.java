@@ -21,10 +21,13 @@ import org.jpropeller.view.View;
 
 /**
  * A {@link ListSelectionModel} that uses the {@link Integer}s in
- * a {@link CList} of {@link Integer} as the selected indices.
+ * a {@link CCollection} of {@link Integer} as the selected indices.
  * Changes are reflected both ways - when the selection model changes,
  * the {@link CList} is updated, and vice versa. Thus this is essentially
  * a {@link ListSelectionModel} as a {@link View} of a {@link CList}
+ * 
+ * TODO this does not handle filtering of the table, since then it cannot
+ * select rows that have been hidden.
  */
 class IntegersListSelectionModel implements ListSelectionModel {
 
@@ -40,7 +43,7 @@ class IntegersListSelectionModel implements ListSelectionModel {
 
 	/**
 	 * Maintain an up to date mirror of the delegate's selection as a set
-	 * of integers. It's a shame we have to do this, but we need to use
+	 * of integers in MODEL numbering. It's a shame we have to do this, but we need to use
 	 * a delegate to inherit the various weird behaviour of ListSelectionModel,
 	 * so we must accept a little extra memory use.
 	 * Sorting means that if we are handling a CList prop, we put the
