@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -52,6 +53,11 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 * {@link ListSelectionModel} will be passed through to the indexProp, or ignored.
 	 */
 	private SelectionSetFilter setFilter;
+	
+	/**
+	 * The table we are working with, so we can translate row indices allowing for sorting
+	 */
+	private JTable table;
 
 	/**
 	 * Create an {@link IntegersListSelectionModel}
@@ -63,10 +69,14 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 * 						 - if this returns true, the selection is set,
 	 * 						otherwise the attempt is ignored 
 	 */
-	IntegersListSelectionModel(Prop<? extends CCollection<Integer>> indicesProp, SelectionSetFilter setFilter) {
+	IntegersListSelectionModel(
+			Prop<? extends CCollection<Integer>> indicesProp, 
+			SelectionSetFilter setFilter,
+			JTable table) {
 		super();
 		this.indicesProp = indicesProp;
 		this.setFilter = setFilter;
+		this.table = table;
 
 		indicesProp.features().addListener(new ChangeListener() {
 			@Override
@@ -103,7 +113,7 @@ class IntegersListSelectionModel implements ListSelectionModel {
 		if (!delegate.isSelectionEmpty()) {
 			for (int i = delegate.getMinSelectionIndex(); i <= delegate.getMaxSelectionIndex(); i++) {
 				if (delegate.isSelectedIndex(i)) {
-					selection.add(i);
+					selection.add(table.convertRowIndexToModel(i));
 				}
 			}
 		}
@@ -147,7 +157,8 @@ class IntegersListSelectionModel implements ListSelectionModel {
 			delegate.clearSelection();
 			
 			for (Integer i : indicesProp.get()) {
-				delegate.addSelectionInterval(i, i);
+				int tableRow = table.convertRowIndexToView(i);
+				delegate.addSelectionInterval(tableRow, tableRow);
 			}
 			
 			//Restore the original anchor if it is still selected
