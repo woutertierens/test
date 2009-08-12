@@ -18,6 +18,9 @@ import org.jpropeller.properties.change.Changeable;
  * A {@link ListSelectionModel} for {@link JTable} row selection,
  * that uses the {@link Integer} value of a {@link Prop} as the 
  * single selected index.
+ * 
+ * TODO this does not handle filtering of the table, since then it cannot
+ * select rows that have been hidden.
  */
 class IntegerPropListSelectionModel implements ListSelectionModel {
 
@@ -120,6 +123,9 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 	 */
 	private void handlePropChange() {
 		int index = table.convertRowIndexToView(indexProp.get());
+		//TODO Only select a row if it is visible
+		//if (tableRow != -1) {
+
 		//If necessary, update the delegate to match the indexProp
 		if (delegate.getMinSelectionIndex() != index) {
 			if (index >= 0) {
