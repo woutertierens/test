@@ -62,6 +62,8 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 */
 	private JTable table;
 
+	private boolean adjustingDelegate = false;
+	
 	/**
 	 * Create an {@link IntegersListSelectionModel}
 	 * 
@@ -113,6 +115,10 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 */
 	private void handleDelegateChange() {
 		
+		//Skip when we are actually adjusting delegate, so we
+		//don't respond to our own changes.
+		if (adjustingDelegate) return;
+		
 		//Refresh our selection set
 		selection.clear();
 		if (!delegate.isSelectionEmpty()) {
@@ -144,37 +150,42 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 */
 	private void handlePropChange() {
 
-		//StopWatch time = new StopWatch();
-
-		//If the index prop has actually changed to be different from the selection,
-		//then update the selection
-		if (indicesProp.get().size() != selection.size() || !indicesProp.get().containsAll(selection)) {
-			
-			//FIXME Can we find a more elegant way to do this?
-			
-			//Make change as an adjustment - this may make it more efficient (and also prevents this
-			//class from responding to the changes). Would be better to
-			//do this as a "batched" change, but it is hard to see how to do this
-			delegate.setValueIsAdjusting(true);
-
-			int originalAnchor = delegate.getAnchorSelectionIndex();
-			
-			delegate.clearSelection();
-			
-			for (Integer i : indicesProp.get()) {
-				int tableRow = table.convertRowIndexToView(i);
-				//Only select a row if it is visible
-				if (tableRow != -1) {
-					delegate.addSelectionInterval(tableRow, tableRow);
+		adjustingDelegate = true;
+		try {
+			//StopWatch time = new StopWatch();
+	
+			//If the index prop has actually changed to be different from the selection,
+			//then update the selection
+			if (indicesProp.get().size() != selection.size() || !indicesProp.get().containsAll(selection)) {
+				
+				//FIXME Can we find a more elegant way to do this?
+				
+				//Make change as an adjustment - this may make it more efficient (and also prevents this
+				//class from responding to the changes). Would be better to
+				//do this as a "batched" change, but it is hard to see how to do this
+				delegate.setValueIsAdjusting(true);
+	
+				int originalAnchor = delegate.getAnchorSelectionIndex();
+				
+				delegate.clearSelection();
+				
+				for (Integer i : indicesProp.get()) {
+					int tableRow = table.convertRowIndexToView(i);
+					//Only select a row if it is visible
+					if (tableRow != -1) {
+						delegate.addSelectionInterval(tableRow, tableRow);
+					}
 				}
+				
+				//Restore the original anchor if it is still selected
+				if (delegate.isSelectedIndex(originalAnchor)) {
+					delegate.setAnchorSelectionIndex(originalAnchor);
+				}
+				
+				delegate.setValueIsAdjusting(false);
 			}
-			
-			//Restore the original anchor if it is still selected
-			if (delegate.isSelectedIndex(originalAnchor)) {
-				delegate.setAnchorSelectionIndex(originalAnchor);
-			}
-			
-			delegate.setValueIsAdjusting(false);
+		} finally {
+			adjustingDelegate = false;
 		}
 		
 		//System.out.println("prop change took " + time.stop());
