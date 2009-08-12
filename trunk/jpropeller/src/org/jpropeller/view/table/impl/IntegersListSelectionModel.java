@@ -68,6 +68,8 @@ class IntegersListSelectionModel implements ListSelectionModel {
 	 * 						whenever an attempt is made to set a new selection
 	 * 						 - if this returns true, the selection is set,
 	 * 						otherwise the attempt is ignored 
+	 * @param table			The {@link JTable} we are working with. Must be the
+	 * 						table with which this model is used.
 	 */
 	IntegersListSelectionModel(
 			Prop<? extends CCollection<Integer>> indicesProp, 
@@ -158,7 +160,10 @@ class IntegersListSelectionModel implements ListSelectionModel {
 			
 			for (Integer i : indicesProp.get()) {
 				int tableRow = table.convertRowIndexToView(i);
-				delegate.addSelectionInterval(tableRow, tableRow);
+				//Only select a row if it is visible
+				if (tableRow != -1) {
+					delegate.addSelectionInterval(tableRow, tableRow);
+				}
 			}
 			
 			//Restore the original anchor if it is still selected

@@ -50,7 +50,8 @@ public class SingleSelectionListTableView<T> implements JView {
 			}
 		};
 		
-		table = new JTableImproved(tableModel, null, new IntegerPropListSelectionModel(model.selection(), filter));
+		table = new JTableImproved(tableModel);
+		table.setSelectionModel(new IntegerPropListSelectionModel(model.selection(), filter, table));
 	}
 
 	/**
