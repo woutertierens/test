@@ -12,6 +12,11 @@ import javax.swing.table.TableModel;
 public interface TableRowView<T> {
 
 	/**
+	 * Key for metadata flag to exclude a Prop from any {@link TableRowView}
+	 */
+	public final static String OMIT_FROM_TABLE_ROW_VIEW = "OMIT_FROM_TABLE_ROW_VIEW";
+	
+	/**
 	 * @return
 	 * 		The number of columns per object
 	 */
