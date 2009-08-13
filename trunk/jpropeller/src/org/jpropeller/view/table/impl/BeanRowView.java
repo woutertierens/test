@@ -1,5 +1,6 @@
 package org.jpropeller.view.table.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +32,20 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * @param bean		The bean to use as a "template"
 	 */
 	public BeanRowView(Bean bean) {
-		this(bean, PropUtils.buildNonGenericPropsList(bean));
+		this(bean, buildFilteredPropsList(bean));
 	}
 
+	private final static List<Prop<?>> buildFilteredPropsList(Bean bean) {
+		List<Prop<?>> list = PropUtils.buildNonGenericPropsList(bean);
+		List<Prop<?>> filtered = new ArrayList<Prop<?>>(list.size());
+		for (Prop<?> prop : list) {
+			if (!prop.features().hasMetadata(OMIT_FROM_TABLE_ROW_VIEW)) {
+				filtered.add(prop);
+			}
+		}
+		return filtered;
+	}
+	
 	//FIXME it would be nicer to use a list of propnames
 	//instead of props, but lists of PropName<? extends Prop<?>,?> are
 	//much harder to handle than List<Prop<?>>. There is no technical
