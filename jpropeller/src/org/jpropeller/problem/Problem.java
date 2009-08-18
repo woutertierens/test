@@ -42,7 +42,7 @@ public interface Problem extends Bean {
 	 * 
 	 * @return		{@link ProblemSeverity}
 	 */
-	Prop<ProblemSeverity> severity();
+	public Prop<ProblemSeverity> severity();
 
 	/**
 	 * A description of the problem in
@@ -50,7 +50,7 @@ public interface Problem extends Bean {
 	 * 
 	 * @return		Problem description
 	 */
-	Prop<String> description();
+	public Prop<String> description();
 
 	/**
 	 * The location of the problem in a
@@ -58,6 +58,6 @@ public interface Problem extends Bean {
 	 * 
 	 * @return		Problem location		
 	 */
-	Prop<String> location();
+	public Prop<String> location();
 	
 }
