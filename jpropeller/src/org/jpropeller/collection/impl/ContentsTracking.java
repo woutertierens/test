@@ -13,7 +13,7 @@ import org.jpropeller.properties.change.Changeable;
  */
 public class ContentsTracking<E> {
 	
-	ReferenceCounter refs = new ReferenceCounter();
+	ReferenceCounter<Object> refs = new ReferenceCounter<Object>();
 	Changeable listener;
 	
 	/**

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.ChangeSystem;
@@ -32,7 +33,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 	private List<UndoRedoStates> past = new LinkedList<UndoRedoStates>();
 	private List<UndoRedoStates> future = new LinkedList<UndoRedoStates>();
 	
-	private List<UndoSystemListener> listeners = new LinkedList<UndoSystemListener>();
+	private ReferenceCounter<UndoSystemListener> listeners = new ReferenceCounter<UndoSystemListener>();
 	
 	private boolean acting = false;
 	
@@ -339,12 +340,12 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 	@Override
 	public void addListener(UndoSystemListener listener) {
-		listeners.add(listener);
+		listeners.addReference(listener);
 	}
 
 	@Override
 	public void removeListener(UndoSystemListener listener) {
-		listeners.remove(listener);
+		listeners.removeReference(listener);
 	}
 	
 	private void fireUndone() {

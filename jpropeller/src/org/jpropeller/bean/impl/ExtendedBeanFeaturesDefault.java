@@ -177,7 +177,7 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		delegate.addListener(listener);
 	}
 
-	public List<Changeable> changeableListenerList() {
+	public Iterable<Changeable> changeableListenerList() {
 		return delegate.changeableListenerList();
 	}
 
@@ -206,7 +206,7 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		return delegate.iterator();
 	}
 
-	public List<ChangeListener> listenerList() {
+	public Iterable<ChangeListener> listenerList() {
 		return delegate.listenerList();
 	}
 

@@ -2,22 +2,25 @@ package org.jpropeller.collection.impl;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Counts references to objects using the actual identity of the referenced objects.
+ * Can be iterated to give referees
+ * @param <T>		The type of counted object 
  */
-public class ReferenceCounter {
+public class ReferenceCounter<T> implements Iterable<T> {
 	
 	private final static Integer ONE = 1;
-	Map<Object, Integer> referenceCounts;
-	Map<Object, Integer> umReferenceCounts;
+	Map<T, Integer> referenceCounts;
+	Map<T, Integer> umReferenceCounts;
 
 	/**
 	 * Make a reference counter
 	 */
 	public ReferenceCounter() {
-		referenceCounts = new IdentityHashMap<Object, Integer>();
+		referenceCounts = new IdentityHashMap<T, Integer>();
 		umReferenceCounts = Collections.unmodifiableMap(referenceCounts);		
 	}
 	
@@ -27,7 +30,7 @@ public class ReferenceCounter {
 	 * @return
 	 * 		reference counts
 	 */
-	public Map<Object, Integer> getReferenceCounts() {
+	public Map<T, Integer> getReferenceCounts() {
 		return umReferenceCounts;
 	}
 
@@ -52,7 +55,7 @@ public class ReferenceCounter {
 	 * 		True if the element was already present in the list (if it
 	 * had a reference count already), false otherwise.
 	 */
-	public boolean addReference(Object element) {
+	public boolean addReference(T element) {
 
 		//Current count
 		Integer count = referenceCounts.get(element);
@@ -87,7 +90,7 @@ public class ReferenceCounter {
 	 * (if it is not of the last copy of the element). False otherwise (if the
 	 * element is no longer present in the list)
 	 */
-	public boolean removeReference(Object element) {
+	public boolean removeReference(T element) {
 		
 		//Current count
 		Integer count = referenceCounts.get(element);
@@ -116,5 +119,14 @@ public class ReferenceCounter {
 				return true;
 			}
 		}
+	}
+
+	/**
+	 * Iterator over the referees - the objects that currently have a reference count
+	 * @return An iterator of referees 
+	 */
+	@Override
+	public Iterator<T> iterator() {
+		return umReferenceCounts.keySet().iterator();
 	}
 }

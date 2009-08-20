@@ -2,6 +2,7 @@ package org.jpropeller.util;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -83,7 +84,7 @@ public class GeneralUtils {
 	 * @return			A list with the entries
 	 */
 	public static <J> List<J> makeList(J... elements) {
-		List<J> list = new LinkedList<J>();
+		List<J> list = new ArrayList<J>(elements.length);
 		for (J input : elements){
 			list.add(input);
 		}
@@ -100,7 +101,7 @@ public class GeneralUtils {
 	 * @return						A list with the entries
 	 */
 	public static <J> List<J> makeList(J firstElement, J... additionalElements) {
-		List<J> list = new LinkedList<J>();
+		List<J> list = new ArrayList<J>(additionalElements.length + 1);
 		list.add(firstElement);
 		for (J input : additionalElements){
 			list.add(input);

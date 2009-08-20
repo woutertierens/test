@@ -23,10 +23,10 @@ import org.jpropeller.properties.change.impl.InternalChangeImplementation;
  */
 public class BeanFeaturesDefault extends ChangeableFeaturesDefault implements MutableBeanFeatures {
 
-	Map<PropName<?>, Prop<?>> map;
-	List<Prop<?>> list;
-	List<Prop<?>> umList;
-	Bean bean;
+	private final Map<PropName<?>, Prop<?>> map;
+	private final List<Prop<?>> list;
+	private final List<Prop<?>> umList;
+	private final Bean bean;
 	
 	/**
 	 * Create a new {@link BeanFeaturesDefault}
