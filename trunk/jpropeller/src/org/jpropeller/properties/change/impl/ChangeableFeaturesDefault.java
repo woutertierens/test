@@ -1,11 +1,10 @@
 package org.jpropeller.properties.change.impl;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -19,13 +18,9 @@ import org.jpropeller.system.Props;
 public class ChangeableFeaturesDefault implements ChangeableFeatures {
 
 	InternalChangeImplementation internalChangeImplementation;
-	
-	List<Changeable> changeableListeners = new LinkedList<Changeable>();
-	List<ChangeListener> listeners = new LinkedList<ChangeListener>();
 
-	//unmodifiable versions of lists, for external access
-	List<Changeable> umChangeableListeners = Collections.unmodifiableList(changeableListeners);
-	List<ChangeListener> umListeners = Collections.unmodifiableList(listeners);
+	ReferenceCounter<Changeable> changeableListeners = new ReferenceCounter<Changeable>();
+	ReferenceCounter<ChangeListener> listeners = new ReferenceCounter<ChangeListener>();
 
 	Map<String, String> annotations = null;
 	
@@ -50,7 +45,7 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void addChangeableListener(Changeable listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			changeableListeners.add(listener);
+			changeableListeners.addReference(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
@@ -60,7 +55,7 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void addListener(ChangeListener listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			listeners.add(listener);
+			listeners.addReference(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
@@ -70,7 +65,7 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void removeChangeableListener(Changeable listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			changeableListeners.remove(listener);
+			changeableListeners.removeReference(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
@@ -80,20 +75,20 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void removeListener(ChangeListener listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			listeners.remove(listener);
+			listeners.removeReference(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
 	}
 
 	@Override
-	public List<Changeable> changeableListenerList() {
-		return umChangeableListeners;
+	public Iterable<Changeable> changeableListenerList() {
+		return changeableListeners;
 	}
 
 	@Override
-	public List<ChangeListener> listenerList() {
-		return umListeners;
+	public Iterable<ChangeListener> listenerList() {
+		return listeners;
 	}
 
 	@Override

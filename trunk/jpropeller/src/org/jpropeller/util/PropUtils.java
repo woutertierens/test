@@ -1,6 +1,6 @@
 package org.jpropeller.util;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,8 +69,9 @@ public class PropUtils {
 	 * @return		A list of the names
 	 */
 	public static List<Prop<?>> buildNonGenericPropsList(Bean b) {
-		List<Prop<?>> props = new LinkedList<Prop<?>>();
-		for (Prop<?> g : b.features().getList()) {
+		List<Prop<?>> list = b.features().getList();
+		List<Prop<?>> props = new ArrayList<Prop<?>>(list.size());
+		for (Prop<?> g : list) {
 			if (!g.getName().isTGeneric()) {
 				props.add(g);
 			}

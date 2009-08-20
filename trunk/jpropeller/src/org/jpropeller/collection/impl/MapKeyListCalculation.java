@@ -1,7 +1,7 @@
 package org.jpropeller.collection.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,9 +33,10 @@ public class MapKeyListCalculation<K, V> implements Calculation<List<K>> {
 	@Override
 	public List<K> calculate() {
 		
+		Set<K> keySet = map.get().keySet();
 		//Make a list of keys
-		List<K> keyList = new LinkedList<K>();
-		for (K t : map.get().keySet()) {
+		List<K> keyList = new ArrayList<K>(keySet.size());
+		for (K t : keySet) {
 			keyList.add(t);
 		}
 		

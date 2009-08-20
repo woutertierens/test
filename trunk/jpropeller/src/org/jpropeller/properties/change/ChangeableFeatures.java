@@ -24,11 +24,11 @@ public interface ChangeableFeatures {
 	public void removeChangeableListener(Changeable listener);
 
 	/**
-	 * Get the current list of {@link Changeable} listeners
+	 * Get the current {@link Changeable} listeners
 	 * @return
-	 * 		Listener list
+	 * 		Listener iterable
 	 */
-	public List<Changeable> changeableListenerList();
+	public Iterable<Changeable> changeableListenerList();
 	
 	/**
 	 * Add a listener to be notified of changes to this {@link Changeable},
@@ -46,11 +46,11 @@ public interface ChangeableFeatures {
 	public void removeListener(ChangeListener listener);
 
 	/**
-	 * Get the current list of {@link ChangeListener}s
+	 * Get the current {@link ChangeListener}s
 	 * @return
-	 * 		Listener list
+	 * 		Listener iterable
 	 */
-	public List<ChangeListener> listenerList();
+	public Iterable<ChangeListener> listenerList();
 
 	/**
 	 * Notify this {@link Changeable} that another {@link Changeable} it is listening

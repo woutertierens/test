@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.concurrency.Responder;
 import org.jpropeller.concurrency.impl.CoalescingResponder;
 import org.jpropeller.properties.change.Change;
@@ -31,7 +32,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	private final static Logger logger = GeneralUtils.logger(ChangeSystemDefault.class);
 	
-	private List<ChangeSystemListener> changeSystemListeners = new LinkedList<ChangeSystemListener>();
+	private ReferenceCounter<ChangeSystemListener> changeSystemListeners = new ReferenceCounter<ChangeSystemListener>();
 	
 	/**
 	 * List of {@link Changeable}s that started changes, in order
@@ -399,12 +400,12 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void addChangeSystemListener(ChangeSystemListener listener) {
-		changeSystemListeners.add(listener);
+		changeSystemListeners.addReference(listener);
 	}
 
 	@Override
 	public void removeChangeSystemListener(ChangeSystemListener listener) {
-		changeSystemListeners.remove(listener);
+		changeSystemListeners.removeReference(listener);
 	}
 	
 	private void firePrepareChange(Changeable changed) {
