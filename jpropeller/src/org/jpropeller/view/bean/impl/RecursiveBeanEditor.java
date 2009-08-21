@@ -248,9 +248,11 @@ public class RecursiveBeanEditor<M extends Bean> implements JView, UpdatableSing
 		List<PropName<?>> newViewNameList = new LinkedList<PropName<?>>();
 		if (newModel != null) {
 			for (Prop<?> prop : newModel.features()) {
-				PropName<?> name = prop.getName();
-				if(factory.providesFor(name)) {
-					newViewNameList.add(name);					
+				if (!prop.features().hasMetadata(BeanEditor.NO_DISPLAY)) {
+					PropName<?> name = prop.getName();
+					if(factory.providesFor(name)) {
+						newViewNameList.add(name);					
+					}
 				}
 			}
 		}

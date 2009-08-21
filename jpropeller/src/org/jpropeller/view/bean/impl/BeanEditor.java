@@ -36,6 +36,11 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, ChangeListener {
 
+	/**
+	 * Metadata key to indicate props should not be displayed in this editor
+	 */
+	public final static String NO_DISPLAY = "org.jpropeller.view.bean.impl.NO_DISPLAY";
+	
 	private Reference<M> model;
 	
 	private PropViewFactory factory;
@@ -193,7 +198,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		if (newModel != null) {
 			for (Prop<?> prop : newModel.features()) {
 				PropName<?> name = prop.getName();
-				if (!name.isTGeneric()) {
+				if (!name.isTGeneric() && !prop.features().hasMetadata(NO_DISPLAY)) {
 					newViewNameList.add(name);					
 				}
 			}
