@@ -24,6 +24,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	
 	private List<Prop<?>> props;
 	private Bean bean;
+	private final boolean editable;
 
 	/**
 	 * Create a {@link BeanRowView} showing all
@@ -32,9 +33,20 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * @param bean		The bean to use as a "template"
 	 */
 	public BeanRowView(Bean bean) {
-		this(bean, buildFilteredPropsList(bean));
+		this(bean, buildFilteredPropsList(bean), true);
 	}
 
+	/**
+	 * Create a {@link BeanRowView} showing all
+	 * non-generic {@link Prop}s of the specified {@link Bean}
+	 * 
+	 * @param bean		The bean to use as a "template"
+	 * @param editable	True to enable editing of editable props, false to disable all editing
+	 */
+	public BeanRowView(Bean bean, boolean editable) {
+		this(bean, buildFilteredPropsList(bean), editable);
+	}
+	
 	private final static List<Prop<?>> buildFilteredPropsList(Bean bean) {
 		List<Prop<?>> list = PropUtils.buildNonGenericPropsList(bean);
 		List<Prop<?>> filtered = new ArrayList<Prop<?>>(list.size());
@@ -63,11 +75,13 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * 					to display for each bean - in essence 
 	 * 					these are "example" props, not the actual 
 	 * 					props to display
+	 * @param editable	True to enable editing of editable props, false to disable all editing
 	 */
-	public BeanRowView(Bean bean, List<Prop<?>> props) {
+	public BeanRowView(Bean bean, List<Prop<?>> props, boolean editable) {
 		super();
 		this.bean = bean;
 		this.props = props;
+		this.editable = editable;
 	}
 
 	/**
@@ -118,6 +132,9 @@ public class BeanRowView implements TableRowView<Bean> {
 
 	@Override
 	public boolean isEditable(Bean row, int column) {
+		//Not editable if all editing disables
+		if (!editable) return false;
+		
 		Prop<?> beanProp = findBeanProp(row, column);
 		
 		//Uneditable where prop does not exist in current bean
