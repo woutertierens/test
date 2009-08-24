@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -113,7 +114,7 @@ public class TaskDemo {
 		}
 		
 		@Override
-		public void run() {
+		public void respond(AtomicBoolean shouldCancel) {
 			Props.getPropSystem().getChangeSystem().acquire();
 			try {
 				Iterator<LotsOfProps> it = l.iterator();
