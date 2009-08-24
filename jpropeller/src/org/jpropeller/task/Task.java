@@ -4,12 +4,14 @@ import java.util.Set;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.IdentityHashSet;
+import org.jpropeller.concurrency.CancellableResponse;
 import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.Changeable;
 
 /**
  * <p>
- * A task triggered by changes in a set of {@link Changeable}s,
+ * A task is a {@link CancellableResponse} triggered by 
+ * changes in a set of {@link Changeable}s,
  * which executes based on information from just those
  * {@link Changeable}s.
  * </p>
@@ -40,7 +42,7 @@ import org.jpropeller.properties.change.Changeable;
  * </p>
  * 
  * <p>
- * Tasks are not informed of the changes that have occured,
+ * Tasks are not informed of the changes that have occurred,
  * and must actually query the state to check this. However they
  * can obviously assume that at least one of the {@link Changeable}s
  * they depend on has changed.
@@ -102,7 +104,7 @@ import org.jpropeller.properties.change.Changeable;
  * </ol>
  * </p>
  */
-public interface Task extends Runnable {
+public interface Task extends CancellableResponse {
 
 	/**
 	 * Get the set of properties used in the task
@@ -120,19 +122,5 @@ public interface Task extends Runnable {
 	 * 		The set of properties used
 	 */
 	public Set<? extends Changeable> getSources();
-	
-	/**
-	 * Run the task.
-	 * 
-	 * Method must only use state from a {@link Changeable} in
-	 * the set returned by {@link #getSources()}
-	 * 
-	 * This may be called from different threads, but never from
-	 * more than one thread at a time, and always from a thread
-	 * that may change {@link Changeable} state and may try
-	 * to call {@link ChangeSystem#acquire()}
-	 * 
-	 * See {@link Task} class docs for (much) more information.
-	 */
-	public void run();
+
 }

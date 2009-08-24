@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jpropeller.concurrency.impl.BackgroundResponder;
+import org.jpropeller.concurrency.impl.CancellingBackgroundResponder;
 import org.jpropeller.concurrency.impl.DaemonThreadFactory;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
@@ -30,7 +31,7 @@ public class TaskExecutor implements ChangeListener {
 	 */
 	ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThreadFactory.getSharedInstance());
 
-	private final BackgroundResponder responder;
+	private final CancellingBackgroundResponder responder;
 	private final Task task;
 	
 	/**
@@ -41,7 +42,7 @@ public class TaskExecutor implements ChangeListener {
 		this.task = task;
 		
 		//Responder decides when to run the task
-		this.responder = new BackgroundResponder(task, executor);
+		this.responder = new CancellingBackgroundResponder(task, executor);
 		
 		//Listen to each source changeable of the task, from a view
 		//level
