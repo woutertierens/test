@@ -18,6 +18,7 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.TableRowViewListener;
 import org.jpropeller.view.update.Updatable;
 import org.jpropeller.view.update.UpdateManager;
 
@@ -34,13 +35,15 @@ import org.jpropeller.view.update.UpdateManager;
  * @param <T> 
  * 		The type of data in the list
  */
-public class ListTableModel<T> extends AbstractTableModel implements FiringTableModel, ChangeListener, Updatable {
+public class ListTableModel<T> 	extends AbstractTableModel 
+								implements FiringTableModel, ChangeListener, Updatable, TableRowViewListener {
 
 	private Reference<? extends CList<T>> model;
 	private TableRowView<? super T> rowView;
 	
-	//Track whether we have had a complete change since last firing
+	//Track whether we have had a complete change and/or column change since last firing
 	private boolean completeChange = false;
+	private boolean columnChange = false;
 	
 	private UpdateManager updateManager;
 	private AtomicBoolean isFiring = new AtomicBoolean(false);
@@ -55,7 +58,7 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 	 * @param model
 	 * 		The model, a {@link Reference} to the {@link CList} we will display
 	 * @param rowView
-	 * 		The view of each row
+	 * 		The view of each row. SHould only be provided to ONE {@link ListTableModel}
 	 */
 	public ListTableModel(Reference<? extends CList<T>> model, TableRowView<? super T> rowView) {
 		this(model, rowView, false, "", 0);
@@ -84,6 +87,9 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 		updateManager.registerUpdatable(this);
 		
 		this.rowView = rowView;
+		
+		rowView.addListener(this);
+		
 		this.model = model;
 		
 		if (indexColumn) {
@@ -179,12 +185,17 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 	}
 
 	@Override
+	public void tableRowViewChanged(TableRowView<?> tableRowView) {
+		handleChange(true, true);
+	}
+
+	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		//FIXME fire finer-grained changes if possible
 		
 		//If the model has had a new instance set then we have a complete change
 		if (!changes.get(model.value()).sameInstances()) {
-			handleChange(true);
+			handleChange(true, false);
 			
 		//If the model still points to the same list instance, see what change it has had
 		} else {
@@ -192,19 +203,23 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 			//only - we don't have more or less rows
 			Change change = changes.get(list());
 			if (change == null || change.sameInstances()) {
-				handleChange(false);
+				handleChange(false, false);
 			//If the list itself has been edited, fire a change to number of rows
 			} else {
-				handleChange(true);
+				handleChange(true, false);
 			}
 		}
 	}
 	
-	private synchronized void handleChange(boolean newChangeIsComplete) {
+	private synchronized void handleChange(boolean newChangeIsComplete, boolean newChangeOnColumns) {
 		//Track whether we have had a complete change since last firing
 		if (newChangeIsComplete) {
 			completeChange = true;
 		}
+		if (newChangeOnColumns) {
+			columnChange = true;
+		}
+
 		//Ask for an update
 		updateManager.updateRequiredBy(this);
 	}
@@ -216,7 +231,9 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 		isFiring.set(true);
 		
 		//Fire appropriate change
-		if (completeChange) {
+		if (columnChange) {
+			fireTableStructureChanged();
+		} else if (completeChange) {
 			fireTableDataChanged();			
 		} else {
 			fireTableRowsUpdated(0, getRowCount()-1);
@@ -226,6 +243,7 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 		
 		//We now haven't had a complete change since the last firing
 		completeChange = false;
+		columnChange = false;
 	}
 
 	@Override
@@ -237,6 +255,7 @@ public class ListTableModel<T> extends AbstractTableModel implements FiringTable
 	public void dispose() {
 		updateManager.deregisterUpdatable(this);
 		model.value().features().removeListener(this);
+		rowView.removeListener(this);
 	}
 	
 	/**

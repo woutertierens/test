@@ -14,6 +14,7 @@ import org.jpropeller.properties.exception.ReadOnlyException;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.PropUtils;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.TableRowViewListener;
 
 /**
  * A {@link TableRowView} of {@link Bean} instances
@@ -174,6 +175,20 @@ public class BeanRowView implements TableRowView<Bean> {
 				logger.warning("BeanRowView got incorrect value, expecting " + ed.getName().getPropClass() + ", but got value '" + value + "' of " + value.getClass());
 			}
 		}
+	}
+
+	@Override
+	public void addListener(TableRowViewListener listener) {
+		//View is immutable, no changes
+	}
+
+	@Override
+	public void removeListener(TableRowViewListener listener) {
+		//View is immutable, no changes
+	}
+
+	@Override
+	public void dispose() {
 	}
 
 }

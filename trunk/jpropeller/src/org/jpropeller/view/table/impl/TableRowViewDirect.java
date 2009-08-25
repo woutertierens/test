@@ -1,6 +1,7 @@
 package org.jpropeller.view.table.impl;
 
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.TableRowViewListener;
 
 /**
  * A {@link TableRowView} that displays a single
@@ -56,5 +57,18 @@ public class TableRowViewDirect<T> implements TableRowView<T> {
 	public void setColumn(T row, int column, Object value) {
 		//Not editable
 	}
+	
+	@Override
+	public void addListener(TableRowViewListener listener) {
+		//View is immutable, no changes
+	}
 
+	@Override
+	public void removeListener(TableRowViewListener listener) {
+		//View is immutable, no changes
+	}
+	
+	@Override
+	public void dispose() {
+	}
 }
