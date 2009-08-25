@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.jpropeller.bean.Bean;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -116,10 +117,11 @@ public class FlexibleView implements JView, ChangeListener {
 		//changes. When a deep change occurred, it will be displayed by a
 		//sub view update
 		
-		//First see if the ref has changed at all
-		if (changes.containsKey(ref)) {
-			//Only update if the ref has a change to any instances
-			if (!changes.get(ref).sameInstances()) {
+		//First see if the ref value has changed at all
+		Prop<?> val = ref.value();
+		if (changes.containsKey(val)) {
+			//Only update if the value has a change to any instances
+			if (!changes.get(val).sameInstances()) {
 				updateManager.updateRequiredBy(this);
 			}
 		}

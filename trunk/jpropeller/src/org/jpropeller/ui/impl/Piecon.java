@@ -1,13 +1,13 @@
 package org.jpropeller.ui.impl;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.geom.Arc2D;
 
 import javax.swing.Icon;
@@ -26,6 +26,21 @@ public class Piecon implements Icon {
 	private final int border = 2;
 	private final int dotRadius;
 
+	
+	private final static Paint defaultFill = new Color(70, 153, 70);
+	private final static Paint defaultOutline = new Color(200, 200, 200);
+	
+	/**
+	 * Create a {@link Piecon} with default fill, stroke and outline
+	 * @param size		The icon width and height
+	 * @param border	The size of the border round the icon
+	 * @param dotRadius	The diameter of the dots
+	 * @param value		The value, from 0 to 1
+	 */
+	public Piecon(int size, int border, int dotRadius, double value) {
+		this(size, border, dotRadius, value, defaultFill, defaultOutline);
+	}
+	
 	/**
 	 * Create a {@link Piecon}
 	 * @param size		The icon width and height
@@ -34,9 +49,8 @@ public class Piecon implements Icon {
 	 * @param value		The value, from 0 to 1
 	 * @param fill		Fill paint 
 	 * @param outline 	Outline paint
-	 * @param stroke 	Stroke paint
 	 */
-	public Piecon(int size, int border, int dotRadius, double value, Paint fill, Paint outline, Stroke stroke) {
+	public Piecon(int size, int border, int dotRadius, double value, Paint fill, Paint outline) {
 		super();
 		this.size = size;
 		this.arcAngle = - (int)(value * 360);

@@ -174,6 +174,10 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		//have dispatched a change to a ChangeListener, and it has responded
 		//by attempting to make another change to a Changeable. This is illegal
 		//since it can cause loops, out of order changes, etc.
+		//NOTE we can check this without further locking since it
+		//is only checking for THIS thread holding the lock, so no
+		//other concurrent thread can affect this between us checking, and 
+		//acquiring the mainLock
 		if (dispatchingLock.isHeldByCurrentThread()) {
 			throw new IllegalArgumentException("Must not attempt to change a Changeable in response to a change - this can cause cycles and is prohibited.");
 		}
@@ -216,7 +220,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 		//If the initial has actually got an extended change, start recursive processing from initial
 		if (extendedInitialChange != null) { 
-			processListeners(initial, changed, change);
+			processListeners(changed, change);
 		}
 		
 		//Propagation is complete - we need to coalesce the currentChanges into allChanges
@@ -270,7 +274,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		}
 	}
 	
-	private void processListeners(List<Changeable> initial, Changeable changed, Change change) {
+	private void processListeners(Changeable changed, Change change) {
 		
 		//Process each listener
 		for (Changeable listener : changed.features().changeableListenerList()) {
@@ -297,7 +301,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 					
 					//If we have extended the change then notify listeners of the listener
 					if (extendedChange != null) {
-						processListeners(initial, listener, newChange);
+						processListeners(listener, newChange);
 					}
 				}
 				
@@ -307,25 +311,25 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	}
 	
 	/**
-	 * Extend the current change for a {@link Changeable} listener
+	 * Extend the current change for a {@link Changeable}
 	 * in the changes map.
 	 * This either extends the current change if there is one, OR
 	 * adds the new change if there is no current change.
-	 * @param listener
-	 * 		The listener whose change is to be extended
+	 * @param changeable
+	 * 		The {@link Changeable} whose {@link Change} is to be extended
 	 * @param newChange
-	 * 		The new change for the listener
+	 * 		The new {@link Change} for the {@link Changeable}
 	 * @param changes
-	 * 		The change map
+	 * 		The {@link Change} map
 	 * @return
 	 * 		If the change for the listener is extended, the
 	 * change it was extended to is returned.
 	 * If the existing change already covered the new change (so
 	 * no extension needs to take place), null is returned
 	 */
-	private static Change extendChange(Changeable listener, Change newChange, Map<Changeable, Change> changes) {
+	private static Change extendChange(Changeable changeable, Change newChange, Map<Changeable, Change> changes) {
 		//See if we have a current change for this listener
-		Change currentChange = changes.get(listener);
+		Change currentChange = changes.get(changeable);
 		
 		//Make the change that we will use for the listener - if
 		//we have no current change, just use the new one, otherwise
@@ -340,8 +344,8 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		//If we have extended the change (or we are using the new one directly)
 		//then put it in the map
 		if (changeToUse != null) {
-			//Put the new change for listener
-			changes.put(listener, changeToUse);
+			//Put the new change for changeable
+			changes.put(changeable, changeToUse);
 		}
 		
 		//Return the extended change if there is one, or null if the existing change is large enough
