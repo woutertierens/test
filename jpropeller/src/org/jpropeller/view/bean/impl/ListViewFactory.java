@@ -7,7 +7,6 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.reference.Reference;
@@ -15,6 +14,7 @@ import org.jpropeller.reference.impl.PathReferenceBuilder;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.TableRowViewListener;
 import org.jpropeller.view.table.impl.SingleSelectionListTableView;
 
 /**
@@ -53,16 +53,17 @@ public class ListViewFactory implements PropViewFactory {
 		final ListAndSelectionAndValueReference<?> ref = 
 			new ListAndSelectionAndValueReferenceDefault(pathProp, genericType);
 		
+		//FIXME Is this required, or can it be a normal row view
 		TableRowView<?> rowView = new TableRowView<?>(){
 		
 			@Override
 			public void setColumn(Object row, int column, Object value) {
-				((ListProp)model.value().get().features().getUnsafe(displayedName)).set(ref.selection().get().intValue(), value);
+				//((ListProp)model.value().get().features().getUnsafe(displayedName)).set(ref.selection().get().intValue(), value);
 			}
 		
 			@Override
 			public boolean isEditable(Object row, int column) {
-				return true;
+				return false;
 			}
 		
 			@Override
@@ -84,6 +85,19 @@ public class ListViewFactory implements PropViewFactory {
 			public Object getColumn(Object row, int column) {
 				return row;
 			}
+			@Override
+			public void addListener(TableRowViewListener listener) {
+				//View is immutable, no changes
+			}
+
+			@Override
+			public void removeListener(TableRowViewListener listener) {
+				//View is immutable, no changes
+			}
+			@Override
+			public void dispose() {
+			}
+
 		};
 		
 

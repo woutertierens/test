@@ -19,6 +19,7 @@ import org.jpropeller.system.Props;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.TableRowViewListener;
 import org.jpropeller.view.table.impl.ListTableModel;
 import org.jpropeller.view.update.Updatable;
 import org.jpropeller.view.update.UpdateManager;
@@ -43,13 +44,15 @@ import org.jpropeller.view.update.UpdateManager;
  * @param <V>	The type of value
  * @param <L>	The type of {@link CList} in the map 
  */
-public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableModel implements ChangeListener, Updatable {
+public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableModel 
+		implements ChangeListener, Updatable, TableRowViewListener {
 
 	private MapListReference<K, V, L> model;
 	private TableRowView<? super V> rowView;
 	
 	//Track whether we have had a complete change since last firing
 	private boolean completeChange = false;
+	private boolean columnChange = false;
 	
 	private UpdateManager updateManager;
 	private AtomicBoolean isFiring = new AtomicBoolean(false);
@@ -110,6 +113,9 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		updateManager.registerUpdatable(this);
 		
 		this.rowView = rowView;
+		
+		rowView.addListener(this);
+		
 		this.model = model;
 		this.indexBase = indexBase;
 		
@@ -336,6 +342,14 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 	}
 
 	@Override
+	public void tableRowViewChanged(TableRowView<?> tableRowView) {
+		columnChange = true;
+
+		//Ask for an update
+		updateManager.updateRequiredBy(this);
+	}
+	
+	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		//FIXME fire finer-grained changes if possible
 		handleChange();
@@ -378,7 +392,9 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		isFiring.set(true);
 		
 		//Fire appropriate change
-		if (completeChange) {
+		if (columnChange) {
+			fireTableStructureChanged();
+		} else if (completeChange) {
 			fireTableDataChanged();			
 		} else {
 			fireTableRowsUpdated(0, getRowCount()-1);
@@ -388,6 +404,7 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		
 		//We now haven't had a complete change since the last firing
 		completeChange = false;
+		columnChange = false;
 	}
 
 	/**
@@ -404,6 +421,7 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 	public void dispose() {
 		updateManager.deregisterUpdatable(this);
 		model.features().removeListener(this);
+		rowView.removeListener(this);
 	}
 	
 }

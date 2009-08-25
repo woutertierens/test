@@ -5,7 +5,7 @@ import javax.swing.table.TableModel;
 /**
  * Provides data for a line of a {@link TableModel}, from objects of a given
  * type
- *
+ * 
  * @param <T>
  * 	The type of objects to be viewed in a table
  */
@@ -78,4 +78,22 @@ public interface TableRowView<T> {
 	 */
 	public void setColumn(T row, int column, Object value);
 
+	/**
+	 * Add a listener to be notified when any aspect of 
+	 * the {@link TableRowView} has changed
+	 * @param listener		The listener
+	 */
+	public void addListener(TableRowViewListener listener);
+	
+	/**
+	 * Remove a listener, no longer to be notified when any aspect of 
+	 * the {@link TableRowView} has changed
+	 * @param listener		The listener
+	 */
+	public void removeListener(TableRowViewListener listener);
+	
+	/**
+	 * Dispose of the view, when it will no longer be used
+	 */
+	public void dispose();
 }
