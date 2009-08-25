@@ -75,8 +75,10 @@ public final class ChangeDefault implements Change {
 		//Extended change retains same instances if both this and the existing change retain same instances
 		ChangeDefault extendedChange = ChangeDefault.instance(initial() || existing.initial(), sameInstances() && existing.sameInstances());
 		
-		//If there is no extension of change, then return null
-		if (this == extendedChange) {
+		//If there is no extension of change (that is, if the extended change is the same as the
+		//existing change), then return null
+		//Note, == is correct, since there are only ever 4 instances, one for each possible combination of the two flags
+		if (existing == extendedChange) {
 			return null;
 			
 		//If an extension occurs, return the extended change
