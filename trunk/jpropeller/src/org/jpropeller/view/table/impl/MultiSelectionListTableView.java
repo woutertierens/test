@@ -5,7 +5,9 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
+import org.jpropeller.collection.CCollection;
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.MultiSelectionReference;
 import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.CompletionException;
@@ -27,7 +29,6 @@ import org.jpropeller.view.table.TableView;
 public class MultiSelectionListTableView<T> implements JView, TableView {
 
 	JTable table;
-	MultiSelectionReference<T> model;
 	FiringTableModel tableModel;
 	
 	
@@ -49,21 +50,19 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 			String indexName,
 			int indexBase) {
 		
-		this(model, new ListTableModel<T>(model, rowView, indexColumn, indexName, indexBase));
+		this(new ListTableModel<T>(model, rowView, indexColumn, indexName, indexBase), model.selection());
 	}
 	
 	/**
 	 * Make a new {@link MultiSelectionListTableView}
-	 * @param model				The model to be displayed - references the list that will be displayed
-	 * 							as rows of a table
 	 * @param firingTableModel	The actual table model to display
+	 * @param selection			The prop giving selected indices
 	 */
 	public MultiSelectionListTableView(
-			MultiSelectionReference<T> model, 
-			FiringTableModel firingTableModel
+			FiringTableModel firingTableModel,
+			Prop<? extends CCollection<Integer>> selection
 			) {
 		
-		this.model = model;
 		this.tableModel = firingTableModel;
 		
 		//Only allow the selection to be set when the table model is NOT firing a change - 
@@ -79,7 +78,7 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
 		
 		table = new JTableImproved(tableModel);
-		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(model.selection(), filter, table);
+		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(selection, filter, table);
 		table.setSelectionModel(listSelectionModel);
 		
 		table.setRowSorter(sorter);
