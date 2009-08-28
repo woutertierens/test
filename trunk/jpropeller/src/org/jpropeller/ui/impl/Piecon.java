@@ -91,29 +91,6 @@ public class Piecon implements Icon {
 		g2.drawOval(x + border + dotRadius, y + border + dotRadius, circleDiameter, circleDiameter);
 		g2.setClip(clip);
 		
-		/*
-		g2.setPaint(fill);
-		for (int i = increments-1; i >=0; i--) {
-			if (i < count) {
-				double angle = - Math.PI/2 + (Math.PI * 2d / ((double)increments)) * i;
-				int dotX = x + (int)(Math.cos(angle) * radius) + offset;
-				int dotY = y + (int)(Math.sin(angle) * radius) + offset;
-				g2.fillOval(dotX, dotY, dotRadius * 2, dotRadius * 2);
-			}
-		}*/
-		
-		/*
-		Double arc = new Arc2D.Double(x + border, y + border, width-2*border, height-2*border,
-        		90, arcAngle, Arc2D.PIE);
-
-		g2.setPaint(fill);
-		g2.fill(arc);
-
-		g2.setStroke(stroke);
-		g2.setPaint(outline);
-		g2.draw(arc);
-		*/
-		
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
 	}
 
