@@ -345,7 +345,9 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 	@Override
 	public void removeListener(UndoSystemListener listener) {
-		listeners.removeReference(listener);
+		if (!listeners.removeReferenceUnchecked(listener)) {
+			logger.warning("Removed ChangeListener which was not registered.");
+		}
 	}
 	
 	private void fireUndone() {

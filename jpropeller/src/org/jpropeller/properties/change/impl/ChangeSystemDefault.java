@@ -409,7 +409,9 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void removeChangeSystemListener(ChangeSystemListener listener) {
-		changeSystemListeners.removeReference(listener);
+		if (!changeSystemListeners.removeReferenceUnchecked(listener)) {
+			logger.warning("Removed ChangeSystemListener which was not registered.");
+		}
 	}
 	
 	private void firePrepareChange(Changeable changed) {
