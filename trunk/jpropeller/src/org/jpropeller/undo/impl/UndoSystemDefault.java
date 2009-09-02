@@ -4,9 +4,9 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.ChangeSystem;
@@ -19,6 +19,7 @@ import org.jpropeller.undo.delegates.UndoDelegate;
 import org.jpropeller.undo.delegates.UndoDelegateSource;
 import org.jpropeller.undo.delegates.UndoDelegateSourceException;
 import org.jpropeller.util.GeneralUtils;
+import org.jpropeller.util.Listeners;
 
 /**
  * Default implementation of an undo system for {@link Changeable}s
@@ -33,7 +34,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 	private List<UndoRedoStates> past = new LinkedList<UndoRedoStates>();
 	private List<UndoRedoStates> future = new LinkedList<UndoRedoStates>();
 	
-	private ReferenceCounter<UndoSystemListener> listeners = new ReferenceCounter<UndoSystemListener>();
+	private Listeners<UndoSystemListener> listeners = new Listeners<UndoSystemListener>();
 	
 	private boolean acting = false;
 	
@@ -340,13 +341,13 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 	@Override
 	public void addListener(UndoSystemListener listener) {
-		listeners.addReference(listener);
+		listeners.add(listener);
 	}
 
 	@Override
 	public void removeListener(UndoSystemListener listener) {
-		if (!listeners.removeReferenceUnchecked(listener)) {
-			logger.warning("Removed ChangeListener which was not registered.");
+		if (!listeners.remove(listener)) {
+			logger.log(Level.FINE, "Removed UndoSystemListener which was not registered.", new Exception("Stack Trace"));
 		}
 	}
 	

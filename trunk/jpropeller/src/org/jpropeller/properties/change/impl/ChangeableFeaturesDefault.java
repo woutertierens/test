@@ -3,15 +3,16 @@ package org.jpropeller.properties.change.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.system.Props;
 import org.jpropeller.util.GeneralUtils;
+import org.jpropeller.util.Listeners;
 
 /**
  *	Default implementation of {@link ChangeableFeatures}, which handles
@@ -23,8 +24,8 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	
 	private final InternalChangeImplementation internalChangeImplementation;
 
-	private final ReferenceCounter<Changeable> changeableListeners = new ReferenceCounter<Changeable>();
-	private final ReferenceCounter<ChangeListener> listeners = new ReferenceCounter<ChangeListener>();
+	private final Listeners<Changeable> changeableListeners = new Listeners<Changeable>();
+	private final Listeners<ChangeListener> listeners = new Listeners<ChangeListener>();
 
 	private Map<String, String> annotations = null;
 	
@@ -49,7 +50,7 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void addChangeableListener(Changeable listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			changeableListeners.addReference(listener);
+			changeableListeners.add(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
@@ -59,7 +60,7 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void addListener(ChangeListener listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			listeners.addReference(listener);
+			listeners.add(listener);
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
 		}
@@ -69,8 +70,8 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void removeChangeableListener(Changeable listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			if (!changeableListeners.removeReferenceUnchecked(listener)) {
-				logger.warning("Removed Changeable listener which was not registered.");
+			if (!changeableListeners.remove(listener)) {
+				logger.log(Level.FINE, "Removed Changeable listener which was not registered.", new Exception("Stack Trace"));
 			}
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);
@@ -81,8 +82,8 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	public void removeListener(ChangeListener listener) {
 		Props.getPropSystem().getChangeSystem().prepareListenerChange(owner);
 		try {
-			if (!listeners.removeReferenceUnchecked(listener)) {
-				logger.warning("Removed ChangeListener which was not registered.");
+			if (!listeners.remove(listener)) {
+				logger.log(Level.FINE, "Removed ChangeListener which was not registered.", new Exception("Stack Trace"));
 			}
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeListenerChange(owner);

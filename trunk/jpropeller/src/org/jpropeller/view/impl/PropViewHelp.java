@@ -40,6 +40,9 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	private UpdateManager updateManager;
 	private Prop<T> viewedProp = null;
 	
+	//Track whether we have been disposed
+	private boolean disposed = false;
+	
 	/**
 	 * Make a {@link PropViewHelp}
 	 * 
@@ -164,6 +167,10 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	 * and events, so it can be garbage collected, etc.
 	 */
 	public void dispose() {
+		if (disposed) {
+			logger.fine("PropViewHelp already disposed.");
+		}
+		disposed = true;
 		updateManager.deregisterUpdatable(view);
 		model.value().features().removeListener(this);
 	}
@@ -205,6 +212,10 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	 */
 	public void setPropValue(T value) throws ReadOnlyException, InvalidValueException {
 		
+		if (disposed) {
+			logger.severe("setPropValue called after PropViewHelp disposed");
+		}
+
 		//Get the model's value - the bean we are viewing
 		M currentValue = model.value().get();
 		
