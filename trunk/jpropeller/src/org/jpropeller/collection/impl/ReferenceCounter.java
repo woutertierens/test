@@ -89,6 +89,8 @@ public class ReferenceCounter<T> implements Iterable<T> {
 	 * 		True if the element is still present after removing the reference,
 	 * (if it is not of the last copy of the element). False otherwise (if the
 	 * element is no longer present in the list)
+	 * 
+	 * @throws CCollectionRuntimeException	If there is no reference to the element.
 	 */
 	public boolean removeReference(T element) {
 		
@@ -121,6 +123,53 @@ public class ReferenceCounter<T> implements Iterable<T> {
 		}
 	}
 
+	/**
+	 * Remove a current reference to an element - this decrements the reference
+	 * count for the element, and removes the reference count from the map
+	 * if this reduces the reference count to 0
+	 * 
+	 * This version does NOT throw an exception if there is no current reference to
+	 * be removed, it just does nothing
+	 * 
+	 * The return is also different - it indicates whether the element had a reference
+	 * count BEFORE attempting to remove. 
+	 * 
+	 * @param element
+	 * 		The element for which to remove a reference
+	 * @return
+	 * 		True if the element is was had a reference count BEFORE attempting to remove.
+	 */
+	public boolean removeReferenceUnchecked(T element) {
+		
+		//Current count
+		Integer count = referenceCounts.get(element);
+		
+		//If there is no current count, do nothing
+		if (count == null) {
+			return false;
+			
+		//There is a current count, decrement
+		} else {
+			
+			//If count is non-positive, this is an error
+			if (count <= 0) {
+				throw new CCollectionRuntimeException("Non-positive reference count for element '" + element + "'");
+				
+			//If this is the last reference, then remove the
+			//mapping and return true, since the element was
+			//present
+			} else if (count == 1) {
+				referenceCounts.remove(element);
+				return true;
+				
+			//If there are further references, then just decrement the count
+			} else {
+				referenceCounts.put(element, count-1);				
+				return true;
+			}
+		}
+	}
+	
 	/**
 	 * Iterator over the referees - the objects that currently have a reference count
 	 * @return An iterator of referees 
