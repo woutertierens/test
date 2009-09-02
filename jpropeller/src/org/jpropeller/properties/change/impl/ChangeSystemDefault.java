@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jpropeller.collection.impl.ReferenceCounter;
 import org.jpropeller.concurrency.Responder;
 import org.jpropeller.concurrency.impl.CoalescingResponder;
 import org.jpropeller.properties.change.Change;
@@ -19,6 +19,7 @@ import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.ChangeSystemListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.util.GeneralUtils;
+import org.jpropeller.util.Listeners;
 
 /**
  * Default implementation of {@link ChangeSystem}
@@ -32,7 +33,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	private final static Logger logger = GeneralUtils.logger(ChangeSystemDefault.class);
 	
-	private ReferenceCounter<ChangeSystemListener> changeSystemListeners = new ReferenceCounter<ChangeSystemListener>();
+	private Listeners<ChangeSystemListener> changeSystemListeners = new Listeners<ChangeSystemListener>();
 	
 	/**
 	 * List of {@link Changeable}s that started changes, in order
@@ -404,13 +405,13 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void addChangeSystemListener(ChangeSystemListener listener) {
-		changeSystemListeners.addReference(listener);
+		changeSystemListeners.add(listener);
 	}
 
 	@Override
 	public void removeChangeSystemListener(ChangeSystemListener listener) {
-		if (!changeSystemListeners.removeReferenceUnchecked(listener)) {
-			logger.warning("Removed ChangeSystemListener which was not registered.");
+		if (!changeSystemListeners.remove(listener)) {
+			logger.log(Level.FINE, "Removed ChangeSystemListener which was not registered.", new Exception("Stack Trace"));
 		}
 	}
 	
