@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +44,16 @@ public class GeneralUtils {
 	 * 		The classes for which to enable finest logging
 	 */
 	public static void enableConsoleLogging(Class<?>... classes) {
+		System.out.println("Enabled console logging...");
+		
+		//Remove any existing handlers
+		Logger rootLogger = Logger.getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		for (Handler handler : handlers) {
+			rootLogger.removeHandler(handler);
+		}
+
+		//Add our logger
 		ConsoleHandler handler = new ConsoleHandler();
 		//handler.setFormatter(new SimpleFormatter());
 		handler.setLevel(Level.ALL);
