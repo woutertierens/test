@@ -280,8 +280,6 @@ public class RecursiveBeanEditor<M extends Bean> implements JView, UpdatableSing
 			}
 		}
 		
-		//logger.finest("  ->need to use new views");
-
 		//Dispose of the old views
 		for (JView oldView : subViews.values()) {
 			oldView.dispose();
