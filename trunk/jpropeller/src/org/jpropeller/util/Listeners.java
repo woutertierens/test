@@ -17,14 +17,14 @@ import org.jpropeller.collection.impl.ReferenceCounter;
  */
 public class Listeners<L> implements Iterable<L> {
 
-	private final ReferenceCounter<L> listeners = new ReferenceCounter<L>();
+	private ReferenceCounter<L> listeners;
 	
 	/**
 	 * Add a listener
 	 * @param listener
 	 */
 	public void add(L listener) {
-		listeners.addReference(listener);
+		listeners().addReference(listener);
 	}
 
 	/**
@@ -36,12 +36,17 @@ public class Listeners<L> implements Iterable<L> {
 	 * 				than added.
 	 */
 	public boolean remove(L listener) {
-		return listeners.removeReferenceUnchecked(listener);
+		return listeners().removeReferenceUnchecked(listener);
 	}
 
 	@Override
 	public Iterator<L> iterator() {
-		return listeners.iterator();
+		return listeners().iterator();
+	}
+	
+	private ReferenceCounter<L> listeners() {
+		if (listeners == null) listeners = new ReferenceCounter<L>();
+		return listeners;
 	}
 	
 //WEAK implementation
