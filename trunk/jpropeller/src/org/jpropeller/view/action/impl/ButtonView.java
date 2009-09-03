@@ -113,7 +113,8 @@ public class ButtonView<T> implements JView, SingleValueView<T> {
 	 * @return			A source of {@link ButtonView}s
 	 */
 	public static PropViewFactory asFactory(final Action ... actions) {
-		return PropViewAdaptor.factoryFor(asSource(actions));		
+		//Will accept any object
+		return PropViewAdaptor.factoryFor(asSource(actions), Object.class);		
 	}
 
 	@Override
