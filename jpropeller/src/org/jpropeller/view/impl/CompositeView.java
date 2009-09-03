@@ -15,10 +15,10 @@ import org.jpropeller.view.View;
  */
 public class CompositeView<C extends JComponent> implements JView {
 	
-	C component;
-	CompositeViewHelper helper;
-	List<View> views;
-	boolean selfNaming;
+	private final C component;
+	private final CompositeViewHelper helper;
+	private final boolean selfNaming;
+	private final Runnable disposeRunnable;
 
 	/**
 	 * Create a {@link CompositeView}
@@ -39,9 +39,34 @@ public class CompositeView<C extends JComponent> implements JView {
 			List<View> views,
 			C component,
 			boolean selfNaming) {
-		this.views = views;
+		this(views, component, selfNaming, null);
+	}
+	
+	/**
+	 * Create a {@link CompositeView}
+	 * 
+	 * @param views				The child views that together
+	 * 							form this view - they will be commited,
+	 * 							cancelled and disposed when this view
+	 * 							is, but are expected to update themselves.
+	 * @param component			The component used to display this view - 
+	 * 							generally this is formed from the components
+	 * 							of the child views, see {@link JView#getComponent()}
+	 * @param selfNaming		Whether the component is selfNaming,
+	 * 							see {@link JView#selfNaming()}
+	 * @param disposeRunnable	{@link Runnable} to be executed as
+	 * 							last stage of {@link #dispose()}, or
+	 * 							null if there is nothing to do
+	 */
+	public CompositeView(
+			List<View> views,
+			C component,
+			boolean selfNaming,
+			Runnable disposeRunnable) {
 		this.component = component;
+		this.selfNaming = selfNaming;
 		helper = new CompositeViewHelper(views);
+		this.disposeRunnable = disposeRunnable;
 	}
 
 
@@ -70,6 +95,9 @@ public class CompositeView<C extends JComponent> implements JView {
 	@Override
 	public void dispose() {
 		helper.dispose();
+		if (disposeRunnable != null) {
+			disposeRunnable.run();
+		}
 	}
 
 	@Override
