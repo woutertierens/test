@@ -12,7 +12,6 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.JViewSource;
 import org.jpropeller.view.UpdatableSingleValueView;
 import org.jpropeller.view.View;
-import org.jpropeller.view.primitive.impl.BooleanCheckboxEditor;
 
 /**
  * This will use an existing JView in the same way as a Prop view - 
@@ -42,16 +41,16 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 	}
 
 	/**
-	 * Create a {@link BooleanCheckboxEditor}
+	 * Create a {@link PropViewAdaptor}
 	 * 
 	 * @param model			The {@link Reference} for this {@link View} 
 	 * @param displayedName	The name of the displayed property 
 	 * @param viewSource	Supplies {@link View}s of type T
-	 * @return				A new{@link BooleanCheckboxEditor}
+	 * @return				A new {@link PropViewAdaptor}
 	 * 
 	 * @param <T>	The type of value in the viewed prop
 	 */
-	public static <T> PropViewAdaptor<T>  create(Reference<? extends Bean> model,
+	public static <T> PropViewAdaptor<T> create(Reference<? extends Bean> model,
 			PropName<T> displayedName, JViewSource<T> viewSource) {
 		return new PropViewAdaptor<T>(model, displayedName, viewSource);
 	}
@@ -100,11 +99,12 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 	 * through to {@link View}s from a {@link JViewSource},
 	 * using {@link PropViewAdaptor} instances
 	 * @param source	Supplies {@link View}s of type T
+	 * @param clazz		The class accepted by the JViewSource
 	 * @return			A factory for prop views
 	 * 
 	 * @param <T>		The type of viewed element in props
 	 */
-	public static final <T> PropViewFactory factoryFor(final JViewSource<T> source) {
+	public static final <T> PropViewFactory factoryFor(final JViewSource<T> source, final Class<T> clazz) {
 		return new PropViewFactory() {
 		
 			@SuppressWarnings("unchecked")
@@ -120,7 +120,7 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 
 			@Override
 			public boolean providesFor(PropName<?> displayedName) {
-				return !displayedName.isTGeneric();
+				return !displayedName.isTGeneric() && clazz.isAssignableFrom(displayedName.getPropClass());
 			}
 		};
 	}
