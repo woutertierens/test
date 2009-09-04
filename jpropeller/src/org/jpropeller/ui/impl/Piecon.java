@@ -12,6 +12,8 @@ import java.awt.geom.Arc2D;
 
 import javax.swing.Icon;
 
+import org.jpropeller.util.GeneralUtils;
+
 /**
  * An {@link Icon} containing a pie. The pie displays
  * a value from 0 to 1 by filling in dots from 0 to 360 degrees
@@ -27,8 +29,28 @@ public class Piecon implements Icon {
 	private final int dotRadius;
 
 	
-	private final static Paint defaultFill = new Color(70, 153, 70);
-	private final static Paint defaultOutline = new Color(200, 200, 200);
+	private final static Color defaultFill = new Color(70, 153, 70);
+	private final static Color defaultOutline = new Color(200, 200, 200);
+	
+	/**
+	 * Create a {@link Piecon} with default fill, stroke, outline, size,
+	 * border and dotradius. Icon will be 22x22 pixels.
+	 * Alpha of the Piecon is also specified, to allow for fading in/out.
+	 * @param alpha		Alpha for the Piecon
+	 * @param value		The value, from 0 to 1
+	 */
+	public Piecon(double alpha, double value) {
+		this(22, 2, 3, value, GeneralUtils.fadeColor(defaultFill, alpha), GeneralUtils.fadeColor(defaultOutline, alpha)); 
+	}
+	
+	/**
+	 * Create a {@link Piecon} with default fill, stroke, outline, size,
+	 * border and dotradius. Icon will be 22x22 pixels.
+	 * @param value		The value, from 0 to 1
+	 */
+	public Piecon(double value) {
+		this(22, 2, 3, value); 
+	}
 	
 	/**
 	 * Create a {@link Piecon} with default fill, stroke and outline
