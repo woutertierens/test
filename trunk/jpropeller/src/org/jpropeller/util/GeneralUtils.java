@@ -186,6 +186,20 @@ public class GeneralUtils {
     						clip((int)(c.getBlue() * factor), 0, 255));
     }
     
+	/**
+	 * Multiply a {@link Color}s alpha by a factor,
+	 * then clip to 0-255 and return as a new {@link Color}
+	 * @param c			The input color
+	 * @param factor	The alpha scaling factor
+	 * @return			The output faded color
+	 */
+    public static Color fadeColor(Color c, double factor) {
+    	return new Color(	c.getRed(), 
+    						c.getGreen(),
+    						c.getBlue(),
+    						clip((int)(c.getAlpha() * factor), 0, 255));
+    }
+    
     /**
      * Return a double value clipped to lie from min to max, inclusive
      * @param value		The value
