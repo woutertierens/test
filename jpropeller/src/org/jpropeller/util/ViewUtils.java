@@ -23,8 +23,18 @@ public class ViewUtils {
 	 * @return				Panel containing component, with border
 	 */
 	public final static JPanel dialogPanel(JComponent component) {
-		JPanel panel = new JPanel(new BorderLayout());
+		JPanel panel = backgroundPanel(component);
 		panel.setBorder(Borders.DIALOG_BORDER);
+		return panel;
+	}
+	
+	/**
+	 * Return a panel, containing specified component.
+	 * @param component		The component to contain
+	 * @return				Panel containing component
+	 */
+	public final static JPanel backgroundPanel(JComponent component) {
+		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(component);
 		return panel;
 	}
