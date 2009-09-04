@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Enumeration;
 
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -59,8 +60,7 @@ public class SpreadsheetTableView<T> implements TableView {
 		this.tableModel = tableModel;
 		this.table = new JTableImproved(tableModel);
 		sheet = new JScrollPane(table);
-		sheet.setBorder(null);
-		
+		sheet.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(4, 4, 0, 0)));
 		//table.setCursor(CURSOR);
 
 		TableCellRenderer rowHeaderRenderer = new TableCellRenderer() {
@@ -204,7 +204,6 @@ public class SpreadsheetTableView<T> implements TableView {
 		table.setShowGrid(true);
 		table.setIntercellSpacing(new Dimension(2, 2));
 
-		
 		rowHeaders.setBackground(Color.lightGray);
 		rowHeaders.setForeground(Color.black);
 		rowHeaders.setEnabled(false);
@@ -227,7 +226,7 @@ public class SpreadsheetTableView<T> implements TableView {
 		rowHeaders.setTableHeader(null);
 		
 		sheet.setRowHeaderView(rowHeaders);
-		
+//		sheet.getVerticalScrollBar().set
 		SpreadSheetAdapter.install(table);
 	}
 	
