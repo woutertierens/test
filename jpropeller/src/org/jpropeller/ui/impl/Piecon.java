@@ -40,7 +40,7 @@ public class Piecon implements Icon {
 	 * @param value		The value, from 0 to 1
 	 */
 	public Piecon(double alpha, double value) {
-		this(22, 2, 3, value, GeneralUtils.fadeColor(defaultFill, alpha), GeneralUtils.fadeColor(defaultOutline, alpha)); 
+		this(22, 2, 3, value, GeneralUtils.transparentColor(defaultFill, alpha), GeneralUtils.transparentColor(defaultOutline, alpha)); 
 	}
 	
 	/**
