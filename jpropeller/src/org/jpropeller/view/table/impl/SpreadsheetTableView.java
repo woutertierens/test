@@ -21,13 +21,18 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
+import org.jpropeller.collection.CCollection;
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.ui.impl.JTabButton;
 import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.TableView;
 
@@ -47,7 +52,7 @@ public class SpreadsheetTableView<T> implements TableView {
 	JTable table;
 	JScrollPane sheet;
 	Reference<? extends CList<T>> model;
-	ListTableModel<T> tableModel;
+	FiringTableModel tableModel;
 	
 	//private static final Cursor CURSOR;
 	private static final Color selectionBackground = new Color(155, 155, 200, 100);
@@ -55,12 +60,30 @@ public class SpreadsheetTableView<T> implements TableView {
 	/**
 	 * Make a new {@link SpreadsheetTableView}
 	 * @param tableModel		The table model to be displayed
+	 * @param selection 		The current selection.
 	 */
-	public SpreadsheetTableView(final ListTableModel<T> tableModel) {
+	public SpreadsheetTableView(final FiringTableModel tableModel, final Prop<? extends CCollection<Integer>> selection) {
 		this.tableModel = tableModel;
-		this.table = new JTableImproved(tableModel);
+		table = new JTableImproved(tableModel);
+		
 		sheet = new JScrollPane(table);
 		sheet.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(4, 4, 0, 0)));
+		SelectionSetFilter filter = new SelectionSetFilter() {
+			@Override
+			public boolean canSet() {
+				return !tableModel.isFiring();
+			}
+		};
+		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
+		
+		
+		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(selection, filter, table);
+		table.setSelectionModel(listSelectionModel);
+		
+		table.setRowSorter(sorter);
+		 
+		
+		
 		//table.setCursor(CURSOR);
 
 		TableCellRenderer rowHeaderRenderer = new TableCellRenderer() {
@@ -219,30 +242,23 @@ public class SpreadsheetTableView<T> implements TableView {
 		rowHeaders.setRowHeight(table.getRowHeight());
 		
 		table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
 		table.setCellSelectionEnabled(true);
 		
 		rowHeaders.setTableHeader(null);
 		
 		sheet.setRowHeaderView(rowHeaders);
-//		sheet.getVerticalScrollBar().set
 		SpreadSheetAdapter.install(table);
 	}
 	
 	/**
-	 * Make a new {@link SpreadsheetTableView}
-	 * @param model
-	 * 		The model to be displayed - references the list that will be displayed
-	 * as rows of a table
-	 * @param rowView
-	 * 		The {@link TableRowView} to convert from elements of the list to
-	 * rows of the {@link JTable}
+	 * Creates a {@link SpreadsheetTableView} that doesn't care about selection.
+	 * @param model		The model.
 	 */
-	public SpreadsheetTableView(Reference<? extends CList<T>> model, TableRowView<? super T> rowView) {
-		this(new ListTableModel<T>(model, rowView));
+	public SpreadsheetTableView(final FiringTableModel model) {
+		this(model, SetPropDefault.create("sel", Integer.class));
 	}
-	
+
 	@Override
 	public TableCellEditor getDefaultEditor(Class<?> columnClass) {
 		return table.getDefaultEditor(columnClass);
