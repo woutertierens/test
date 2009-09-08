@@ -29,6 +29,18 @@ public class ViewUtils {
 	}
 	
 	/**
+	 * Return a panel, containing specified component, with
+	 * a {@link Borders#DLU4_BORDER}
+	 * @param component		The component to contain
+	 * @return				Panel containing component, with border
+	 */
+	public final static JPanel smallBorderPanel(JComponent component) {
+		JPanel panel = backgroundPanel(component);
+		panel.setBorder(Borders.DLU4_BORDER);
+		return panel;
+	}
+	
+	/**
 	 * Return a panel, containing specified component.
 	 * @param component		The component to contain
 	 * @return				Panel containing component
