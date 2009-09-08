@@ -138,6 +138,16 @@ public class ColorPaletteChooser implements ActionListener {
 	 * @return	default chooser
 	 */
 	public final static ColorPaletteChooser create() {
+		List<Color> colors = makeDefaultPalette();
+		return new ColorPaletteChooser(8, colors);
+	}
+	
+	/**
+	 * Make a default palette of colors in different
+	 * hues and brightness/saturation
+	 * @return	A default palette
+	 */
+	public static List<Color> makeDefaultPalette() {
 		List<Color> colors = new LinkedList<Color>();
 		
 		int variations = 4;
@@ -166,9 +176,10 @@ public class ColorPaletteChooser implements ActionListener {
 					colors.add(Color.getHSBColor(shFrac, saturation, brightness));
 				}
 			}
-		}
+		}	
 		
-		return new ColorPaletteChooser(shades, colors);
+		return colors;
 	}
+
 	
 }

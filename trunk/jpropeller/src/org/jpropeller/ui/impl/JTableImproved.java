@@ -83,11 +83,12 @@ public class JTableImproved extends JTable {
 		//Improved editors and renderers
 		setDefaultEditor(Double.class, 	NumberCellEditor.doubleEditor());
 		setDefaultEditor(Float.class, 	NumberCellEditor.floatEditor());
-		setDefaultEditor(Integer.class, 	NumberCellEditor.integerEditor());
-		setDefaultEditor(Long.class, 		NumberCellEditor.longEditor());
+		setDefaultEditor(Integer.class, NumberCellEditor.integerEditor());
+		setDefaultEditor(Long.class, 	NumberCellEditor.longEditor());
 		setDefaultEditor(String.class, 	SelectingTextCellEditor.editor());
+		
 		setDefaultEditor(Color.class, 	new ColorCellEditor());
-
+		
 		setDefaultRenderer(ImmutableIcon.class, 	new IconCellRenderer());
 		setDefaultRenderer(Color.class, 			new ColorCellRenderer());
 

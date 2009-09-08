@@ -248,6 +248,9 @@ public class SpreadsheetTableView<T> implements TableView {
 		rowHeaders.setTableHeader(null);
 		
 		sheet.setRowHeaderView(rowHeaders);
+		
+		sheet.setPreferredSize(new Dimension(10, 10));
+		
 		SpreadSheetAdapter.install(table);
 	}
 	

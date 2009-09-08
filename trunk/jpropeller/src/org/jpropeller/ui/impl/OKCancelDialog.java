@@ -52,6 +52,8 @@ public class OKCancelDialog extends JDialog {
 		getContentPane().add(buildUI());
 		
 		pack();
+		
+		setLocationRelativeTo(owner);
 	}
 
 	/**
@@ -141,10 +143,8 @@ public class OKCancelDialog extends JDialog {
 		//irritating "flick" where the window appears for a tiny interval 
 		//(or just causes screen to be greyed in that area) then moves to
 		//another position.
-		if (owner != null) {
-			//setLocationByPlatform(true);
-			setLocationRelativeTo(owner);
-		}
+		System.out.println("Setting location relative to " + owner);
+		setLocationRelativeTo(owner);
 		setVisible(true);
 	}
 }

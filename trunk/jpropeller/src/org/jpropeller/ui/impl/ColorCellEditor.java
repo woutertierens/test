@@ -2,8 +2,8 @@ package org.jpropeller.ui.impl;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
@@ -11,6 +11,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 
 /**
@@ -35,18 +36,6 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 	public ColorCellEditor() {
 		
 		chooser = ColorPaletteChooser.create();
-		
-		//TODO would be best if editing behaviour were more like the
-		//other editors - double click to start editing. At present,
-		//two single clicks are enough (obviously double click does 
-		//work as well though)
-		//When the user clicks the label, perform the edit
-		label.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				edit();
-			}
-		});
 
 	}
 
@@ -56,8 +45,6 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 		
 		//The user has clicked the cell, so
 		//bring up the dialog.
-		//button.setBackground(currentColor);
-		//colorChooser.setColor(currentColor);
 		chooser.setPreviousColor(currentColor);
 		dialog.setVisible(true);
 
@@ -69,8 +56,14 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 			}
 		}
 		
-		//Make the renderer reappear.
-		fireEditingStopped(); 
+		//Make the renderer reappear, after all editing completes
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				fireEditingStopped();			
+			}
+		});
+		 
 	}
 	
 	//Implement the one CellEditor method that AbstractCellEditor doesn't.
@@ -79,6 +72,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 	}
 
 	//Implement the one method defined by TableCellEditor.
+	@Override
 	public Component getTableCellEditorComponent(JTable table,
 			Object value,
 			boolean isSelected,
@@ -86,6 +80,16 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 			int column) {
 		currentColor = (Color)value;
 		icon.setColor(currentColor);
+		edit();
 		return label;
+	}
+	
+	@Override
+	public boolean isCellEditable(EventObject anEvent) {
+		//Only double clicks start editing using mouse
+		if (anEvent instanceof MouseEvent) {
+			return ((MouseEvent) anEvent).getClickCount() >= 2;
+		}
+		return true;
 	}
 }
