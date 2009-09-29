@@ -121,6 +121,8 @@ public class ComponentDialog extends JDialog {
 			}
 		});
 		
+		dialog.setLocationRelativeTo(owner);
+		
 		return dialog;
 
 	}
@@ -145,10 +147,7 @@ public class ComponentDialog extends JDialog {
 		//irritating "flick" where the window appears for a tiny interval 
 		//(or just causes screen to be greyed in that area) then moves to
 		//another position.
-		if (owner != null) {
-			//setLocationByPlatform(true);
-			setLocationRelativeTo(owner);
-		}
+		setLocationRelativeTo(owner);
 		setVisible(true);
 	}
 
