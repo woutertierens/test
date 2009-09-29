@@ -8,7 +8,6 @@ import java.util.Enumeration;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -241,9 +240,9 @@ public class SpreadsheetTableView<T> implements TableView {
 		
 		rowHeaders.setRowHeight(table.getRowHeight());
 		
-		table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		//table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
-		table.setCellSelectionEnabled(true);
+		//table.setCellSelectionEnabled(true);
 		
 		rowHeaders.setTableHeader(null);
 		
