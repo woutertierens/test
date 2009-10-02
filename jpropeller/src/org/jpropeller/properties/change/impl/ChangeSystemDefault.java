@@ -157,7 +157,11 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		//Get main lock
 		mainLock.lock();
 		
-		//Run all pending tasks
+		//Only one dispatcher - this thread
+		dispatchingLock.lock();
+	}
+
+	private void runPendingTasks() {
 		boolean tasksClear = false;
 		while(!tasksClear) {
 			Task task = null;
@@ -176,9 +180,6 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 				task.respond(new AtomicBoolean(false));
 			}
 		}
-		
-		//Only one dispatcher - this thread
-		dispatchingLock.lock();
 	}
 
 	@Override
@@ -277,6 +278,20 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	
 	@Override
 	public void concludeChange(Changeable changed) {
+
+		//TODO running pending tasks here ensures
+		//that the tasks are always run BEFORE anything
+		//can see any state, so it is impossible to see
+		//the un-updated state. However, it might be possible
+		//to run tasks more lazily - for example just before
+		//dispatch.
+		//If we are about to completely release the mainLock,
+		//then run any pending tasks
+		if (mainLock.getHoldCount() == 1) {
+			//Run all pending tasks
+			runPendingTasks();
+		}
+		
 		//Release necessary lock
 		mainLock.unlock();
 		
