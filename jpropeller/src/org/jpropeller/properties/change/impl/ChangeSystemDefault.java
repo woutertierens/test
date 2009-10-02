@@ -284,13 +284,15 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		//can see any state, so it is impossible to see
 		//the un-updated state. However, it might be possible
 		//to run tasks more lazily - for example just before
-		//dispatch.
-		//If we are about to completely release the mainLock,
-		//then run any pending tasks
-		if (mainLock.getHoldCount() == 1) {
-			//Run all pending tasks
-			runPendingTasks();
-		}
+		//dispatch, or with the code below only when the mainLock
+		//is about to be released - however this allows for un-updated data
+		//to be seen by code that acquires the main lock, then 
+		//makes changes, then (before releasing the lock) reads 
+		//state that the tasks would update.
+		//if (mainLock.getHoldCount() == 1)
+		
+		//Run all pending tasks
+		runPendingTasks();
 		
 		//Release necessary lock
 		mainLock.unlock();
