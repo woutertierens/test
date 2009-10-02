@@ -2,6 +2,8 @@ package org.jpropeller.properties.change;
 
 import java.util.concurrent.locks.Lock;
 
+import org.jpropeller.task.Task;
+
 /**
  * Manages the changes of a set of {@link Changeable} instances,
  * handling any synchronisation of changes, propagation of changes
@@ -162,5 +164,13 @@ public interface ChangeSystem {
 	 * 		The listener to be removed
 	 */
 	public void removeChangeSystemListener(ChangeSystemListener listener);
+
+	/**
+	 * Add a task to be run before next dispatch to {@link ChangeListener}s
+	 * Note that any given task will be run only once per dispatch, even if
+	 * added multiple times before that dispatch
+	 * @param task		The {@link Task} to execute
+	 */
+	public void addTask(Task task);
 	
 }

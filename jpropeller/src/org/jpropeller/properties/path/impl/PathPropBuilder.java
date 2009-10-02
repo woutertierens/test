@@ -201,6 +201,38 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * <pre>
 	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
+	 * The path must end at a {@link Prop} containing a {@link CList} of type T
+	 * @param <R>
+	 * 		The type of the root bean for the {@link BeanPath} 
+	 * @param <K>
+	 * 		The type of key in the {@link CMap} in the final {@link Prop} reached by the path
+	 * @param <V>
+	 * 		The type of value in the {@link CMap} in the final {@link Prop} reached by the path
+	 * @param name
+	 * 		The string name of the {@link PathProp} to build
+	 * @param keyClass
+	 * 		The type of key in the final map prop reached by the path
+	 * @param valueClass
+	 * 		The type of value in the final map prop reached by the path
+	 * @param pathRoot
+	 * 		The root of the path
+	 * @param processor
+	 * 		The {@link ValueProcessor} for the resulting {@link PathProp}
+	 * @return
+	 * 		A builder to be used to make a {@link PathProp}
+	 */
+	public static <R extends Bean, K, V> PathPropBuilder<R, R, CMap<K, V>> mapFrom(String name, Class<K> keyClass, Class<V> valueClass, R pathRoot, ValueProcessor<CMap<K, V>> processor) {
+		return new PathPropBuilder<R, R, CMap<K, V>>(PropName.createMap(name, keyClass, valueClass), pathRoot, BeanPathBuilder.<R>create(), processor);
+	}
+	
+	/**
+	 * Start a {@link PathPropBuilder} that can be used to build a {@link PathProp}
+	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
+	 * For example, to make a {@link PathProp} starting from bean b and progressing
+	 * via properties x, y, z in order, use:
+	 * <pre>
+	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
+	 * </pre>
 	 * Path must start from a {@link Reference}, and will then go to the value of that
 	 * reference.
 	 * @param <M>
