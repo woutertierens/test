@@ -2,13 +2,16 @@ package org.jpropeller.properties.change.impl;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jpropeller.collection.impl.IdentityHashSet;
 import org.jpropeller.concurrency.Responder;
 import org.jpropeller.concurrency.impl.CoalescingResponder;
 import org.jpropeller.properties.change.Change;
@@ -18,6 +21,7 @@ import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.ChangeSystemListener;
 import org.jpropeller.properties.change.Changeable;
+import org.jpropeller.task.Task;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.Listeners;
 
@@ -102,6 +106,8 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	private List<Changeable> umInitial;
 	private Map<Changeable, Change> umAllChanges;
 
+	private IdentityHashSet<Task> pendingTasks = new IdentityHashSet<Task>();
+	
 	/**
 	 * User to actually call change method on {@link ChangeListener}s
 	 */
@@ -147,13 +153,41 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void prepareDispatch() {
+		
 		//Get main lock
 		mainLock.lock();
+		
+		//Run all pending tasks
+		boolean tasksClear = false;
+		while(!tasksClear) {
+			Task task = null;
+
+			synchronized (pendingTasks) {
+				if (pendingTasks.isEmpty()) {
+					tasksClear = true;
+				} else {
+					Iterator<Task> iterator = pendingTasks.iterator();
+					task = iterator.next();
+					iterator.remove();
+				}
+			}
+			
+			if (task!=null) {
+				task.respond(new AtomicBoolean(false));
+			}
+		}
 		
 		//Only one dispatcher - this thread
 		dispatchingLock.lock();
 	}
 
+	@Override
+	public void addTask(Task task) {
+		synchronized (pendingTasks) {
+			pendingTasks.add(task);
+		}
+	}
+	
 	@Override
 	public void concludeDispatch() {
 		try {
