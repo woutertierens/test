@@ -11,13 +11,12 @@ import javax.swing.table.TableModel;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
-import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
 import org.jpropeller.view.JView;
-import org.jpropeller.view.View;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.TableRowViewListener;
 import org.jpropeller.view.table.impl.ListTableModel;
@@ -25,29 +24,27 @@ import org.jpropeller.view.update.Updatable;
 import org.jpropeller.view.update.UpdateManager;
 
 /**
- * A {@link TableModel} displaying a map from keys to
- * {@link CList} values, accessed by a {@link MapListReference} 
- * to be compatible with use by a {@link View}, 
+ * A {@link TableModel} displaying a map from keys to {@link CList} values, 
  * where elements of the referenced  {@link List}s are displayed 
  * as rows, and the columns of each row are given by a 
  * {@link TableRowView}
- * Since the {@link MapListReference} contains a map from keys to
- * lists, the model displays the lists one by one, in the order
- * given by the {@link MapListReference#keys()} property.
+ * 
  * Uses {@link UpdateManager}, and in general provides the
  * "intelligence" required for a {@link JView} implemented
  * by simply displaying this {@link TableModel} in a 
  * {@link JTable}.
+ * 
  * Very similar to {@link ListTableModel}, but adding the extra
  * layer of having a map of lists.
  * @param <K>	The type of key
  * @param <V>	The type of value
  * @param <L>	The type of {@link CList} in the map 
  */
-public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableModel 
+public class MapListTableModelRowOrder<K, V, L extends CList<V>> extends AbstractTableModel 
 		implements ChangeListener, Updatable, TableRowViewListener {
 
-	private MapListReference<K, V, L> model;
+	private final Prop<CMap<K, L>> map;
+	private final Prop<CList<K>> keys;
 	private TableRowView<? super V> rowView;
 	
 	//Track whether we have had a complete change since last firing
@@ -73,20 +70,23 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 	
 	
 	/**
-	 * Create a {@link MapListTableModel}, which displays neither
-	 * the index nor the key column, using a 0 index based
-	 * @param model
-	 * 		The model, a {@link Reference} to the {@link CList} we will display
-	 * @param rowView
-	 * 		The view of each row
+	 * Create a {@link MapListTableModelRowOrder}, which displays neither
+	 * the index nor the key column
+	 * @param map			The map of keys to lists of data
+	 * @param keys			The list of keys whose mapped lists will be displayed
+	 * @param rowView		The view of each row
 	 */
-	public MapListTableModel(MapListReference<K, V, L> model, TableRowView<? super V> rowView) {
-		this(model, rowView, false, "", null, false, "", 0);
+	public MapListTableModelRowOrder(
+			Prop<CMap<K, L>> map,
+			Prop<CList<K>> keys, 
+			TableRowView<? super V> rowView) {
+		this(map, keys, rowView, false, "", null, false, "", 0);
 	}
 	
 	/**
-	 * Create a {@link MapListTableModel}
-	 * @param model			The model
+	 * Create a {@link MapListTableModelRowOrder}
+	 * @param map			The map of keys to lists of data
+	 * @param keys			The list of keys whose mapped lists will be displayed
 	 * @param rowView		The view of each row
 	 * @param keyColumn 	True to display a column showing the key
 	 * @param keyName 		The name of the column used to show key (if any)
@@ -98,8 +98,9 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 	 * 						display 0-based indices 0, 1, 2 ... or
 	 * 						1 to display 1-based indices 1, 2, 3 ...
 	 */
-	public MapListTableModel(
-			MapListReference<K, V, L> model, 
+	public MapListTableModelRowOrder(
+			Prop<CMap<K, L>> map,
+			Prop<CList<K>> keys,
 			TableRowView<? super V> rowView,
 			boolean keyColumn,
 			String keyName,
@@ -116,7 +117,8 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		
 		rowView.addListener(this);
 		
-		this.model = model;
+		this.map = map;
+		this.keys = keys;
 		this.indexBase = indexBase;
 		
 		int index = 0;
@@ -138,9 +140,10 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		this.indexName = indexName;
 		this.keyClass = keyClass;
 		
-		//Listen to the our entire model - we need to see changes to
+		//we need to see changes to
 		//both keys prop and value prop
-		model.features().addListener(this);
+		map.features().addListener(this);
+		keys.features().addListener(this);
 		
 		handleChange();
 	}
@@ -180,16 +183,16 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		}
 		
 		//Get the keys and map of lists
-		CList<K> keys = model.keys().get();
-		CMap<K, ? extends CList<V>> map = model.value().get();
+		CList<K> currentKeys = keys.get();
+		CMap<K, ? extends CList<V>> currentMap = map.get();
 		
 		//Track where we are up to in combined index
 		int indexSum = 0;
 		
 		//Check whether we are in the list for each key
-		for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-			K key = keys.get(keyIndex);
-			CList<V> list = map.get(key);
+		for (int keyIndex = 0; keyIndex < currentKeys.size(); keyIndex++) {
+			K key = currentKeys.get(keyIndex);
+			CList<V> list = currentMap.get(key);
 			
 			//Ignore null lists
 			if (list != null) {
@@ -217,16 +220,16 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		}
 		
 		//Get the keys and map of lists
-		CList<K> keys = model.keys().get();
-		CMap<K, ? extends CList<V>> map = model.value().get();
+		CList<K> currentKeys = keys.get();
+		CMap<K, ? extends CList<V>> currentMap = map.get();
 		
 		//Track where we are up to in combined index
 		int indexSum = 0;
 		
 		//Check whether we are in the list for each key
-		for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-			K key = keys.get(keyIndex);
-			CList<V> list = map.get(key);
+		for (int keyIndex = 0; keyIndex < currentKeys.size(); keyIndex++) {
+			K key = currentKeys.get(keyIndex);
+			CList<V> list = currentMap.get(key);
 			
 			//Ignore null lists
 			if (list != null) {
@@ -260,16 +263,16 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		}
 		
 		//Get the keys and map of lists
-		CList<K> keys = model.keys().get();
-		CMap<K, ? extends CList<V>> map = model.value().get();
+		CList<K> currentKeys = keys.get();
+		CMap<K, ? extends CList<V>> currentMap = map.get();
 		
 		//Track where we are up to in combined index
 		int indexSum = 0;
 		
 		//Check whether we are in the list for each key
-		for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-			K key = keys.get(keyIndex);
-			CList<V> list = map.get(key);
+		for (int keyIndex = 0; keyIndex < currentKeys.size(); keyIndex++) {
+			K key = currentKeys.get(keyIndex);
+			CList<V> list = currentMap.get(key);
 			
 			//Ignore null lists
 			if (list != null) {
@@ -362,11 +365,11 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 		listSizes.clear();
 		
 		//Can't display if any values are null
-		if (model == null || model.keys() == null || model.keys().get() == null) {
+		if (keys == null || keys.get() == null) {
 			rowCount = 0;
 		} else {
-			for (K key : model.keys().get()) {
-				CList<V> list = model.value().get().get(key);
+			for (K key : keys.get()) {
+				CList<V> list = map.get().get(key);
 				//Ignore null lists
 				if (list != null) {
 					int size = list.size();
@@ -420,7 +423,8 @@ public class MapListTableModel<K, V, L extends CList<V>> extends AbstractTableMo
 	@Override
 	public void dispose() {
 		updateManager.deregisterUpdatable(this);
-		model.features().removeListener(this);
+		keys.features().removeListener(this);
+		map.features().removeListener(this);
 		rowView.removeListener(this);
 	}
 	

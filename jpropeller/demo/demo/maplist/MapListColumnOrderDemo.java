@@ -10,15 +10,13 @@ import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.view.maplist.impl.MapListReference;
-import org.jpropeller.view.maplist.impl.MapListTableModel;
+import org.jpropeller.view.maplist.impl.MapListTableModelColumnOrder;
 import org.jpropeller.view.table.impl.TableRowViewDirect;
 
 /**
- * Demonstrate display of a map of lists using {@link MapListTableModel}
- * and {@link MapListReference}
+ * Demonstrate display of a map of lists using {@link MapListColumnOrderDemo}
  */
-public class MapListDemo {
+public class MapListColumnOrderDemo {
 
 	/**
 	 * A {@link CList} of {@link String}
@@ -79,15 +77,18 @@ public class MapListDemo {
 			m.map().get().put(i, list);
 		}
 		
-		MapListReference<Integer, String, StringList> ref = MapListReference.create(m.map(), m.keys());
+		MapListTableModelColumnOrder<Integer, String, StringList> tableModel = 
+			new MapListTableModelColumnOrder<Integer, String, StringList>(
+					m.map(), m.keys(), 
+					new TableRowViewDirect<String>(String.class, "String"));
 		
-		MapListTableModel<Integer, String, StringList> tableModel = new MapListTableModel<Integer, String, StringList>(ref, new TableRowViewDirect<String>(String.class, "String"));
+		System.out.println("Rows x columns: " + tableModel.getRowCount() + ", " + tableModel.getColumnCount());
 		
 		JTable table = new JTable(tableModel);
 		
 		JScrollPane scroll = new JScrollPane(table);
 		
-		JFrame frame = new JFrame("Map List Demo");
+		JFrame frame = new JFrame("Map List Column Order Demo");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(scroll);
 		frame.pack();
