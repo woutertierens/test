@@ -22,8 +22,7 @@ import org.jpropeller.ui.impl.Tabs;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.Source;
 import org.jpropeller.view.list.impl.ListEditView;
-import org.jpropeller.view.maplist.impl.MapListReference;
-import org.jpropeller.view.maplist.impl.MapListTableModel;
+import org.jpropeller.view.maplist.impl.MapListTableModelRowOrder;
 import org.jpropeller.view.table.impl.BeanRowView;
 import org.jpropeller.view.table.impl.TableRowViewDirect;
 
@@ -32,10 +31,9 @@ import test.example.LotsOfProps;
 import com.jgoodies.forms.factories.Borders;
 
 /**
- * Demonstrate display of a map of lists using {@link MapListTableModel}
- * and {@link MapListReference}
+ * Demonstrate display of a map of lists using {@link MapListTableModelRowOrder}
  */
-public class ComplexMapListDemo {
+public class ComplexMapListRowOrderDemo {
 
 	private final static Source<LotsOfProps> source = new Source<LotsOfProps>() {
 		int i = 0;
@@ -145,12 +143,10 @@ public class ComplexMapListDemo {
 		m.map().get().put(0, l);
 		m.map().get().put(1, l2);
 		
-		MapListReference<Integer, LotsOfProps, LotsList> ref = MapListReference.create(m.map(), m.keys());
-		
 		BeanRowView rowView = new BeanRowView(example);
 		
-		MapListTableModel<Integer, LotsOfProps, LotsList> tableModel = 
-			new MapListTableModel<Integer, LotsOfProps, LotsList>(ref, rowView, true, "Key", Integer.class, true, "Index", 0);
+		MapListTableModelRowOrder<Integer, LotsOfProps, LotsList> tableModel = 
+			new MapListTableModelRowOrder<Integer, LotsOfProps, LotsList>(m.map(), m.keys(), rowView, true, "Key", Integer.class, true, "Index", 0);
 		
 		JTable table = new JTableImproved(tableModel);
 		
