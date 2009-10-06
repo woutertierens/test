@@ -16,6 +16,7 @@ import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.system.Props;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.TableRowViewListener;
 import org.jpropeller.view.table.impl.ListTableModel;
@@ -41,10 +42,10 @@ import org.jpropeller.view.update.UpdateManager;
  * @param <L>	The type of {@link CList} in the map 
  */
 public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends AbstractTableModel 
-		implements Updatable, TableRowViewListener {
+		implements Updatable, TableRowViewListener, FiringTableModel {
 
-	private final Prop<CMap<K, L>> map;
-	private final Prop<CList<K>> keys;
+	private final Prop<? extends CMap<K, L>> map;
+	private final Prop<? extends CList<K>> keys;
 	private final TableRowView<? super V> rowView;
 	
 	//Track whether we have had a complete change since last firing
@@ -94,8 +95,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 	 * @param rowView		The view of each element as a row
 	 */
 	public MapListTableModelColumnOrder(
-			Prop<CMap<K, L>> map,
-			Prop<CList<K>> keys, 
+			Prop<? extends CMap<K, L>> map,
+			Prop<? extends CList<K>> keys, 
 			TableRowView<? super V> rowView
 			){
 		this(map, keys, rowView, false, "", 0);
@@ -114,8 +115,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 	 * 						1 to display 1-based indices 1, 2, 3 ...
 	 */
 	public MapListTableModelColumnOrder(
-			Prop<CMap<K, L>> map,
-			Prop<CList<K>> keys, 
+			Prop<? extends CMap<K, L>> map,
+			Prop<? extends CList<K>> keys, 
 			TableRowView<? super V> rowView,
 			boolean indexColumn,
 			String indexName, 
@@ -342,7 +343,11 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 		} else if (completeChange) {
 			fireTableDataChanged();			
 		} else {
-			fireTableRowsUpdated(0, getRowCount()-1);
+			if (getRowCount() == 0) {
+				fireTableDataChanged();							
+			} else {
+				fireTableRowsUpdated(0, getRowCount()-1);
+			}
 		}
 		
 		isFiring.set(false);
