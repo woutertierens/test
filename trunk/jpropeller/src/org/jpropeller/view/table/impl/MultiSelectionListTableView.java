@@ -22,11 +22,8 @@ import org.jpropeller.view.table.TableView;
  * to a row of the table
  * 
  * Maintains a multiple selection in its reference
- *
- * @param <T>
- * 		The type of element in the {@link CList}
  */
-public class MultiSelectionListTableView<T> implements JView, TableView {
+public class MultiSelectionListTableView implements JView, TableView {
 
 	JTable table;
 	FiringTableModel tableModel;
@@ -34,6 +31,7 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 	
 	/**
 	 * Make a new {@link MultiSelectionListTableView}
+	 * @param <T>				The type of element in the displayed list 
 	 * @param model				The model to be displayed - references the list that will be displayed
 	 * 							as rows of a table
 	 * @param rowView			The {@link TableRowView} to convert from elements of the list to
@@ -42,15 +40,16 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 	 * @param indexName 		The name for first column, if indexColumn is true
 	 * @param indexBase 		The base for row index numbering - 0 to be 0-based, 0, 1, 2...
 	 * 							1 to be 1-based, 1, 2, 3...
+	 * @return					A new {@link MultiSelectionListTableView} 
 	 */
-	public MultiSelectionListTableView(
+	public static <T> MultiSelectionListTableView create(
 			MultiSelectionReference<T> model, 
 			TableRowView<? super T> rowView,
 			boolean indexColumn,
 			String indexName,
 			int indexBase) {
 		
-		this(new ListTableModel<T>(model, rowView, indexColumn, indexName, indexBase), model.selection());
+		return new MultiSelectionListTableView(new ListTableModel<T>(model, rowView, indexColumn, indexName, indexBase), model.selection());
 	}
 	
 	/**
@@ -86,15 +85,15 @@ public class MultiSelectionListTableView<T> implements JView, TableView {
 	
 	/**
 	 * Make a new {@link MultiSelectionListTableView}
-	 * @param model
-	 * 		The model to be displayed - references the list that will be displayed
+	 * @param <T> 		The type of element in the list
+	 * @param model		The model to be displayed - references the list that will be displayed
 	 * as rows of a table
-	 * @param rowView
-	 * 		The {@link TableRowView} to convert from elements of the list to
+	 * @param rowView	The {@link TableRowView} to convert from elements of the list to
 	 * rows of the {@link JTable}
+	 * @return			A new {@link MultiSelectionListTableView} 
 	 */
-	public MultiSelectionListTableView(MultiSelectionReference<T> model, TableRowView<? super T> rowView) {
-		this(model, rowView, false, "", 0);
+	public static <T> MultiSelectionListTableView create(MultiSelectionReference<T> model, TableRowView<? super T> rowView) {
+		return create(model, rowView, false, "", 0);
 	}
 
 	/**

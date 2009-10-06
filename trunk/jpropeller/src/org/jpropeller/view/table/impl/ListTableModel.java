@@ -135,7 +135,14 @@ public class ListTableModel<T> 	extends AbstractTableModel
 			if (columnIndex == indexColumn) {
 				return rowIndex + indexBase;
 			} else {
-				return rowView.getColumn(list.get(rowIndex), columnIndex - firstRowViewColumn);
+				if (rowIndex >= list.size()) {
+					return null;
+				}
+				T value = list.get(rowIndex);
+				if (value == null) {
+					return null;
+				}
+				return rowView.getColumn(value, columnIndex - firstRowViewColumn);
 			}
 		}
 	}
