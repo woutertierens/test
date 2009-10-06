@@ -45,6 +45,9 @@ public class SynchronousTaskExecutor implements Changeable {
 		for (Changeable changeable : task.getSources()) {
 			changeable.features().addChangeableListener(this);
 		}
+		
+		//Start updated
+		Props.getPropSystem().getChangeSystem().addTask(task);
 	}
 	
 	@Override

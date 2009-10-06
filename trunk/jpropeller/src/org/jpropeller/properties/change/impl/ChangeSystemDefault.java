@@ -151,6 +151,26 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		this.umAllChanges = Collections.unmodifiableMap(allChanges);
 	}
 
+	private void leaveMainLock() {
+		
+		//TODO running pending tasks here ensures
+		//that the tasks are always run BEFORE anything
+		//can see any state, so it is impossible to see
+		//the un-updated state. However, it might be possible
+		//to run tasks more lazily - for example just before
+		//dispatch, or with the code below only when the mainLock
+		//is about to be released - however this allows for un-updated data
+		//to be seen by code that acquires the main lock, then 
+		//makes changes, then (before releasing the lock) reads 
+		//state that the tasks would update.
+		//if (mainLock.getHoldCount() == 1)
+		
+		//Run all pending tasks
+		runPendingTasks();
+
+		mainLock.unlock();
+	}
+	
 	@Override
 	public void prepareDispatch() {
 		
@@ -186,6 +206,32 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	public void addTask(Task task) {
 		synchronized (pendingTasks) {
 			pendingTasks.add(task);
+		
+			//We now need to check whether we should run the task(s)
+			//immediately, or leave them to be run when the mainlock
+			//is next unlocked
+			
+			//Try to get the mainLock - this will succeed
+			//if the lock is not held at all, OR we already 
+			//hold the lock in this thread
+			boolean canHold = mainLock.tryLock(); 
+			if (canHold) {
+				try {
+					//We got the lock - if we hold it once only then
+					//it wasn't held before, and we need to run the tasks
+					//immediately.
+					//Otherwise, the lock was already held by this thread, and
+					//the task will be run when we release it again
+					if (mainLock.getHoldCount() == 1) {
+						runPendingTasks();
+					}
+				} finally {
+					mainLock.unlock();
+				}
+			} else {
+				//If some other thread has the lock, then we don't need to do anything,
+				//since when the lock is released the task will be run
+			}
 		}
 	}
 	
@@ -198,7 +244,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		} finally {		
 			//Release locks in reverse order
 			dispatchingLock.unlock();
-			mainLock.unlock();
+			leaveMainLock();
 		}
 	}
 	
@@ -278,24 +324,9 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	
 	@Override
 	public void concludeChange(Changeable changed) {
-
-		//TODO running pending tasks here ensures
-		//that the tasks are always run BEFORE anything
-		//can see any state, so it is impossible to see
-		//the un-updated state. However, it might be possible
-		//to run tasks more lazily - for example just before
-		//dispatch, or with the code below only when the mainLock
-		//is about to be released - however this allows for un-updated data
-		//to be seen by code that acquires the main lock, then 
-		//makes changes, then (before releasing the lock) reads 
-		//state that the tasks would update.
-		//if (mainLock.getHoldCount() == 1)
-		
-		//Run all pending tasks
-		runPendingTasks();
 		
 		//Release necessary lock
-		mainLock.unlock();
+		leaveMainLock();
 		
 		//dispatch();
 		//If we have left mainLock completely, it is safe to
@@ -322,7 +353,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 				dispatcher.dispatch();
 			}
 		} finally {
-			mainLock.unlock();
+			leaveMainLock();
 		}
 	}
 	
@@ -415,7 +446,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void concludeListenerChange(Changeable changeable) {
-		mainLock.unlock();
+		leaveMainLock();
 	}
 
 	@Override
@@ -425,7 +456,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	
 	@Override
 	public void concludeRead(Changeable changeable) {
-		mainLock.unlock();
+		leaveMainLock();
 	}
 
 	@Override
@@ -445,7 +476,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	@Override
 	public void release() {
-		mainLock.unlock();
+		leaveMainLock();
 		
 		//We need to request dispatch since it may not have been requested
 		//while the mainLock was held
