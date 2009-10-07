@@ -180,6 +180,10 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 
 		CMap<K, ? extends CList<V>> currentMap = map.get();
 
+		if (currentMap == null) {
+			return null;
+		}
+		
 		//Look up actual displayed list
 		CList<V> list = currentMap.get(key);
 		if (list == null) {
