@@ -204,6 +204,10 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 	private K getKeyAt(int columnIndex) {
 		CList<K> currentKeys = keys.get();
 		
+		if (currentKeys == null) {
+			return null;
+		}
+		
 		//Find which key index we are in, using the size of the row view
 		int keyIndex = columnIndex / viewColumnCount;
 		
