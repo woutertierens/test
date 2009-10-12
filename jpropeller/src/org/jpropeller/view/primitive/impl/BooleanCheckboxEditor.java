@@ -28,6 +28,8 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 
 	private JCheckBox checkBox;
 	private PropName<Boolean> displayedName;
+
+	private boolean settingEnabled = false;
 	
 	private BooleanCheckboxEditor(Reference<? extends Bean> model,
 			PropName<Boolean> displayedName) {
@@ -41,7 +43,17 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 		checkBox.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				commit();
+				//We can't tell whether a change event is for the
+				//actual selected state of the checkbox changing,
+				//or its enabled state. So we need to flag the difference
+				//ourself, to avoid committing when we change enabled state.
+				//This is important because we may change enabled state in
+				//response to a Changeable change, and we don't want to
+				//then commit() and break ChangeListener contract about
+				//not writing from an event.
+				if (!settingEnabled) {
+					commit();
+				}
 			}
 		});
 		help.connect();
@@ -85,7 +97,9 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 
 	private boolean checkNull(Boolean value) {
 		boolean n = (value == null);
+		settingEnabled  = true;
 		checkBox.setEnabled(!n);
+		settingEnabled = false;
 		return n;
 	}
 	
