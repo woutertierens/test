@@ -39,7 +39,7 @@ public class ListComboBoxReferenceDefault<T> extends BeanDefault implements List
 	 * @return 				A new {@link ListComboBoxReferenceDefault}
 	 */
 	public static <S extends Changeable> ListComboBoxReferenceDefault<S> create(Prop<CList<S>> value, Class<S> valueClass, S initialSelection) {
-		return new ListComboBoxReferenceDefault<S>(value, ChangeablePropDefault.editable("selection", valueClass, initialSelection));
+		return new ListComboBoxReferenceDefault<S>(value, ChangeablePropDefault.editable(valueClass, "selection", initialSelection));
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class ListComboBoxReferenceDefault<T> extends BeanDefault implements List
 	 * @return 				A new {@link ListComboBoxReferenceDefault}
 	 */
 	public static <S extends Changeable> ListComboBoxReferenceDefault<S> createConstrained(Prop<CList<S>> value, Class<S> valueClass, boolean selectFirst) {
-		Prop<S> selection = new SelectionFromCollectionProp<S>(PropName.create("selection", valueClass), value, selectFirst);
+		Prop<S> selection = new SelectionFromCollectionProp<S>(PropName.create(valueClass, "selection"), value, selectFirst);
 		return new ListComboBoxReferenceDefault<S>(value, selection);
 	}
 	

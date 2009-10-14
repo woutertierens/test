@@ -58,13 +58,12 @@ public class ClassFilterProp<T> implements Prop<T> {
 	
 	/**
 	 * Create a {@link ClassFilterProp}
-	 * 
+	 * @param requiredClass	The required class for mirroring
 	 * @param name			The name of the prop
 	 * @param filteredProp	The prop mirrored by this prop, 
 	 * 						when it matches the required class
-	 * @param requiredClass	The required class for mirroring
 	 */
-	public ClassFilterProp(PropName<T> name, final Prop<? super T> filteredProp, Class<T> requiredClass) {
+	public ClassFilterProp(Class<T> requiredClass, PropName<T> name, final Prop<? super T> filteredProp) {
 		this.name = name;
 		this.filteredProp = filteredProp;
 		this.requiredClass = requiredClass;

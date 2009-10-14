@@ -35,7 +35,7 @@ public class Group extends BeanDefault {
 	/**
 	 * The {@link PropName} for {@link #permissions()} property
 	 */
-	public final static PropName<String> PERMISSIONS_NAME = PropName.create("permissions", String.class);
+	public final static PropName<String> PERMISSIONS_NAME = PropName.create(String.class, "permissions");
 
 	//Set up Props
 	private Prop<String> name = editable("name", "default group name");

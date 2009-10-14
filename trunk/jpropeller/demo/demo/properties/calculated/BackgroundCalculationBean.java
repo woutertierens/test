@@ -37,7 +37,7 @@ public class BackgroundCalculationBean extends BeanDefault {
 	private final Calculation<Long> calculation = new CalculationDefault<Prop<? extends Long>, Long>(slowCalculation, i);
 	
 	//Property using calculation
-	Prop<Long> calculated = addProp(new BackgroundCalculatedProp<Long>(PropName.create("calculated", Long.class), calculation, 1L));
+	Prop<Long> calculated = addProp(new BackgroundCalculatedProp<Long>(PropName.create(Long.class, "calculated"), calculation, 1L));
 
 	/**
 	 * Simulate a calculation - just returns i, but delays by

@@ -81,7 +81,7 @@ public class ListEditView<T> implements JView{
 	 */
 	public static <S> ListEditView<S> create(CList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Class<?>... editedClasses) {
 		ListAndSelectionAndValueReference<S> model = 
-			new ListAndSelectionAndValueReferenceDefault<S>(list, clazz);
+			new ListAndSelectionAndValueReferenceDefault<S>(clazz, list);
 		return new ListEditView<S>(model, clazz, rowView, source, editSelected, editedClasses);
 	}
 	
@@ -136,7 +136,7 @@ public class ListEditView<T> implements JView{
 		BeanPathTo<ListAndSelectionAndValueReference<T>, T> refToSelected = 
 			ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 		
-		selectedReference = PathReferenceBuilder.from(model, clazz).to(refToSelected);
+		selectedReference = PathReferenceBuilder.from(clazz, model).to(refToSelected);
 		
 		//Make table view, put table in a scroll pane
 		tableView = new SingleSelectionListTableView<T>(model, rowView);

@@ -14,7 +14,7 @@ public class A extends BeanDefault {
 	/**
 	 * The {@link PropName} of the {@link B} property
 	 */
-	public final static PropName<B> B_NAME = PropName.create("b", B.class); 
+	public final static PropName<B> B_NAME = PropName.create(B.class, "b"); 
 	
 	/**
 	 * Transform from {@link A} to its {@link #b()} property

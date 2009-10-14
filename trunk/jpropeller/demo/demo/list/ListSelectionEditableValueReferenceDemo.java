@@ -32,7 +32,7 @@ public class ListSelectionEditableValueReferenceDemo {
 			list.add(Integer.toString(i));
 		}
 		
-		ref = new ListAndSelectionAndValueReferenceDefault<String>(list, String.class);
+		ref = new ListAndSelectionAndValueReferenceDefault<String>(String.class, list);
 		
 		ref.selectedValue().features().addListener(new PrintingChangeListener());
 		

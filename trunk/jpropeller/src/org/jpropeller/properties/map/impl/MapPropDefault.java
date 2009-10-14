@@ -32,85 +32,85 @@ public class MapPropDefault<K, T> extends ChangeablePropDefault<CMap<K,T>> imple
 	/**
 	 * Create a new {@link MapPropDefault}, which will
 	 * always accept new values.
-	 * @param <K> 
-	 * 		The type of key in the map/indexed property
-	 * @param <T> 
-	 * 		The type of data in the map/indexed property
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param keyClass
 	 * 		The class of key in the map
 	 * @param valueClass
 	 * 		The class of value in the map
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param data
 	 * 		The data to contain
+	 * @param <K> 
+	 * 		The type of key in the map/indexed property
+	 * @param <T> 
+	 * 		The type of data in the map/indexed property
 	 * @return
 	 * 		The new {@link MapPropDefault}
 	 */
-	public static <K, T> MapPropDefault<K, T> editable(String name, Class<K> keyClass, Class<T> valueClass, CMap<K, T> data) {
-		return new MapPropDefault<K, T>(PropName.<K,T>createMap(name, keyClass, valueClass), data, AcceptProcessor.<CMap<K, T>>get());
+	public static <K, T> MapPropDefault<K, T> editable(Class<K> keyClass, Class<T> valueClass, String name, CMap<K, T> data) {
+		return new MapPropDefault<K, T>(PropName.<K,T>createMap(keyClass, valueClass, name), data, AcceptProcessor.<CMap<K, T>>get());
 	}
 
 	/**
 	 * Create a new {@link MapPropDefault}, which will
 	 * always accept new values.
-	 * @param <K> 
-	 * 		The type of key in the map/indexed property
-	 * @param <T> 
-	 * 		The type of data in the map/indexed property
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param keyClass
 	 * 		The class of key in the map
 	 * @param valueClass
 	 * 		The class of value in the map
+	 * @param name 
+	 * 		The string value of the property name
+	 * @param <K> 
+	 * 		The type of key in the map/indexed property
+	 * @param <T> 
+	 * 		The type of data in the map/indexed property
 	 * @return
 	 * 		The new {@link MapPropDefault}
 	 */
-	public static <K, T> MapPropDefault<K, T> editable(String name, Class<K> keyClass, Class<T> valueClass) {
-		return editable(name, keyClass, valueClass, new CMapDefault<K, T>());
+	public static <K, T> MapPropDefault<K, T> editable(Class<K> keyClass, Class<T> valueClass, String name) {
+		return editable(keyClass, valueClass, name, new CMapDefault<K, T>());
 	}
 	
 	/**
 	 * Create a new {@link MapPropDefault}, which is
 	 * read only (cannot set a new {@link CMap} value).
-	 * @param <K> 
-	 * 		The type of key in the map/indexed property
-	 * @param <T> 
-	 * 		The type of data in the map/indexed property
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param keyClass
 	 * 		The class of key in the map
 	 * @param valueClass
 	 * 		The class of value in the map
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param data
 	 * 		The data to contain
+	 * @param <K> 
+	 * 		The type of key in the map/indexed property
+	 * @param <T> 
+	 * 		The type of data in the map/indexed property
 	 * @return
 	 * 		The new {@link MapPropDefault}
 	 */
-	public static <K, T> MapPropDefault<K, T> create(String name, Class<K> keyClass, Class<T> valueClass, CMap<K, T> data) {
-		return new MapPropDefault<K, T>(PropName.<K,T>createMap(name, keyClass, valueClass), data, ReadOnlyProcessor.<CMap<K, T>>get());
+	public static <K, T> MapPropDefault<K, T> create(Class<K> keyClass, Class<T> valueClass, String name, CMap<K, T> data) {
+		return new MapPropDefault<K, T>(PropName.<K,T>createMap(keyClass, valueClass, name), data, ReadOnlyProcessor.<CMap<K, T>>get());
 	}
 
 	/**
 	 * Create a new {@link MapPropDefault}, which is
 	 * read only (cannot set a new {@link CMap} value).
-	 * @param <K> 
-	 * 		The type of key in the map/indexed property
-	 * @param <T> 
-	 * 		The type of data in the map/indexed property
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param keyClass
 	 * 		The class of key in the map
 	 * @param valueClass
 	 * 		The class of value in the map
+	 * @param name 
+	 * 		The string value of the property name
+	 * @param <K> 
+	 * 		The type of key in the map/indexed property
+	 * @param <T> 
+	 * 		The type of data in the map/indexed property
 	 * @return
 	 * 		The new {@link MapPropDefault}
 	 */
-	public static <K, T> MapPropDefault<K, T> create(String name, Class<K> keyClass, Class<T> valueClass) {
-		return create(name, keyClass, valueClass, new CMapDefault<K, T>());
+	public static <K, T> MapPropDefault<K, T> create(Class<K> keyClass, Class<T> valueClass, String name) {
+		return create(keyClass, valueClass, name, new CMapDefault<K, T>());
 	}
 	
 	@Override

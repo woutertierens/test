@@ -161,36 +161,36 @@ public class ChangeablePropDefault<T extends Changeable> implements ChangeablePr
 	
 	/**
 	 * Make a new read-only {@link ChangeablePropDefault} 
-	 * @param <S>
-	 * 		The type of {@link Changeable} in the prop
-	 * @param name
-	 * 		The name of the Prop
 	 * @param clazz
 	 * 		The class of the Prop 
+	 * @param name
+	 * 		The name of the Prop
 	 * @param value
 	 * 		The initial value of the Prop
+	 * @param <S>
+	 * 		The type of {@link Changeable} in the prop
 	 * @return
 	 * 		The {@link Prop}
 	 */
-	public static <S extends Changeable> ChangeablePropDefault<S> create(String name, Class<S> clazz, S value) {
-		return new ChangeablePropDefault<S>(PropName.create(name, clazz), value, ReadOnlyProcessor.<S>get());
+	public static <S extends Changeable> ChangeablePropDefault<S> create(Class<S> clazz, String name, S value) {
+		return new ChangeablePropDefault<S>(PropName.create(clazz, name), value, ReadOnlyProcessor.<S>get());
 	}
 	
 	/**
 	 * Make a new {@link ChangeablePropDefault} accepting 
 	 * any value
-	 * @param <S>
-	 * 		The type of {@link Changeable} in the prop
-	 * @param name
-	 * 		The name of the Prop
 	 * @param clazz
 	 * 		The class of the Prop 
+	 * @param name
+	 * 		The name of the Prop
 	 * @param value
 	 * 		The initial value of the Prop
+	 * @param <S>
+	 * 		The type of {@link Changeable} in the prop
 	 * @return
 	 * 		The Prop
 	 */
-	public static <S extends Changeable> ChangeablePropDefault<S> editable(String name, Class<S> clazz, S value) {
-		return new ChangeablePropDefault<S>(PropName.create(name, clazz), value, AcceptProcessor.<S>get());
+	public static <S extends Changeable> ChangeablePropDefault<S> editable(Class<S> clazz, String name, S value) {
+		return new ChangeablePropDefault<S>(PropName.create(clazz, name), value, AcceptProcessor.<S>get());
 	}
 }

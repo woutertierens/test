@@ -12,7 +12,7 @@ public class B extends BeanDefault {
 	/**
 	 * The {@link PropName} of the {@link C} property
 	 */
-	public final static PropName<C> C_NAME = PropName.create("c", C.class); 
+	public final static PropName<C> C_NAME = PropName.create(C.class, "c"); 
 	
 	private Prop<C> c = editable(C.class, "c", null);
 	

@@ -46,7 +46,7 @@ public class MapLookupCalculation<K, V> implements Calculation<V> {
 			Prop< ? extends CMap<? super K, ? extends V>> map,
 			Prop< ? extends K> key) {
 		MapLookupCalculation<K, V> calc = new MapLookupCalculation<K, V>(map, key);
-		return new CalculatedProp<V>(PropName.create(name, clazz), calc);
+		return new CalculatedProp<V>(PropName.create(clazz, name), calc);
 	}
 	
 	/**

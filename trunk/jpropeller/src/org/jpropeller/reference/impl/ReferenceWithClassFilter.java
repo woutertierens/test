@@ -43,8 +43,8 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	 * @return				A new reference
 	 */
 	public static <S> ReferenceWithClassFilter<S> create(Class<S> clazz, Prop<? super S> filteredProp) {
-		PropName<S> name = PropName.create("value", clazz);
-		ClassFilterProp<S> prop = new ClassFilterProp<S>(name, filteredProp, clazz);
+		PropName<S> name = PropName.create(clazz, "value");
+		ClassFilterProp<S> prop = new ClassFilterProp<S>(clazz, name, filteredProp);
 		return new ReferenceWithClassFilter<S>(prop);
 	}
 
@@ -59,8 +59,8 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	 * @return				A new reference
 	 */
 	public static <S> ReferenceWithClassFilter<S> create(Class<S> clazz, Reference<? super S> filteredRef) {
-		PropName<S> name = PropName.create("value", clazz);
-		ClassFilterProp<S> prop = new ClassFilterProp<S>(name, filteredRef.value(), clazz);
+		PropName<S> name = PropName.create(clazz, "value");
+		ClassFilterProp<S> prop = new ClassFilterProp<S>(clazz, name, filteredRef.value());
 		return new ReferenceWithClassFilter<S>(prop);
 	}
 
@@ -89,8 +89,8 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	//See docs for reasoning behind suppression
 	@SuppressWarnings("unchecked")
 	public static ReferenceWithClassFilter createUnsafe(Class clazz, Prop filteredProp) {
-		PropName name = PropName.create("value", clazz);
-		ClassFilterProp prop = new ClassFilterProp(name, filteredProp, clazz);
+		PropName name = PropName.create(clazz, "value");
+		ClassFilterProp prop = new ClassFilterProp(clazz, name, filteredProp);
 		return new ReferenceWithClassFilter(prop);
 	}
 
@@ -121,8 +121,8 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	//See docs for reasoning behind suppression
 	@SuppressWarnings("unchecked")
 	public static ReferenceWithClassFilter createUnsafe(Class clazz, Reference filteredRef) {
-		PropName name = PropName.create("value", clazz);
-		ClassFilterProp prop = new ClassFilterProp(name, filteredRef.value(), clazz);
+		PropName name = PropName.create(clazz, "value");
+		ClassFilterProp prop = new ClassFilterProp(clazz, name, filteredRef.value());
 		return new ReferenceWithClassFilter(prop);
 	}
 }

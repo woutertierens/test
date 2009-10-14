@@ -51,7 +51,7 @@ public class ReferenceToChangeable<M extends Changeable> implements Reference<M>
 	 * 		A new reference
 	 */
 	public static <S extends Changeable> ReferenceToChangeable<S> create(Class<S> clazz, S value) {
-		return new ReferenceToChangeable<S>(ChangeablePropDefault.editable("value", clazz, value));
+		return new ReferenceToChangeable<S>(ChangeablePropDefault.editable(clazz, "value", value));
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class ReferenceToChangeable<M extends Changeable> implements Reference<M>
 	 * 		A new reference
 	 */
 	public static <S extends Changeable> ReferenceToChangeable<CList<S>> createObservableListReference(Class<S> clazz, CList<S> value) {
-		Prop<CList<S>> prop = ListPropDefault.editable("value", clazz, value);
+		Prop<CList<S>> prop = ListPropDefault.editable(clazz, "value", value);
 		return new ReferenceToChangeable<CList<S>>(prop);
 	}
 	
@@ -86,7 +86,7 @@ public class ReferenceToChangeable<M extends Changeable> implements Reference<M>
 	 * 		A new reference
 	 */
 	public static <K, S extends Changeable> ReferenceToChangeable<CMap<K, S>> createObservableMapReference(Class<K> keyClass, Class<S> valueClass, CMap<K, S> value) {
-		Prop<CMap<K, S>> prop = MapPropDefault.editable("value", keyClass, valueClass, value);
+		Prop<CMap<K, S>> prop = MapPropDefault.editable(keyClass, valueClass, "value", value);
 		return new ReferenceToChangeable<CMap<K, S>>(prop);
 	}
 	

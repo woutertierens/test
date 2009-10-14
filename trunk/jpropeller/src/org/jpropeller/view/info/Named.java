@@ -19,7 +19,7 @@ public interface Named {
 	/**
 	 * The {@link PropName} for {@link #name()} property
 	 */
-	public final static PropName<String> NAME = PropName.create("name", String.class); 
+	public final static PropName<String> NAME = PropName.create(String.class, "name"); 
 
 	/**
 	 * Path to {@link #name()}

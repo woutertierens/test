@@ -19,7 +19,7 @@ public class AdditionBean extends BeanDefault {
 	//The generic array is unimportant - we know CalculatedProp never relies on its type, but unfortunately we can't suppress the warning in CalculatedProp itself
 	@SuppressWarnings("unchecked")
 	Prop<Double> c = addProp(new CalculatedProp<Double>(
-			PropName.create("c", Double.class), new PropAddition(a, b)));
+			PropName.create(Double.class, "c"), new PropAddition(a, b)));
 
 	/**
 	 * Access property a

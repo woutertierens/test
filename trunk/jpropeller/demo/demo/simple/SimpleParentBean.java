@@ -21,7 +21,7 @@ public class SimpleParentBean implements Bean {
 	}
 
 	private Prop<Double> d = services.add(PropImmutable.editable("d", 1.1d));
-	private Prop<SimpleBean> s = services.add(ChangeablePropDefault.editable("s", SimpleBean.class, null));
+	private Prop<SimpleBean> s = services.add(ChangeablePropDefault.editable(SimpleBean.class, "s", null));
 	
 	/**
 	 * Property

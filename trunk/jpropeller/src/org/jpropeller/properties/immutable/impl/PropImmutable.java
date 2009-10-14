@@ -175,9 +175,9 @@ public class PropImmutable<T> implements Prop<T> {
 	
 	/**
 	 * Create a prop
+	 * @param clazz 
 	 * @param name
 	 * 		The name of the prop
-	 * @param clazz 
 	 * @param value
 	 * 		The initial value of the prop
 	 * @return
@@ -185,46 +185,13 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @param <S>
 	 * 		The type of value in the {@link Prop} 
 	 */
-	public static <S extends Immutable> PropImmutable<S> create(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, ReadOnlyProcessor.<S>get());
+	public static <S extends Immutable> PropImmutable<S> create(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, ReadOnlyProcessor.<S>get());
 	}
 
 	/**
 	 * Create a prop
-	 * @param name
-	 * 		The name of the prop
 	 * @param clazz 
-	 * @param value
-	 * 		The initial value of the prop
-	 * @return
-	 * 		The new prop
-	 * @param <S>
-	 * 		The type of value in the {@link Prop} 
-	 */
-	public static <S extends Enum<S>> PropImmutable<S> create(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, ReadOnlyProcessor.<S>get());
-	}
-	
-	
-	/**
-	 * Create a prop
-	 * @param name
-	 * 		The name of the prop
-	 * @param clazz
-	 * 		The {@link Class} of {@link Enum} 
-	 * @param value
-	 * 		The initial value of the prop
-	 * @return
-	 * 		The new prop
-	 * @param <S>
-	 * 		The type of value in the {@link Prop} 
-	 */
-	public static <S extends Immutable> PropImmutable<S> editable(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, AcceptProcessor.<S>get());
-	}
-	
-	/**
-	 * Create a prop
 	 * @param name
 	 * 		The name of the prop
 	 * @param value
@@ -233,11 +200,44 @@ public class PropImmutable<T> implements Prop<T> {
 	 * 		The new prop
 	 * @param <S>
 	 * 		The type of value in the {@link Prop} 
+	 */
+	public static <S extends Enum<S>> PropImmutable<S> create(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, ReadOnlyProcessor.<S>get());
+	}
+	
+	
+	/**
+	 * Create a prop
 	 * @param clazz
 	 * 		The {@link Class} of {@link Enum} 
+	 * @param name
+	 * 		The name of the prop
+	 * @param value
+	 * 		The initial value of the prop
+	 * @return
+	 * 		The new prop
+	 * @param <S>
+	 * 		The type of value in the {@link Prop} 
 	 */
-	public static <S extends Enum<S>> PropImmutable<S> editable(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, AcceptProcessor.<S>get());
+	public static <S extends Immutable> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, AcceptProcessor.<S>get());
+	}
+	
+	/**
+	 * Create a prop
+	 * @param clazz
+	 * 		The {@link Class} of {@link Enum} 
+	 * @param name
+	 * 		The name of the prop
+	 * @param value
+	 * 		The initial value of the prop
+	 * @return
+	 * 		The new prop
+	 * @param <S>
+	 * 		The type of value in the {@link Prop} 
+	 */
+	public static <S extends Enum<S>> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, AcceptProcessor.<S>get());
 	}
 	
 
@@ -256,7 +256,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<String> create(String name, String value){
-		return new PropImmutable<String>(PropName.create(name, String.class), value, ReadOnlyProcessor.<String>get());
+		return new PropImmutable<String>(PropName.create(String.class, name), value, ReadOnlyProcessor.<String>get());
 	}
 	/**
 	 * Make a new String {@link Prop}
@@ -266,7 +266,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<String> create(String name, String value, ValueProcessor<String> processor){
-		return new PropImmutable<String>(PropName.create(name, String.class), value, processor);
+		return new PropImmutable<String>(PropName.create(String.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable String {@link Prop}, accepting all values
@@ -275,7 +275,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<String> editable(String name, String value){
-		return new PropImmutable<String>(PropName.create(name, String.class), value, AcceptProcessor.<String>get());
+		return new PropImmutable<String>(PropName.create(String.class, name), value, AcceptProcessor.<String>get());
 	}
 	/**
 	 * Make a new read-only Boolean {@link Prop}
@@ -284,7 +284,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Boolean> create(String name, Boolean value){
-		return new PropImmutable<Boolean>(PropName.create(name, Boolean.class), value, ReadOnlyProcessor.<Boolean>get());
+		return new PropImmutable<Boolean>(PropName.create(Boolean.class, name), value, ReadOnlyProcessor.<Boolean>get());
 	}
 	/**
 	 * Make a new Boolean {@link Prop}
@@ -294,7 +294,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Boolean> create(String name, Boolean value, ValueProcessor<Boolean> processor){
-		return new PropImmutable<Boolean>(PropName.create(name, Boolean.class), value, processor);
+		return new PropImmutable<Boolean>(PropName.create(Boolean.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Boolean {@link Prop}, accepting all values
@@ -303,14 +303,14 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Boolean> editable(String name, Boolean value){
-		return new PropImmutable<Boolean>(PropName.create(name, Boolean.class), value, AcceptProcessor.<Boolean>get());
+		return new PropImmutable<Boolean>(PropName.create(Boolean.class, name), value, AcceptProcessor.<Boolean>get());
 	}
 
 	/**
 	 * Create a prop
+	 * @param clazz 
 	 * @param name
 	 * 		The name of the prop
-	 * @param clazz 
 	 * @param value
 	 * 		The initial value of the prop
 	 * @return
@@ -318,8 +318,8 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @param <S>
 	 * 		The type of value in the {@link Prop} 
 	 */
-	public static <S> PropImmutable<S> create(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, ReadOnlyProcessor.<S>get());
+	public static <S> PropImmutable<S> create(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, ReadOnlyProcessor.<S>get());
 	}
 	
 	/**
@@ -329,7 +329,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Byte> create(String name, Byte value){
-		return new PropImmutable<Byte>(PropName.create(name, Byte.class), value, ReadOnlyProcessor.<Byte>get());
+		return new PropImmutable<Byte>(PropName.create(Byte.class, name), value, ReadOnlyProcessor.<Byte>get());
 	}
 	/**
 	 * Make a new Byte {@link Prop}
@@ -339,7 +339,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Byte> create(String name, Byte value, ValueProcessor<Byte> processor){
-		return new PropImmutable<Byte>(PropName.create(name, Byte.class), value, processor);
+		return new PropImmutable<Byte>(PropName.create(Byte.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Byte {@link Prop}, accepting all values
@@ -348,7 +348,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Byte> editable(String name, Byte value){
-		return new PropImmutable<Byte>(PropName.create(name, Byte.class), value, AcceptProcessor.<Byte>get());
+		return new PropImmutable<Byte>(PropName.create(Byte.class, name), value, AcceptProcessor.<Byte>get());
 	}
 	/**
 	 * Make a new read-only Short {@link Prop}
@@ -357,7 +357,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Short> create(String name, Short value){
-		return new PropImmutable<Short>(PropName.create(name, Short.class), value, ReadOnlyProcessor.<Short>get());
+		return new PropImmutable<Short>(PropName.create(Short.class, name), value, ReadOnlyProcessor.<Short>get());
 	}
 	/**
 	 * Make a new Short {@link Prop}
@@ -367,7 +367,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Short> create(String name, Short value, ValueProcessor<Short> processor){
-		return new PropImmutable<Short>(PropName.create(name, Short.class), value, processor);
+		return new PropImmutable<Short>(PropName.create(Short.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Short {@link Prop}, accepting all values
@@ -376,7 +376,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Short> editable(String name, Short value){
-		return new PropImmutable<Short>(PropName.create(name, Short.class), value, AcceptProcessor.<Short>get());
+		return new PropImmutable<Short>(PropName.create(Short.class, name), value, AcceptProcessor.<Short>get());
 	}
 	/**
 	 * Make a new read-only Integer {@link Prop}
@@ -385,7 +385,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Integer> create(String name, Integer value){
-		return new PropImmutable<Integer>(PropName.create(name, Integer.class), value, ReadOnlyProcessor.<Integer>get());
+		return new PropImmutable<Integer>(PropName.create(Integer.class, name), value, ReadOnlyProcessor.<Integer>get());
 	}
 	/**
 	 * Make a new Integer {@link Prop}
@@ -395,7 +395,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Integer> create(String name, Integer value, ValueProcessor<Integer> processor){
-		return new PropImmutable<Integer>(PropName.create(name, Integer.class), value, processor);
+		return new PropImmutable<Integer>(PropName.create(Integer.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Integer {@link Prop}, accepting all values
@@ -404,7 +404,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Integer> editable(String name, Integer value){
-		return new PropImmutable<Integer>(PropName.create(name, Integer.class), value, AcceptProcessor.<Integer>get());
+		return new PropImmutable<Integer>(PropName.create(Integer.class, name), value, AcceptProcessor.<Integer>get());
 	}
 	/**
 	 * Make a new read-only Long {@link Prop}
@@ -413,7 +413,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Long> create(String name, Long value){
-		return new PropImmutable<Long>(PropName.create(name, Long.class), value, ReadOnlyProcessor.<Long>get());
+		return new PropImmutable<Long>(PropName.create(Long.class, name), value, ReadOnlyProcessor.<Long>get());
 	}
 	/**
 	 * Make a new Long {@link Prop}
@@ -423,7 +423,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Long> create(String name, Long value, ValueProcessor<Long> processor){
-		return new PropImmutable<Long>(PropName.create(name, Long.class), value, processor);
+		return new PropImmutable<Long>(PropName.create(Long.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Long {@link Prop}, accepting all values
@@ -432,7 +432,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Long> editable(String name, Long value){
-		return new PropImmutable<Long>(PropName.create(name, Long.class), value, AcceptProcessor.<Long>get());
+		return new PropImmutable<Long>(PropName.create(Long.class, name), value, AcceptProcessor.<Long>get());
 	}
 	/**
 	 * Make a new read-only Float {@link Prop}
@@ -441,7 +441,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Float> create(String name, Float value){
-		return new PropImmutable<Float>(PropName.create(name, Float.class), value, ReadOnlyProcessor.<Float>get());
+		return new PropImmutable<Float>(PropName.create(Float.class, name), value, ReadOnlyProcessor.<Float>get());
 	}
 	/**
 	 * Make a new Float {@link Prop}
@@ -451,7 +451,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Float> create(String name, Float value, ValueProcessor<Float> processor){
-		return new PropImmutable<Float>(PropName.create(name, Float.class), value, processor);
+		return new PropImmutable<Float>(PropName.create(Float.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Float {@link Prop}, accepting all values
@@ -460,7 +460,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Float> editable(String name, Float value){
-		return new PropImmutable<Float>(PropName.create(name, Float.class), value, AcceptProcessor.<Float>get());
+		return new PropImmutable<Float>(PropName.create(Float.class, name), value, AcceptProcessor.<Float>get());
 	}
 	/**
 	 * Make a new read-only Double {@link Prop}
@@ -469,7 +469,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Double> create(String name, Double value){
-		return new PropImmutable<Double>(PropName.create(name, Double.class), value, ReadOnlyProcessor.<Double>get());
+		return new PropImmutable<Double>(PropName.create(Double.class, name), value, ReadOnlyProcessor.<Double>get());
 	}
 	/**
 	 * Make a new Double {@link Prop}
@@ -479,7 +479,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Double> create(String name, Double value, ValueProcessor<Double> processor){
-		return new PropImmutable<Double>(PropName.create(name, Double.class), value, processor);
+		return new PropImmutable<Double>(PropName.create(Double.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable Double {@link Prop}, accepting all values
@@ -488,7 +488,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Double> editable(String name, Double value){
-		return new PropImmutable<Double>(PropName.create(name, Double.class), value, AcceptProcessor.<Double>get());
+		return new PropImmutable<Double>(PropName.create(Double.class, name), value, AcceptProcessor.<Double>get());
 	}
 	/**
 	 * Make a new read-only DateTime {@link Prop}
@@ -497,7 +497,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<DateTime> create(String name, DateTime value){
-		return new PropImmutable<DateTime>(PropName.create(name, DateTime.class), value, ReadOnlyProcessor.<DateTime>get());
+		return new PropImmutable<DateTime>(PropName.create(DateTime.class, name), value, ReadOnlyProcessor.<DateTime>get());
 	}
 	/**
 	 * Make a new DateTime {@link Prop}
@@ -507,7 +507,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<DateTime> create(String name, DateTime value, ValueProcessor<DateTime> processor){
-		return new PropImmutable<DateTime>(PropName.create(name, DateTime.class), value, processor);
+		return new PropImmutable<DateTime>(PropName.create(DateTime.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable DateTime {@link Prop}, accepting all values
@@ -516,7 +516,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<DateTime> editable(String name, DateTime value){
-		return new PropImmutable<DateTime>(PropName.create(name, DateTime.class), value, AcceptProcessor.<DateTime>get());
+		return new PropImmutable<DateTime>(PropName.create(DateTime.class, name), value, AcceptProcessor.<DateTime>get());
 	}
 	/**
 	 * Make a new read-only Color {@link Prop}
@@ -525,7 +525,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Color> create(String name, Color value){
-		return new PropImmutable<Color>(PropName.create(name, Color.class), value, ReadOnlyProcessor.<Color>get());
+		return new PropImmutable<Color>(PropName.create(Color.class, name), value, ReadOnlyProcessor.<Color>get());
 	}
 	/**
 	 * Make a new Color {@link Prop}
@@ -535,14 +535,14 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<Color> create(String name, Color value, ValueProcessor<Color> processor){
-		return new PropImmutable<Color>(PropName.create(name, Color.class), value, processor);
+		return new PropImmutable<Color>(PropName.create(Color.class, name), value, processor);
 	}
 	/**
 	 * Create a prop
-	 * @param name
-	 * 		The name of the prop
 	 * @param clazz
 	 * 		The {@link Class}. 
+	 * @param name
+	 * 		The name of the prop
 	 * @param value
 	 * 		The initial value of the prop
 	 * @return
@@ -550,8 +550,8 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @param <S>
 	 * 		The type of value in the {@link Prop} 
 	 */
-	public static <S> PropImmutable<S> editable(String name, Class<S> clazz, S value) {
-		return new PropImmutable<S>(PropName.create(name, clazz), value, AcceptProcessor.<S>get());
+	public static <S> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
+		return new PropImmutable<S>(PropName.create(clazz, name), value, AcceptProcessor.<S>get());
 	}
 	
 	/**
@@ -564,7 +564,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * 		The new prop
 	 */
 	public final static PropImmutable<Color> editable(String name, Color value){
-		return new PropImmutable<Color>(PropName.create(name, Color.class), value, AcceptProcessor.<Color>get());
+		return new PropImmutable<Color>(PropName.create(Color.class, name), value, AcceptProcessor.<Color>get());
 	}
 	
 	
@@ -575,7 +575,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<ImmutableIcon> create(String name, ImmutableIcon value){
-		return new PropImmutable<ImmutableIcon>(PropName.create(name, ImmutableIcon.class), value, ReadOnlyProcessor.<ImmutableIcon>get());
+		return new PropImmutable<ImmutableIcon>(PropName.create(ImmutableIcon.class, name), value, ReadOnlyProcessor.<ImmutableIcon>get());
 	}
 	/**
 	 * Make a new ImmutableIcon {@link Prop}
@@ -585,7 +585,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<ImmutableIcon> create(String name, ImmutableIcon value, ValueProcessor<ImmutableIcon> processor){
-		return new PropImmutable<ImmutableIcon>(PropName.create(name, ImmutableIcon.class), value, processor);
+		return new PropImmutable<ImmutableIcon>(PropName.create(ImmutableIcon.class, name), value, processor);
 	}
 	/**
 	 * Make a new editable ImmutableIcon {@link Prop}, accepting all values
@@ -594,7 +594,7 @@ public class PropImmutable<T> implements Prop<T> {
 	 * @return			The new {@link Prop}
 	 */
 	public final static PropImmutable<ImmutableIcon> editable(String name, ImmutableIcon value){
-		return new PropImmutable<ImmutableIcon>(PropName.create(name, ImmutableIcon.class), value, AcceptProcessor.<ImmutableIcon>get());
+		return new PropImmutable<ImmutableIcon>(PropName.create(ImmutableIcon.class, name), value, AcceptProcessor.<ImmutableIcon>get());
 	}
 
 
