@@ -230,7 +230,7 @@ public class TestObservableListCalculated {
 		MultiplesListCalc calc = new MultiplesListCalc(a.intProp(), b.intProp());
 		CListCalculated<Integer> list = new CListCalculated<Integer>(calc);
 		
-		final ListAndSelectionAndValueReference<Integer> listRef = new ListAndSelectionAndValueReferenceDefault<Integer>(list, Integer.class);
+		final ListAndSelectionAndValueReference<Integer> listRef = new ListAndSelectionAndValueReferenceDefault<Integer>(Integer.class, list);
 		ListTableView<Integer> listView = new ListTableView<Integer>(listRef, new TableRowViewDirect<Integer>(Integer.class, "Values"));
 		JScrollPane listScroll = new JScrollPane(listView.getComponent());
 		listScroll.setMinimumSize(new Dimension(100, 100));

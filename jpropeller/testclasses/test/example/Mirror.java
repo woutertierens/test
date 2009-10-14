@@ -36,7 +36,7 @@ public class Mirror extends BeanDefault {
 	/**
 	 * The {@link PropName} for {@link #s()} property
 	 */
-	public final static PropName<String> S_NAME = PropName.create("s", String.class);
+	public final static PropName<String> S_NAME = PropName.create(String.class, "s");
 
 	//Set up Props
 	private Prop<String> s = editable("s", "default s value");

@@ -42,7 +42,7 @@ public class ListSelectionProp implements Prop<Integer> {
 	 * @param list		The list in which a selection is tracked
 	 */
 	public ListSelectionProp(CList<?> list) {
-		this(PropName.create("selection", Integer.class), list);
+		this(PropName.create(Integer.class, "selection"), list);
 	}
 
 	/**

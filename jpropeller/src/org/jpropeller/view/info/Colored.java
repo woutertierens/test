@@ -20,7 +20,7 @@ public interface Colored {
 	/**
 	 * The {@link PropName} for {@link #color()} property
 	 */
-	public final static PropName<Color> COLOR = PropName.create("color", Color.class); 
+	public final static PropName<Color> COLOR = PropName.create(Color.class, "color"); 
 
 	/**
 	 * Path to {@link #color()}

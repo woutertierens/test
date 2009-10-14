@@ -20,18 +20,18 @@ public class ListAndSelectionReferenceDefault<T> extends BeanDefault implements 
 
 	/**
 	 * Make a new {@link ListAndSelectionReferenceDefault}
-	 * @param list
-	 * 		The initial list value in the {@link ListAndSelectionReferenceDefault}
 	 * @param clazz
 	 * 		The class of value in the list 
+	 * @param list
+	 * 		The initial list value in the {@link ListAndSelectionReferenceDefault}
 	 */
-	public ListAndSelectionReferenceDefault(CList<T> list, Class<T> clazz) {
-		Prop<CList<T>> valueProp = ListPropDefault.editable("model", clazz, list);
+	public ListAndSelectionReferenceDefault(Class<T> clazz, CList<T> list) {
+		Prop<CList<T>> valueProp = ListPropDefault.editable(clazz, "model", list);
 
 		value = addProp(valueProp);
 		
 		//Tracks selection within whichever list is in the "list" prop
-		selection = addProp(new ListSelectionReferenceProp<T>(PropName.create("selection", Integer.class), value));
+		selection = addProp(new ListSelectionReferenceProp<T>(PropName.create(Integer.class, "selection"), value));
 	}
 
 	@Override

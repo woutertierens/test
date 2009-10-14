@@ -53,7 +53,7 @@ public class PropViewFactoryRecursive implements PropViewFactory {
 		
 		if (!displayedName.isTGeneric() && Bean.class.isAssignableFrom(displayedName.getPropClass())) {
 			final PathReference<Bean> ref = 
-				PathReferenceBuilder.fromRef(model, Bean.class).to((PropName<Bean>)displayedName);
+				PathReferenceBuilder.fromRef(Bean.class, model).to((PropName<Bean>)displayedName);
 			
 			if(view == null) {
 				view = RecursiveBeanEditor.create(ref, this, false);

@@ -37,19 +37,19 @@ public class SetPropDefault<T> extends ChangeablePropDefault<CSet<T>> implements
 	/**
 	 * Create a new {@link SetPropDefault},
 	 * accepting all new values
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param clazz
 	 * 		The class of data in the set
-	 * @param <S> 
-	 * 		The type of data in the set
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param value
 	 * 		The initial value of the {@link Prop}
+	 * @param <S> 
+	 * 		The type of data in the set
 	 * @return
 	 * 		The new {@link SetPropDefault}
 	 */
-	public static <S> SetPropDefault<S> editable(String name, Class<S> clazz, CSet<S> value) {
-		return new SetPropDefault<S>(PropName.createSet(name, clazz), value, AcceptProcessor.<CSet<S>>get());
+	public static <S> SetPropDefault<S> editable(Class<S> clazz, String name, CSet<S> value) {
+		return new SetPropDefault<S>(PropName.createSet(clazz, name), value, AcceptProcessor.<CSet<S>>get());
 	}
 	
 
@@ -57,35 +57,35 @@ public class SetPropDefault<T> extends ChangeablePropDefault<CSet<T>> implements
 	 * Create a new {@link SetPropDefault} with an
 	 * initial value of an empty new {@link CSetDefault},
 	 * accepting all new values.
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param clazz
 	 * 		The class of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param <S> 
 	 * 		The type of data in the list/indexed property
 	 * @return
 	 * 		The new {@link SetPropDefault}
 	 */
-	public static <S> SetPropDefault<S> editable(String name, Class<S> clazz) {
-		return editable(name, clazz, new CSetDefault<S>());
+	public static <S> SetPropDefault<S> editable(Class<S> clazz, String name) {
+		return editable(clazz, name, new CSetDefault<S>());
 	}
 
 	/**
 	 * Create a new {@link SetPropDefault},
 	 * with read-only behaviour
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param clazz
 	 * 		The class of data in the set
-	 * @param <S> 
-	 * 		The type of data in the set
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param value
 	 * 		The initial value of the {@link Prop}
+	 * @param <S> 
+	 * 		The type of data in the set
 	 * @return
 	 * 		The new {@link SetPropDefault}
 	 */
-	public static <S> SetPropDefault<S> create(String name, Class<S> clazz, CSet<S> value) {
-		return new SetPropDefault<S>(PropName.createSet(name, clazz), value, ReadOnlyProcessor.<CSet<S>>get());
+	public static <S> SetPropDefault<S> create(Class<S> clazz, String name, CSet<S> value) {
+		return new SetPropDefault<S>(PropName.createSet(clazz, name), value, ReadOnlyProcessor.<CSet<S>>get());
 	}
 	
 
@@ -93,17 +93,17 @@ public class SetPropDefault<T> extends ChangeablePropDefault<CSet<T>> implements
 	 * Create a new {@link SetPropDefault} with an
 	 * initial value of an empty new {@link CSetDefault},
 	 * with read-only behaviour
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param clazz
 	 * 		The class of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param <S> 
 	 * 		The type of data in the list/indexed property
 	 * @return
 	 * 		The new {@link SetPropDefault}
 	 */
-	public static <S> SetPropDefault<S> create(String name, Class<S> clazz) {
-		return create(name, clazz, new CSetDefault<S>());
+	public static <S> SetPropDefault<S> create(Class<S> clazz, String name) {
+		return create(clazz, name, new CSetDefault<S>());
 	}
 	
 	@Override

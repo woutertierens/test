@@ -42,21 +42,21 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, T> {
 	 * Start a {@link PathReferenceBuilder} that can be used to build a {@link PathReference}
 	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * The {@link PathReference} will have a read-only {@link Reference#value()}.
+	 * @param clazz
+	 * 		The class at the end of the path
+	 * @param pathRoot
+	 * 		The root of the path
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
 	 * 		The type of data in the final prop reached by the path
-	 * @param pathRoot
-	 * 		The root of the path
-	 * @param clazz
-	 * 		The class at the end of the path
 	 * @return
 	 * 		A builder to be used to make an {@link PathReference}
 	 */
-	public static <R extends Bean, T> PathReferenceBuilder<R, R, T> from(R pathRoot, Class<T> clazz) {
+	public static <R extends Bean, T> PathReferenceBuilder<R, R, T> from(Class<T> clazz, R pathRoot) {
 		return new PathReferenceBuilder<R, R, T>(
 				pathRoot, 
-				PathPropBuilder.<R, T>from("value", clazz, pathRoot, ReadOnlyProcessor.<T>get()),
+				PathPropBuilder.<R, T>from(clazz, "value", pathRoot, ReadOnlyProcessor.<T>get()),
 				clazz
 				);
 	}
@@ -65,19 +65,19 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, T> {
 	 * Start a {@link PathReferenceBuilder} that can be used to build a {@link PathReference}
 	 * by use of {@link #via(Transformer)} and {@link #to(Transformer)} methods.
 	 * The final prop in the path must be to a {@link CList}
+	 * @param clazz
+	 * 		The class at the end of the path
+	 * @param pathRoot
+	 * 		The root of the path
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
 	 * 		The type of data in the final prop reached by the path
-	 * @param pathRoot
-	 * 		The root of the path
-	 * @param clazz
-	 * 		The class at the end of the path
 	 * @return
 	 * 		A builder to be used to make an {@link PathReference}
 	 */
-	public static <R extends Bean, T> PathReferenceBuilder<R, R, CList<T>> listFrom(R pathRoot, Class<T> clazz) {
-		return from(PropName.createList("value", clazz), pathRoot);
+	public static <R extends Bean, T> PathReferenceBuilder<R, R, CList<T>> listFrom(Class<T> clazz, R pathRoot) {
+		return from(PropName.createList(clazz, "value"), pathRoot);
 	}
 	
 	/**
@@ -87,21 +87,21 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, T> {
 	 * The path will start from the specified {@link Reference}, and initially go to
 	 * the value of that {@link Reference}. The path can then be extended on from
 	 * the value.
+	 * @param clazz
+	 * 		The class at the end of the path
+	 * @param reference
+	 * 		The reference at the root of the path
 	 * @param <M>
 	 * 		The type of value in the reference at the root of the path
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
 	 * 		The type of data in the final prop reached by the path
-	 * @param reference
-	 * 		The reference at the root of the path
-	 * @param clazz
-	 * 		The class at the end of the path
 	 * @return
 	 * 		A builder to be used to make an {@link PathReference}
 	 */
-	public static <M extends Bean, R extends Reference<M>, T> PathReferenceBuilder<R, M, CList<T>> listFromRef(R reference, Class<T> clazz) {
-		return from(PropName.createList("value", clazz), reference).via(Paths.modelToValue(reference));
+	public static <M extends Bean, R extends Reference<M>, T> PathReferenceBuilder<R, M, CList<T>> listFromRef(Class<T> clazz, R reference) {
+		return from(PropName.createList(clazz, "value"), reference).via(Paths.modelToValue(reference));
 	}
 	
 	/**
@@ -110,21 +110,21 @@ public class PathReferenceBuilder<R extends Bean, D extends Bean, T> {
 	 * The path will start from the specified {@link Reference}, and initially go to
 	 * the value of that {@link Reference}. The path can then be extended on from
 	 * the value.
+	 * @param clazz
+	 * 		The class at the end of the path
+	 * @param reference
+	 * 		The reference at the root of the path
 	 * @param <M>
 	 * 		The type of value in the reference at the root of the path
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
 	 * 		The type of data in the final prop reached by the path
-	 * @param reference
-	 * 		The reference at the root of the path
-	 * @param clazz
-	 * 		The class at the end of the path
 	 * @return
 	 * 		A builder to be used to make an {@link PathReference}
 	 */
-	public static <M extends Bean, R extends Reference<M>, T> PathReferenceBuilder<R, M, T> fromRef(R reference, Class<T> clazz) {
-		return from(reference, clazz).via(Paths.modelToValue(reference));
+	public static <M extends Bean, R extends Reference<M>, T> PathReferenceBuilder<R, M, T> fromRef(Class<T> clazz, R reference) {
+		return from(clazz, reference).via(Paths.modelToValue(reference));
 	}
 	
 	/**

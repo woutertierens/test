@@ -49,9 +49,9 @@ public class ListViewFactory implements PropViewFactory {
 				return (Prop<CList<?>>) s.features().getUnsafe(displayedName);
 			}
 		}; 
-		Prop<CList<?>> pathProp = PathReferenceBuilder.listFromRef(model, (Class)genericType).to(transformer).value();
+		Prop<CList<?>> pathProp = PathReferenceBuilder.listFromRef((Class)genericType, model).to(transformer).value();
 		final ListAndSelectionAndValueReference<?> ref = 
-			new ListAndSelectionAndValueReferenceDefault(pathProp, genericType);
+			new ListAndSelectionAndValueReferenceDefault(genericType, pathProp);
 		
 		//FIXME Is this required, or can it be a normal row view
 		TableRowView<?> rowView = new TableRowView<?>(){

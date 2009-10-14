@@ -31,7 +31,7 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 		super();
 		this.model = model;
 	
-		Reference<T> ref = PathReferenceBuilder.fromRef(model, displayedName.getPropClass()).to(displayedName);	
+		Reference<T> ref = PathReferenceBuilder.fromRef(displayedName.getPropClass(), model).to(displayedName);	
 		view = viewSource.get(ref);
 	}
 

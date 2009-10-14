@@ -45,7 +45,7 @@ public class BooleanChoiceCalculation<V> implements Calculation<V> {
 			Prop<Boolean> choice,
 			Prop<? extends V> first,
 			Prop<? extends V> second) {
-		return create(PropName.create(name, clazz), choice, first, second);
+		return create(PropName.create(clazz, name), choice, first, second);
 	}
 	
 	/**
@@ -66,7 +66,7 @@ public class BooleanChoiceCalculation<V> implements Calculation<V> {
 			Prop<Boolean> choice,
 			Prop<? extends CList<V>> first,
 			Prop<? extends CList<V>> second) {
-		return create(PropName.createList(name, clazz), choice, first, second);
+		return create(PropName.createList(clazz, name), choice, first, second);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class BooleanChoiceCalculation<V> implements Calculation<V> {
 			Prop<Boolean> choice,
 			Prop<? extends CMap<K, V>> first,
 			Prop<? extends CMap<K, V>> second) {
-		return create(PropName.createMap(name, keyClass, valueClass), choice, first, second);
+		return create(PropName.createMap(keyClass, valueClass, name), choice, first, second);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class BooleanChoiceCalculation<V> implements Calculation<V> {
 			Prop<Boolean> choice,
 			Prop<? extends CList<V>> first,
 			Prop<? extends CList<V>> second) {
-		return ReferenceDefault.create(create(PropName.createList("value", clazz), choice, first, second));
+		return ReferenceDefault.create(create(PropName.createList(clazz, "value"), choice, first, second));
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class BooleanChoiceCalculation<V> implements Calculation<V> {
 			Prop<Boolean> choice,
 			Prop<? extends CMap<K, V>> first,
 			Prop<? extends CMap<K, V>> second) {
-		return ReferenceDefault.create(create(PropName.createMap("value", keyClass, valueClass), choice, first, second));
+		return ReferenceDefault.create(create(PropName.createMap(keyClass, valueClass, "value"), choice, first, second));
 	}
 	
 	

@@ -41,33 +41,33 @@ public class ListAndSelectionAndValueReferenceDefault<T> extends BeanDefault imp
 	 * Make a new {@link ListAndSelectionAndValueReferenceDefault},
 	 * using a specific prop for the value, rather than just an initial
 	 * list.
+	 * @param clazz
+	 * 		The class of value in the list 
 	 * @param valueProp
 	 * 		The prop to be used as the value of the reference. 
 	 * 		(returned by {@link #value()}).
 	 * 		Normally expected to be named "value", but this is not
 	 * required.
-	 * @param clazz
-	 * 		The class of value in the list 
 	 */
-	public ListAndSelectionAndValueReferenceDefault(Prop<CList<T>> valueProp, Class<T> clazz) {
+	public ListAndSelectionAndValueReferenceDefault(Class<T> clazz, Prop<CList<T>> valueProp) {
 		value = addProp(valueProp);
 		
 		//Tracks selection within whichever list is in the "list" prop
-		selection = addProp(new ListSelectionReferenceProp<T>(PropName.create("selection", Integer.class), value));
+		selection = addProp(new ListSelectionReferenceProp<T>(PropName.create(Integer.class, "selection"), value));
 		
 		//Tracks the actual selected value by looking up the selection index in the list
-		selectedValue = addProp(new ListIndexProp<T>(PropName.create("selectedValue", clazz), value, selection));
+		selectedValue = addProp(new ListIndexProp<T>(PropName.create(clazz, "selectedValue"), value, selection));
 	}
 	
 	/**
 	 * Make a new {@link ListAndSelectionAndValueReferenceDefault}
-	 * @param list
-	 * 		The initial list value in the {@link ListAndSelectionAndValueReferenceDefault}
 	 * @param clazz
 	 * 		The class of value in the list 
+	 * @param list
+	 * 		The initial list value in the {@link ListAndSelectionAndValueReferenceDefault}
 	 */
-	public ListAndSelectionAndValueReferenceDefault(CList<T> list, Class<T> clazz) {
-		this(ListPropDefault.editable("model", clazz, list), clazz);
+	public ListAndSelectionAndValueReferenceDefault(Class<T> clazz, CList<T> list) {
+		this(clazz, ListPropDefault.editable(clazz, "model", list));
 	}
 	
 	/**

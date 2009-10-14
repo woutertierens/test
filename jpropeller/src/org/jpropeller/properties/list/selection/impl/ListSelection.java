@@ -19,7 +19,7 @@ public class ListSelection extends BeanDefault {
 	 * 		The list in which we are tracking a selection
 	 */
 	public ListSelection(CList<?> list) {
-		selection = addProp(new ListSelectionProp(PropName.create("selection", Integer.class), list));
+		selection = addProp(new ListSelectionProp(PropName.create(Integer.class, "selection"), list));
 	}
 	
 	/**

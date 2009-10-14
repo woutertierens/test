@@ -76,87 +76,87 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	@Override
 	public <I extends Changeable, S> Prop<S> calculated(Class<S> clazz, String name, ListCalculation<I, S> calc, I firstInput, I... additionalInputs) {
 		Prop<S> prop = new CalculatedProp<S>(
-							PropName.create(name, clazz), 
+							PropName.create(clazz, name), 
 							new CalculationDefault<I, S>(calc, firstInput, additionalInputs));
 		return add(prop);
 	}
 
 	
 	public <S extends Enum<S>> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
-		return add(PropImmutable.editable(name, clazz, value));
+		return add(PropImmutable.editable(clazz, name, value));
 	}
 
 	public <S extends Changeable> Prop<S> editable(Class<S> clazz, String name, S value) {
-		return add(ChangeablePropDefault.editable(name, clazz, value));
+		return add(ChangeablePropDefault.editable(clazz, name, value));
 	}
 
 	public <S extends Immutable> Prop<S> editable(Class<S> clazz, String name, S value) {
-		return add(PropImmutable.editable(name, clazz, value));
+		return add(PropImmutable.editable(clazz, name, value));
 	}
 	
 	public <S> ListProp<S> createList(Class<S> contentsClass, String name) {
-		return add(ListPropDefault.create(name, contentsClass));
+		return add(ListPropDefault.create(contentsClass, name));
 	}
 
 	public <S> ListPropDefault<S> createList(Class<S> contentsClass, String name, CList<S> data) {
-		return add(ListPropDefault.create(name, contentsClass, data));
+		return add(ListPropDefault.create(contentsClass, name, data));
 	}
 
 	public <S> ListPropDefault<S> editableList(Class<S> contentsClass, String name, CList<S> data) {
-		return add(ListPropDefault.editable(name, contentsClass, data));
+		return add(ListPropDefault.editable(contentsClass, name, data));
 	}
 
 	public <S> ListPropDefault<S> editableList(Class<S> contentsClass, String name) {
-		return add(ListPropDefault.editable(name, contentsClass));
+		return add(ListPropDefault.editable(contentsClass, name));
 	}
 
 	public <J, S> MapProp<J, S> editableMap(Class<J> keyClass, Class<S> valueClass, String name, CMap<J, S> data) {
-		return add(MapPropDefault.editable(name, keyClass, valueClass, data));
+		return add(MapPropDefault.editable(keyClass, valueClass, name, data));
 	}
 	
 	public <J, S> MapProp<J, S> editableMap(Class<J> keyClass, Class<S> valueClass, String name) {
-		return add(MapPropDefault.<J, S>editable(name, keyClass, valueClass));
+		return add(MapPropDefault.<J, S>editable(keyClass, valueClass, name));
 	}
 
 	public <J, S> MapProp<J, S> createMap(Class<J> keyClass, Class<S> valueClass, String name, CMap<J, S> data) {
-		return add(MapPropDefault.create(name, keyClass, valueClass, data));
+		return add(MapPropDefault.create(keyClass, valueClass, name, data));
 	}
 	
 	public <J, S> MapProp<J, S> createMap(Class<J> keyClass, Class<S> valueClass, String name) {
-		return add(MapPropDefault.<J, S>create(name, keyClass, valueClass));
+		return add(MapPropDefault.<J, S>create(keyClass, valueClass, name));
 	}
 
 	public <S> SetProp<S> editableSet(Class<S> clazz, String name, CSet<S> data) {
-		return add(SetPropDefault.editable(name, clazz, data));
+		return add(SetPropDefault.editable(clazz, name, data));
 	}
 	
 	public <S> SetProp<S> editableSet(Class<S> clazz, String name) {
-		return add(SetPropDefault.editable(name, clazz));
+		return add(SetPropDefault.editable(clazz, name));
 	}
 
 	public <S> SetProp<S> createSet(Class<S> clazz, String name, CSet<S> data) {
-		return add(SetPropDefault.create(name, clazz, data));
+		return add(SetPropDefault.create(clazz, name, data));
 	}
 	
 	public <S> SetProp<S> createSet(Class<S> clazz, String name) {
-		return add(SetPropDefault.create(name, clazz));
+		return add(SetPropDefault.create(clazz, name));
 	}
 
 	public <S extends Enum<S>> PropImmutable<S> create(Class<S> clazz, String name, S value) {
-		return add(PropImmutable.create(name, clazz, value));
+		return add(PropImmutable.create(clazz, name, value));
 	}
 
 	public <T extends Immutable> Prop<T> create(Class<T> clazz, String name, T value) {
-		return add(PropImmutable.create(name, clazz, value));
+		return add(PropImmutable.create(clazz, name, value));
 	}
 
 	public <S extends Changeable> Prop<S> create(Class<S> clazz, String name, S value) {
-		return add(ChangeablePropDefault.create(name, clazz, value));
+		return add(ChangeablePropDefault.create(clazz, name, value));
 	}
 
 	public <S> Prop<S> createSuper(Class<S> clazz,
 			String name, Prop<? extends S> core){
-		return add(new SuperClassProp<S>(PropName.create(name, clazz), core));
+		return add(new SuperClassProp<S>(PropName.create(clazz, name), core));
 	}
 
 	/////////////////////////////////////////////////////////////////

@@ -78,7 +78,7 @@ public class SingleSelectionListTableViewDemo {
 				JFrame frame = new JFrame("BeanListTableModel Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
-				final ListAndSelectionAndValueReference<LotsOfProps> reference = new ListAndSelectionAndValueReferenceDefault<LotsOfProps>(l, LotsOfProps.class);
+				final ListAndSelectionAndValueReference<LotsOfProps> reference = new ListAndSelectionAndValueReferenceDefault<LotsOfProps>(LotsOfProps.class, l);
 				
 				//Make table model based on reference and row view displaying properties as columns
 				SingleSelectionListTableView<LotsOfProps> view = new SingleSelectionListTableView<LotsOfProps>(reference, new BeanRowView(example));
@@ -186,7 +186,7 @@ public class SingleSelectionListTableViewDemo {
 					ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 				
 				//Editor for current selection
-				final PathReference<LotsOfProps> selectedReference = PathReferenceBuilder.from(reference, LotsOfProps.class).to(refToSelected);
+				final PathReference<LotsOfProps> selectedReference = PathReferenceBuilder.from(LotsOfProps.class, reference).to(refToSelected);
 				final BeanEditor<LotsOfProps> selectedEditor = BeanEditor.create(selectedReference);
 				JScrollPane selectedEditorScroll = new JScrollPane(selectedEditor.getComponent());
 				selectedEditorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

@@ -60,10 +60,10 @@ public class ListSelectionSourceDemo {
 		FriendList targetList = new FriendList();
 		
 		ListAndSelectionAndValueReferenceDefault<Person> sourceRef = 
-			new ListAndSelectionAndValueReferenceDefault<Person>(sourceList.friends(), Person.class);
+			new ListAndSelectionAndValueReferenceDefault<Person>(Person.class, sourceList.friends());
 
 		ListAndSelectionAndValueReferenceDefault<Person> targetRef = 
-			new ListAndSelectionAndValueReferenceDefault<Person>(targetList.friends(), Person.class);
+			new ListAndSelectionAndValueReferenceDefault<Person>(Person.class, targetList.friends());
 
 		TableRowView<Bean> rowView = new BeanRowView(a);
 		

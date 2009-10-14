@@ -315,31 +315,31 @@ public class PropName<T> {
 	
 	/**
 	 * Make a {@link PropName} for a non-generic value type
-	 * @param <T>
-	 * 		Type of value in the {@link Prop}
-	 * @param s
-	 * 		String value of name
 	 * @param clazz
 	 * 		Class of value in the {@link Prop}
+	 * @param s
+	 * 		String value of name
+	 * @param <T>
+	 * 		Type of value in the {@link Prop}
 	 * @return
 	 * 		A new name
 	 */
-	public static <T> PropName<T> create(String s, Class<T> clazz) {
+	public static <T> PropName<T> create(Class<T> clazz, String s) {
 		return new PropName<T>(s, clazz);
 	}
 
 	/**
 	 * Make a {@link PropName}
-	 * @param <L>
-	 * 		Type of value in the lists held by the {@link Prop} 
-	 * @param s
-	 * 		String value of name
 	 * @param contentsClass
 	 * 		Class of value in the list in {@link Prop}
+	 * @param s
+	 * 		String value of name
+	 * @param <L>
+	 * 		Type of value in the lists held by the {@link Prop} 
 	 * @return
 	 * 		A new name
 	 */
-	public static <L> PropName<CList<L>> createList(String s, Class<L> contentsClass) {
+	public static <L> PropName<CList<L>> createList(Class<L> contentsClass, String s) {
 		//TODO make this a propname implementation where the contents class is held separately
 		return new PropName<CList<L>>(
 				s, 
@@ -350,16 +350,16 @@ public class PropName<T> {
 
 	/**
 	 * Make a {@link PropName}
-	 * @param <T>
-	 * 		Type of value in the {@link Prop}
-	 * @param s
-	 * 		String value of name
 	 * @param clazz
 	 * 		Class of value in the {@link CSet}
+	 * @param s
+	 * 		String value of name
+	 * @param <T>
+	 * 		Type of value in the {@link Prop}
 	 * @return
 	 * 		A new name
 	 */
-	public static <T> PropName<CSet<T>> createSet(String s, Class<T> clazz) {
+	public static <T> PropName<CSet<T>> createSet(Class<T> clazz, String s) {
 		//TODO make this a propname implementation where the contents class is held separately
 		return new PropName<CSet<T>>(
 				s,
@@ -370,20 +370,20 @@ public class PropName<T> {
 	
 	/**
 	 * Make a {@link PropName}
-	 * @param <K> 
-	 * 		Type of key for the {@link MapProp}
-	 * @param <T>
-	 * 		Type of value in the {@link Prop}
-	 * @param s
-	 * 		String value of name
 	 * @param keyClass
 	 * 		Class of key in the {@link Prop}
 	 * @param valueClass
 	 * 		Class of value in the {@link Prop}
+	 * @param s
+	 * 		String value of name
+	 * @param <K> 
+	 * 		Type of key for the {@link MapProp}
+	 * @param <T>
+	 * 		Type of value in the {@link Prop}
 	 * @return
 	 * 		A new name
 	 */
-	public static <K, T> PropName<CMap<K, T>> createMap(String s, Class<K> keyClass, Class<T> valueClass) {
+	public static <K, T> PropName<CMap<K, T>> createMap(Class<K> keyClass, Class<T> valueClass, String s) {
 		//TODO make this a propname implementation where the contents classes are held separately
 		return new PropName<CMap<K,T>>(
 				s, 

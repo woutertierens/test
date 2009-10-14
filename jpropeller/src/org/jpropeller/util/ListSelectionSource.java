@@ -96,8 +96,8 @@ public class ListSelectionSource<T> implements Source<T> {
 		this.title = title;
 		
 		listRef = new ListAndSelectionAndValueReferenceDefault<T>(
-				listProp, 
-				clazz);
+				clazz, 
+				listProp);
 
 		view = new SingleSelectionListTableView<T>(listRef, tableRowView);
 		JScrollPane scroll = new JScrollPane(view.getComponent());

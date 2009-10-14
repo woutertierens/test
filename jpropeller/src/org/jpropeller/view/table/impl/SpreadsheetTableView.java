@@ -258,7 +258,7 @@ public class SpreadsheetTableView<T> implements TableView {
 	 * @param model		The model.
 	 */
 	public SpreadsheetTableView(final FiringTableModel model) {
-		this(model, SetPropDefault.create("sel", Integer.class));
+		this(model, SetPropDefault.create(Integer.class, "sel"));
 	}
 
 	@Override

@@ -33,68 +33,68 @@ public class ListPropDefault<L> extends ChangeablePropDefault<CList<L>> implemen
 	/**
 	 * Create a new read-only {@link ListPropDefault}, using
 	 * an empty new {@link CListDefault}
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param contentsClass
 	 * 		The class of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param <S> 
 	 * 		The type of data in the list
 	 * @return
 	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> ListPropDefault<S> create(String name, Class<S> contentsClass) {
-		return create(name, contentsClass, new CListDefault<S>());
+	public static <S> ListPropDefault<S> create(Class<S> contentsClass, String name) {
+		return create(contentsClass, name, new CListDefault<S>());
 	}
 
 	/**
 	 * Create a new read-only {@link ListPropDefault}
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param contentsClass
 	 * 		The class of data in the list/indexed property
-	 * @param <S>
-	 * 		The type of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param data
 	 * 		The data to contain
+	 * @param <S>
+	 * 		The type of data in the list/indexed property
 	 * @return
 	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> ListPropDefault<S> create(String name, Class<S> contentsClass, CList<S> data) {
-		PropName<CList<S>> propName = PropName.createList(name, contentsClass);
+	public static <S> ListPropDefault<S> create(Class<S> contentsClass, String name, CList<S> data) {
+		PropName<CList<S>> propName = PropName.createList(contentsClass, name);
 		return new ListPropDefault<S>(propName, data, ReadOnlyProcessor.<CList<S>>get());
 	}
 	
 	/**
 	 * Create a new read-only {@link ListPropDefault}, using
 	 * an empty new {@link CListDefault}
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param contentsClass
 	 * 		The class of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param <S> 
 	 * 		The type of data in the list
 	 * @return
 	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> ListPropDefault<S> editable(String name, Class<S> contentsClass) {
-		return editable(name, contentsClass, new CListDefault<S>());
+	public static <S> ListPropDefault<S> editable(Class<S> contentsClass, String name) {
+		return editable(contentsClass, name, new CListDefault<S>());
 	}
 
 	/**
 	 * Create a new read-only {@link ListPropDefault}
-	 * @param name 
-	 * 		The string value of the property name
 	 * @param contentsClass
 	 * 		The class of data in the list/indexed property
-	 * @param <S>
-	 * 		The type of data in the list/indexed property
+	 * @param name 
+	 * 		The string value of the property name
 	 * @param data
 	 * 		The data to contain
+	 * @param <S>
+	 * 		The type of data in the list/indexed property
 	 * @return
 	 * 		The new {@link ListPropDefault}
 	 */
-	public static <S> ListPropDefault<S> editable(String name, Class<S> contentsClass, CList<S> data) {
-		PropName<CList<S>> propName = PropName.createList(name, contentsClass);
+	public static <S> ListPropDefault<S> editable(Class<S> contentsClass, String name, CList<S> data) {
+		PropName<CList<S>> propName = PropName.createList(contentsClass, name);
 		return new ListPropDefault<S>(propName, data, AcceptProcessor.<CList<S>>get());
 	}
 	

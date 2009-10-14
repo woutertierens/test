@@ -34,7 +34,7 @@ public class ListAndSelectionReferenceDemo {
 			list.add(Integer.toString(i));
 		}
 		
-		ref = new ListAndSelectionReferenceDefault<String>(list, String.class);
+		ref = new ListAndSelectionReferenceDefault<String>(String.class, list);
 		
 		ref.selection().set(5);
 		

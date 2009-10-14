@@ -34,7 +34,7 @@ public class User extends BeanDefault {
 	/**
 	 * The {@link PropName} for {@link #group()} property
 	 */
-	public final static PropName<Group> GROUP_NAME = PropName.create("group", Group.class);
+	public final static PropName<Group> GROUP_NAME = PropName.create(Group.class, "group");
 
 	//Set up Props
 	private Prop<String> name = editable("name", "default name");
