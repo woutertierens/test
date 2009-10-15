@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
@@ -17,6 +19,7 @@ import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
+import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.View;
 
 /**
@@ -28,6 +31,8 @@ import org.jpropeller.view.View;
  */
 class IntegersListSelectionModel implements ListSelectionModel {
 
+	private final static Logger logger = GeneralUtils.logger(IntegersListSelectionModel.class);
+	
 	private Prop<? extends CCollection<Integer>> indicesProp;
 	
 	/**
@@ -167,10 +172,15 @@ class IntegersListSelectionModel implements ListSelectionModel {
 				delegate.clearSelection();
 				
 				for (Integer i : indicesProp.get()) {
-					int tableRow = table.convertRowIndexToView(i);
-					//Only select a row if it is visible
-					if (tableRow != -1) {
-						delegate.addSelectionInterval(tableRow, tableRow);
+					try {
+						int tableRow = table.convertRowIndexToView(i);
+						//Only select a row if it is visible
+						if (tableRow != -1) {
+							delegate.addSelectionInterval(tableRow, tableRow);
+						}
+					} catch (IndexOutOfBoundsException ioobe) {
+						//We can't select rows out of bounds
+						logger.log(Level.WARNING, "Invalid model row index " + i);
 					}
 				}
 				
