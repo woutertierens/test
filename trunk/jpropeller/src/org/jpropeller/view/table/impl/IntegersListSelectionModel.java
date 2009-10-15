@@ -194,9 +194,6 @@ class IntegersListSelectionModel implements ListSelectionModel {
 		} finally {
 			adjustingDelegate = false;
 		}
-		
-		//System.out.println("prop change took " + time.stop());
-
 	}
 
 	public String toString() {
