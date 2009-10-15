@@ -153,20 +153,14 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 
 	private void leaveMainLock() {
 		
-		//TODO running pending tasks here ensures
-		//that the tasks are always run BEFORE anything
-		//can see any state, so it is impossible to see
-		//the un-updated state. However, it might be possible
-		//to run tasks more lazily - for example just before
-		//dispatch, or with the code below only when the mainLock
-		//is about to be released - however this allows for un-updated data
-		//to be seen by code that acquires the main lock, then 
-		//makes changes, then (before releasing the lock) reads 
-		//state that the tasks would update.
-		//if (mainLock.getHoldCount() == 1)
-		
-		//Run all pending tasks
-		runPendingTasks();
+		//We run tasks only just before we completely
+		//release the main lock. This means tasks
+		//do NOT run while the main lock is held,
+		//allowing processes that lock for large changes
+		//to be sure that tasks are not running during the 
+		//changes
+		if (mainLock.getHoldCount() == 1)
+			runPendingTasks();
 
 		mainLock.unlock();
 	}
