@@ -23,7 +23,6 @@
 package org.jpropeller.collection.impl;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,6 @@ import java.util.concurrent.Callable;
 import org.jpropeller.collection.CSet;
 import org.jpropeller.collection.SetDelta;
 import org.jpropeller.properties.change.Change;
-import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.properties.change.impl.ChangeableFeaturesDefault;
@@ -54,28 +52,13 @@ import org.jpropeller.system.Props;
  * be sorted when iterated, but it is not possible to access 
  * {@link SortedSet#subSet(Object, Object)}, etc.
  * 
- * As an implementation note, this {@link Changeable} does NOT 
- * use {@link ChangeSystem#prepareRead(Changeable)} or 
- * {@link ChangeSystem#concludeRead(Changeable)}, since it 
- * knows that it does NOT read the values of any other 
- * {@link Changeable}s, or modify its own state, when it is 
- * read. (Reading state of other {@link Changeable}s without 
- * preparing is prohibited, since it can lead to these {@link Changeable}s
- * reading inconsistent state, regenerating cache at the wrong time, etc.) 
- * The {@link Set} that is wrapped is synchronised so that it is 
- * not possible to have synchronisation problems
- * within the {@link Set} itself.
- * 
  * Finally, note that an object where {@link #equals(Object)} returns
  * false for comparison to itself (that is, where a.equals(a) is false)
  * will not work with the change notification of this {@link Set} - this
  * is probably a minor point since such an object would not work with the
  * basic behaviour of {@link Set} in any case.
  * 
- * TODO assess whether it is possible to use {@link ChangeSystem#prepareRead(Changeable)} anyway.
- * 
- * @param <E>
- * 		The type of element in the set
+ * @param <E> The type of element in the set
  */
 public class CSetDefault<E> implements CSet<E> {
 
@@ -99,8 +82,7 @@ public class CSetDefault<E> implements CSet<E> {
 
 	/**
 	 * Create a new {@link CSetDefault} based on a new {@link HashSet}
-	 * @param capacity
-	 * 		The initial capacity of the {@link HashSet}
+	 * @param capacity		The initial capacity of the {@link HashSet}
 	 */
 	public CSetDefault(int capacity) {
 		this(new HashSet<E>(capacity));
@@ -119,13 +101,15 @@ public class CSetDefault<E> implements CSet<E> {
 	 * {@link CSetDefault} functioning as a compliant {@link CSet}.
 	 * It is safest not to retain a reference to the core {@link Set} at all,
 	 * e.g.
-	 * <code>ObservableSet<String> observableSet = new ObservableSetDefault(new HashSet<String>());</code>
+	 * <code>
+	 * 		ObservableSet<String> observableSet = 
+	 * 			new ObservableSetDefault(new HashSet<String>());
+	 * </code>
 	 * 
-	 * @param core
-	 * 		This {@link CSetDefault} will delegate to a synchronised wrapper
-	 * of the specified {@link Set}. It is best not to specify a synchronised {@link Set},
-	 * since it will just be synchronised again.
-	 * 		If this is a null, an empty synchronised {@link HashSet} will be used instead	
+	 * @param core		This {@link CSetDefault} will delegate to the 
+	 * 					specified {@link Set}.
+	 * 					If this is a null, an empty {@link HashSet} 
+	 * 					will be used instead	
 	 */
 	public CSetDefault(Set<E> core) {
 		super();
@@ -133,7 +117,7 @@ public class CSetDefault<E> implements CSet<E> {
 		//If core is null, use an empty HashSet
 		if (core == null) core = new HashSet<E>();
 		
-		this.core = Collections.synchronizedSet(core);
+		this.core = core;
 		
 		features = new ChangeableFeaturesDefault(new InternalChangeImplementation() {
 			@Override
@@ -219,16 +203,15 @@ public class CSetDefault<E> implements CSet<E> {
 	 * 		Runtime exceptions from the action will just be thrown from this method,
 	 * but only after tracking has been set up, and a prop event fired for a 
 	 * complete change
-	 * @return
-	 * 		The return value of the action
-	 * @throws CCollectionRuntimeException
-	 * 		If the action throws a non-runtime exception
+	 * @return		The return value of the action
+	 * @throws CCollectionRuntimeException	If the action throws a non-runtime exception
 	 */
 	private boolean trackAroundSetChange(Callable<Boolean> action) {
-		int oldSize = size();
 		
 		//First prepare for change
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
+
+		int oldSize = size();
 		
 		//Now make sure we will retrack all contents and commit/conclude the change, no matter what
 		//happens - even if something causes an exception, including a runtime exception
@@ -430,7 +413,12 @@ public class CSetDefault<E> implements CSet<E> {
 	//#####################################################################
 
 	public Iterator<E> iterator() {
-		return new IteratorShell<E>(core.iterator());
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new IteratorShell<E>(core.iterator());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	//#####################################################################
@@ -475,62 +463,122 @@ public class CSetDefault<E> implements CSet<E> {
 		
 		//Methods delegated directly to the wrapped iterator
 		public boolean equals(Object obj) {
-			return it.equals(obj);
+			Props.getPropSystem().getChangeSystem().prepareRead(CSetDefault.this);
+			try {
+				return it.equals(obj);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CSetDefault.this);
+			}
 		}
 		public int hashCode() {
-			return it.hashCode();
+			Props.getPropSystem().getChangeSystem().prepareRead(CSetDefault.this);
+			try {
+				return it.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CSetDefault.this);
+			}
 		}
 		public boolean hasNext() {
-			return it.hasNext();
+			Props.getPropSystem().getChangeSystem().prepareRead(CSetDefault.this);
+			try {
+				return it.hasNext();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CSetDefault.this);
+			}
 		}
 		public T next() {
-			return it.next();
+			Props.getPropSystem().getChangeSystem().prepareRead(CSetDefault.this);
+			try {
+				return it.next();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CSetDefault.this);
+			}
 		}
 		public String toString() {
-			return it.toString();
+			Props.getPropSystem().getChangeSystem().prepareRead(CSetDefault.this);
+			try {
+				return it.toString();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CSetDefault.this);
+			}
 		}
 	}
 	
 	//#####################################################################
 	//
 	//	The following methods are just passed directly to the core, 
-	//	since they have no interactions with the events/bean system
+	//	but may read state and so must still use read lock
 	//
 	//#####################################################################
 	
 	@Override
 	public boolean contains(Object o) {
-		return core.contains(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.contains(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return core.containsAll(c);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.containsAll(c);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return core.isEmpty();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.isEmpty();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override
 	public int size() {
-		return core.size();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.size();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override
 	public Object[] toArray() {
-		return core.toArray();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.toArray();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return core.toArray(a);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.toArray(a);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}	
 	
 	@Override
 	public String toString() {
-		return core.toString();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.toString();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	
 }
