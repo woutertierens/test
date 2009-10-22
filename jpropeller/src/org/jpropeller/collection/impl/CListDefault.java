@@ -31,10 +31,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.jpropeller.collection.ListDelta;
 import org.jpropeller.collection.CList;
+import org.jpropeller.collection.ListDelta;
 import org.jpropeller.properties.change.Change;
-import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.properties.change.impl.ChangeableFeaturesDefault;
@@ -48,28 +47,15 @@ import org.jpropeller.system.Props;
  * core {@link List}, and adding tracking of the elements so that events
  * are generated as required for {@link CList} compliance.
  * 
- * As an implementation note, this {@link Changeable} does NOT use 
- * {@link ChangeSystem#prepareRead(Changeable)} or 
- * {@link ChangeSystem#concludeRead(Changeable)}, since it knows 
- * that it does NOT read the values of any other {@link Changeable}s, 
- * or modify its own state, when it is read. (Reading state of other 
- * {@link Changeable}s without preparing is prohibited, since it can 
- * lead to these {@link Changeable}s reading inconsistent state, 
- * regenerating cache at the wrong time, etc.) The list that is 
- * wrapped is synchronised so that it is not possible to have 
- * synchronisation problems within the list itself.
- * 
- * TODO assess whether it is possible to use {@link ChangeSystem#prepareRead(Changeable)} anyway.
- * 
  * @param <E>		The type of element in the list
  */
 public class CListDefault<E> implements CList<E> {
 
 	//Reference counter for elements in list
-	ContentsTracking<E> tracking;
+	private final ContentsTracking<E> tracking;
 	
 	//Standard code block for a bean
-	ChangeableFeatures features;
+	private final ChangeableFeatures features;
 	
 	@Override
 	public ChangeableFeatures features() {
@@ -77,7 +63,7 @@ public class CListDefault<E> implements CList<E> {
 	}
 
 	//The List we delegate to for actual storage, etc.
-	private List<E> core;	
+	private final List<E> core;	
 	
 	/**
 	 * Create a new {@link CListDefault} based on a new {@link ArrayList}
@@ -108,14 +94,15 @@ public class CListDefault<E> implements CList<E> {
 	 * {@link CListDefault} functioning as a compliant {@link CList}.
 	 * It is safest not to retain a reference to the core {@link List} at all,
 	 * e.g.
-	 * <code>ObservableList<String> observableList = new ObservableListDefault(new LinkedList<String>());</code>
+	 * <code>
+	 * 		ObservableList<String> observableList = 
+	 * 			new ObservableListDefault(new LinkedList<String>());
+	 * </code>
 	 * 
-	 * @param core
-	 * 
-	 * 		This {@link CListDefault} will delegate to a synchronized wrapper
-	 * of the specified {@link List}. It is best not to specify a synchronized list, since
-	 * it will just be synchronized again.
-	 * 		If this is a null, an empty synchronized {@link ArrayList} will be used instead	
+	 * @param core	This {@link CListDefault} will delegate to 
+	 * 				the specified {@link List}. 
+	 * 				If this is a null, an empty {@link ArrayList} 
+	 * 				will be used instead	
 	 */
 	public CListDefault(List<E> core) {
 		super();
@@ -123,7 +110,7 @@ public class CListDefault<E> implements CList<E> {
 		//If core is null, use an empty ArrayList
 		if (core == null) core = new ArrayList<E>();
 		
-		this.core = Collections.synchronizedList(core);
+		this.core = core;
 		
 		features = new ChangeableFeaturesDefault(new InternalChangeImplementation() {
 			@Override
@@ -418,9 +405,9 @@ public class CListDefault<E> implements CList<E> {
 
 	public boolean remove(Object o) {
 		
-		int oldSize = core.size();
-		
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
+
+		int oldSize = core.size();
 		
 		try {
 			//Try to remove from core - if we get a runtime exception the 
@@ -515,38 +502,59 @@ public class CListDefault<E> implements CList<E> {
 
 	
 	public List<E> subList(int fromIndex, int toIndex) {
-		//TODO The sublist can be made modifiable by:
-		//	Implementing a wrapper sublist very similar to that in AbstractList, which passes
-		//	all operations through to this underlying ListBean. This means that when the subList
-		//	is used to alter the list, it is done by calling this underlying list bean, which means
-		//	that events and tracking are still correct for this underlying list bean. We can call this
-		//	a SublistShell
-		//  WRAPPING this sublistshell in a new ListBeanShell - this may seem bizarre, but it
-		//	is necessary so that the sublist will report deep changes, and will also report list
-		//	changes since they will be reported by the sublist listbeanshell before the sublistshell
-		//  passes them through to the main listbean, which will also fire its own events. This is a
-		// 	lot of events, but is still necessary.
-		//  The only flaw with this is that the underlying listbean should really report changes
-		//  made via the sublist as consequent changes, otherwise both list and sublist will report
-		//  user changes.
-		//  All in all, it seems simpler just to return this unmodifiable sublist for now, since
-		//  use of a sublist to edit a list is relatively rare AFAIK
-		
-		//  Get the sublist from core list, but render it unmodifiable before we use it. This avoids
-		//  the sublist being used to make undetected changes to this list.
-		return Collections.unmodifiableList(core.subList(fromIndex, toIndex));
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			//TODO The sublist can be made modifiable by:
+			//	Implementing a wrapper sublist very similar to that in AbstractList, which passes
+			//	all operations through to this underlying ListBean. This means that when the subList
+			//	is used to alter the list, it is done by calling this underlying list bean, which means
+			//	that events and tracking are still correct for this underlying list bean. We can call this
+			//	a SublistShell
+			//  WRAPPING this sublistshell in a new ListBeanShell - this may seem bizarre, but it
+			//	is necessary so that the sublist will report deep changes, and will also report list
+			//	changes since they will be reported by the sublist listbeanshell before the sublistshell
+			//  passes them through to the main listbean, which will also fire its own events. This is a
+			// 	lot of events, but is still necessary.
+			//  The only flaw with this is that the underlying listbean should really report changes
+			//  made via the sublist as consequent changes, otherwise both list and sublist will report
+			//  user changes.
+			//  All in all, it seems simpler just to return this unmodifiable sublist for now, since
+			//  use of a sublist to edit a list is relatively rare AFAIK
+			
+			//  Get the sublist from core list, but wrap it in a LockingList shell before
+			//  returning. This renders it safe, by performing required locking and tracking
+			//  Actually currently renders list unmodifiable as well to avoid need for tracking.
+			return new ListShell(core.subList(fromIndex, toIndex));
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	
 	public Iterator<E> iterator() {
-		return new IteratorShell<E>(core.iterator());
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new IteratorShell<E>(core.iterator());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public ListIterator<E> listIterator() {
-		return new ListIteratorShell<E>(core.listIterator());
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new ListIteratorShell<E>(core.listIterator());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public ListIterator<E> listIterator(int index) {
-		return new ListIteratorShell<E>(core.listIterator(index));
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new ListIteratorShell<E>(core.listIterator(index));
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	
 	//#####################################################################
@@ -559,7 +567,7 @@ public class CListDefault<E> implements CList<E> {
 	//index so we can fire smaller changes
 	/**
 	 *	Wraps an iterator, and makes main class fire property change (complete list
-	 *	change) when remove is used.
+	 *	change) when remove is used, and adds appropriate locking.
 	 */
 	private class IteratorShell<T> implements Iterator<T>{
 		
@@ -591,19 +599,44 @@ public class CListDefault<E> implements CList<E> {
 		
 		//Methods delegated directly to the wrapped iterator
 		public boolean equals(Object obj) {
-			return it.equals(obj);
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.equals(obj);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public int hashCode() {
-			return it.hashCode();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public boolean hasNext() {
-			return it.hasNext();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.hasNext();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public T next() {
-			return it.next();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.next();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public String toString() {
-			return it.toString();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.toString();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 	}
 	
@@ -611,7 +644,7 @@ public class CListDefault<E> implements CList<E> {
 	//index so we can fire smaller changes
 	/**
 	 *	Wraps an iterator, and makes main class fire property change (complete list
-	 *	change) when remove is used.
+	 *	change) when remove is used, and adds appropriate locking.
 	 */
 	private class ListIteratorShell<T> implements ListIterator<T> {
 		ListIterator<T> it;
@@ -674,25 +707,233 @@ public class CListDefault<E> implements CList<E> {
 		
 		//Methods delegated directly to the wrapped iterator
 		public boolean hasNext() {
-			return it.hasNext();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.hasNext();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public boolean hasPrevious() {
-			return it.hasPrevious();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.hasPrevious();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public T next() {
-			return it.next();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.next();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public int nextIndex() {
-			return it.nextIndex();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.nextIndex();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public T previous() {
-			return it.previous();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.previous();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		public int previousIndex() {
-			return it.previousIndex();
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return it.previousIndex();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
 		}
 		
 	}
+	
+	/**
+	 * Wraps a list to make it unmodifiable (so tracking is preserved),
+	 * and also performs appropriate locking on reading.
+	 * Passes on required properties to sublists and iterators.
+	 */
+	private class ListShell implements List<E> {
+		private final List<E> coreList;
+		private ListShell(List<E> lockedList) {
+			this.coreList = Collections.unmodifiableList(lockedList);
+		}
+		
+		//These methods are complex - we need to make the returned iterators/sublists
+		//also perform locking
+		
+		//Iterators use the same shell as the parent list
+		public Iterator<E> iterator() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return new IteratorShell<E>(coreList.iterator());
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public ListIterator<E> listIterator() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return new ListIteratorShell<E>(coreList.listIterator());
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public ListIterator<E> listIterator(int index) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return new ListIteratorShell<E>(coreList.listIterator(index));
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		
+		//Make another locking list around sublist, so it gives the same behaviour.
+		//Note that the wrapping isn't recursive - there should just be one LockedList
+		//wrapper around each list, even when getting subList().subList().subList() etc.
+		public List<E> subList(int fromIndex, int toIndex) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return new ListShell(coreList.subList(fromIndex, toIndex));
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		
+		
+		//These methods are all simple - just lock around them
+		public boolean contains(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.contains(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public boolean containsAll(Collection<?> c) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.containsAll(c);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public boolean equals(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.equals(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public E get(int index) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.get(index);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public int hashCode() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public int indexOf(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.indexOf(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public boolean isEmpty() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.isEmpty();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public int lastIndexOf(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.lastIndexOf(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public int size() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.size();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public Object[] toArray() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.toArray();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		public <T> T[] toArray(T[] a) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CListDefault.this);
+			try {
+				return coreList.toArray(a);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CListDefault.this);
+			}
+		}
+		
+		//Methods that modify the list will all fail due to unmodifiable view
+		public boolean add(E e) {
+			return coreList.add(e);
+		}
+		public void add(int index, E element) {
+			coreList.add(index, element);
+		}
+		public boolean addAll(Collection<? extends E> c) {
+			return coreList.addAll(c);
+		}
+		public boolean addAll(int index, Collection<? extends E> c) {
+			return coreList.addAll(index, c);
+		}
+		public void clear() {
+			coreList.clear();
+		}
+		public E remove(int index) {
+			return coreList.remove(index);
+		}
+		public boolean remove(Object o) {
+			return coreList.remove(o);
+		}
+		public boolean removeAll(Collection<?> c) {
+			return coreList.removeAll(c);
+		}
+		public boolean retainAll(Collection<?> c) {
+			return coreList.retainAll(c);
+		}
+		public E set(int index, E element) {
+			return coreList.set(index, element);
+		}
+		
+	}
+	
 	//#####################################################################
 	//
 	//	The following methods are just passed directly to the core list, 
@@ -701,47 +942,102 @@ public class CListDefault<E> implements CList<E> {
 	//#####################################################################
 	
 	public boolean contains(Object o) {
-		return core.contains(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.contains(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public boolean containsAll(Collection<?> c) {
-		return core.containsAll(c);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.containsAll(c);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public boolean equals(Object o) {
-		return core.equals(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.equals(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public E get(int index) {
-		return core.get(index);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.get(index);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public int hashCode() {
-		return core.hashCode();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.hashCode();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public int indexOf(Object o) {
-		return core.indexOf(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.indexOf(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public boolean isEmpty() {
-		return core.isEmpty();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.isEmpty();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	
 	public int lastIndexOf(Object o) {
-		return core.lastIndexOf(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.lastIndexOf(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public int size() {
-		return core.size();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.size();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public Object[] toArray() {
-		return core.toArray();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.toArray();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	public <T> T[] toArray(T[] a) {
-		return core.toArray(a);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.toArray(a);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 	@Override

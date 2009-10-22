@@ -293,6 +293,15 @@ public abstract class BeanDefault implements Bean {
 		return features.createMap(keyClass, valueClass, name);
 	}
 
+	protected Prop<Double> ranged(String name, double value, double low,
+			double high) {
+		return features.ranged(name, value, low, high);
+	}
+
+	protected Prop<Integer> ranged(String name, int value, int low, int high) {
+		return features.ranged(name, value, low, high);
+	}
+
 	//Present a slightly easier interface for building path props
 
 	/**

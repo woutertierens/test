@@ -25,6 +25,7 @@ package org.jpropeller.collection.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,6 @@ import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.MapDelta;
 import org.jpropeller.properties.change.Change;
-import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.properties.change.impl.ChangeableFeaturesDefault;
@@ -48,21 +48,16 @@ import org.jpropeller.system.Props;
  * tracking of the elements so that events are generated as required 
  * for {@link CMapDefault} compliance.
  * 
- * Implementation note - does not use {@link ChangeSystem#prepareChange(Changeable)}
- * for the same reasons given in {@link CListDefault}
- * 
- * @param <K> 
- *		The type of key in the map.
- * @param <V>
- * 		The type of element in the map.
+ * @param <K> 		The type of key in the map.
+ * @param <V>		The type of element in the map.
  */
 public class CMapDefault<K, V> implements CMap<K, V> {
 
 	//Reference counter for elements in list
-	ContentsTracking<V> tracking;
+	private final ContentsTracking<V> tracking;
 
 	//Standard code block for a bean
-	ChangeableFeatures features;
+	private final ChangeableFeatures features;
 	
 	@Override
 	public ChangeableFeatures features() {
@@ -70,12 +65,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	}
 
 	//The Map we delegate to for actual storage, etc.
-	private Map<K, V> core;
-	
-	//Unmodifiable views of core sets
-	Collection<V> umValues;
-	Set<Entry<K, V>> umEntrySet;
-	Set<K> umKeySet;
+	private final Map<K, V> core;
 	
 	/**
 	 * Create a new {@link CMapDefault} based on a new {@link HashMap}
@@ -118,12 +108,14 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	 * {@link CMapDefault} functioning as a compliant {@link CMap}.
 	 * It is safest not to retain a reference to the core {@link Map} at all,
 	 * e.g.
-	 * <code>ObservableMap<String> map = new ObservableMapDefault(new TreeMap<String, String>());</code>
+	 * <code>
+	 * 		ObservableMap<String> map = 
+	 * 			new ObservableMapDefault(new TreeMap<String, String>());
+	 * </code>
 	 * 
-	 * @param core
-	 * 		This {@link CMapDefault} will delegate to a sycnhronized view of
-	 * the specified {@link Map}. Preferably you should not use an {@link Map} that is
-	 * already synchronized, since it will be (inefficiently) synchronized twice.	
+	 * @param core	This {@link CMapDefault} will delegate to the specified 
+	 * 				{@link Map}. If this is null, a new {@link HashMap} will
+	 * 				be used.
 	 */
 	public CMapDefault(Map<K, V> core) {
 		super();
@@ -131,7 +123,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		//If core is null, use an empty HashMap
 		if (core == null) core = new HashMap<K, V>();
 		
-		this.core = Collections.synchronizedMap(core);
+		this.core = core;
 
 		features = new ChangeableFeaturesDefault(new InternalChangeImplementation() {
 			@Override
@@ -141,11 +133,6 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			}
 		}, this);
 
-		
-		//Make um (unmodifiable) views of core map
-		umValues = Collections.unmodifiableCollection(core.values());
-		umEntrySet = Collections.unmodifiableSet(core.entrySet());
-		umKeySet = Collections.unmodifiableSet(core.keySet());
 		
 		tracking = new ContentsTracking<V>(this);		
 
@@ -216,9 +203,9 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	 */
 	private boolean trackAroundMapChange(Callable<Boolean> action) {
 		
-		int oldSize = size();
-
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
+
+		int oldSize = size();
 		
 		try {
 			//To start with, clear all references, and stop listening to all contents.
@@ -358,12 +345,12 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	@SuppressWarnings("unchecked")
 	public V remove(Object key) {
 		
+		Props.getPropSystem().getChangeSystem().prepareChange(this);
+
 		//If the key is not present, then nothing to do
 		if (!core.containsKey(key)) {
 			return null;
 		}
-		
-		Props.getPropSystem().getChangeSystem().prepareChange(this);
 		
 		try {
 			//The key IS present, so is of type K
@@ -395,48 +382,308 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 
 	//#####################################################################
 	//
-	//	The following methods require unmodifiable wrappers to prevent
-	//	modifications that would not currently be noticed by the wrapper
+	//	The following methods require wrappers to prevent
+	//	modifications that would not currently be noticed by the wrapper,
+	//	and to enforce locking.
 	//
 	//#####################################################################
 
 	public Collection<V> values() {
-		return umValues;
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {		
+			return new CollectionShell<V>(core.values());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public Set<Entry<K, V>> entrySet() {
-		return umEntrySet;
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new SetShell<Entry<K,V>>(core.entrySet());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public Set<K> keySet() {
-		return umKeySet;
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return new SetShell<K>(core.keySet());
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
+	
+	/**
+	 *	Wraps an iterator, and makes main class fire property change (complete list
+	 *	change) when remove is used, and adds appropriate locking.
+	 */
+	private class IteratorShell<T> implements Iterator<T>{
+		
+		//The wrapped iterator
+		private final Iterator<T> it;
+		
+		/**
+		 * Make a wrapper 
+		 * @param it The iterator to wrap
+		 */
+		private IteratorShell(Iterator<T> it) {
+			this.it = it;
+		}
+
+		//Method must ensure listbean compliance
+		public void remove() {
+//TODO this could work, using code similar to that below, if the wrapped
+//iterator supports remove.
+//			//Make a callable that will do the remove
+//			Callable<Boolean> action = new Callable<Boolean>() {
+//				@Override
+//				public Boolean call() throws Exception {
+//					it.remove();
+//					return true;
+//				}
+//			};
+//			
+//			//Perform the action with tracking
+//			trackAroundListChange(action);
+			throw new UnsupportedOperationException("Cannot remove from CMapDefault-derived iterators");
+		}
+		
+		//Methods delegated directly to the wrapped iterator
+		public boolean equals(Object obj) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return it.equals(obj);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public int hashCode() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return it.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public boolean hasNext() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return it.hasNext();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public T next() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return it.next();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public String toString() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return it.toString();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+	}
+
+	/**
+	 * Wrap a collection to make it unmodifiable, and to respect locking, 
+	 * and to pass on these restrictions to iterators on it
+	 */
+	private class CollectionShell<T> implements Collection<T> {
+		private final Collection<T> coreCollection;
+
+		private CollectionShell(Collection<T> coreList) {
+			this.coreCollection = Collections.unmodifiableCollection(coreList);
+		}
+
+		private CollectionShell(Collection<T> coreList, boolean alreadyUnmodifiable) {
+			this.coreCollection = alreadyUnmodifiable ? coreList : Collections.unmodifiableCollection(coreList);
+		}
+
+		//This is complex - must wrap the core iterator to pass on
+		//locking
+		public Iterator<T> iterator() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return new IteratorShell<T>(coreCollection.iterator());
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		
+		//These methods are simple - just lock around reading
+		public boolean contains(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.contains(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public boolean containsAll(Collection<?> c) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.containsAll(c);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public boolean equals(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.equals(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public int hashCode() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public boolean isEmpty() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.isEmpty();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public int size() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.size();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public Object[] toArray() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.toArray();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}
+		public <S> S[] toArray(S[] a) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapDefault.this);
+			try {
+				return coreCollection.toArray(a);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapDefault.this);
+			}
+		}	
+		
+		//Methods that modify the collection will all fail due to unmodifiable view
+		//TODO: Note we could actually support these without a huge effort by tracking around
+		//changes
+		public boolean remove(Object o) {
+			return coreCollection.remove(o);
+		}
+		public boolean removeAll(Collection<?> c) {
+			return coreCollection.removeAll(c);
+		}
+		public boolean retainAll(Collection<?> c) {
+			return coreCollection.retainAll(c);
+		}
+		public boolean add(T e) {
+			return coreCollection.add(e);
+		}
+		public boolean addAll(Collection<? extends T> c) {
+			return coreCollection.addAll(c);
+		}
+		public void clear() {
+			coreCollection.clear();
+		}
+		
+	}
+	
+	/**
+	 * Wrap a Set to make it unmodifiable, and to respect locking, 
+	 * and to pass on these restrictions to iterators on it
+	 * Note: This is pretty much identical to CollectionShell, since
+	 * Set is the same as Collection, apart from contracts.
+	 */
+	private class SetShell<T> extends CollectionShell<T> implements Set<T>{
+		private SetShell(Set<T> coreSet) {
+			super(Collections.unmodifiableSet(coreSet), 
+					true);	//already unmodifiable - super won't wrap again
+		}
+	}
+
 	
 	//#####################################################################
 	//
-	//	The following methods are just passed directly to the core map, 
-	//	since they have no interactions with the events/bean system
+	//	The following methods are passed to the core map, but may read
+	//	Changeable state so are read-locked.
 	//
 	//#####################################################################
 	
 	public boolean equals(Object o) {
-		return core.equals(o);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.equals(o);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public V get(Object key) {
-		return core.get(key);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.get(key);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public int hashCode() {
-		return core.hashCode();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.hashCode();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public boolean isEmpty() {
-		return core.isEmpty();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.isEmpty();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public int size() {
-		return core.size();
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.size();
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
-	public boolean containsKey(Object key) {
-		return core.containsKey(key);
+	public boolean containsKey(Object key) { 
+		//	since they have no interactions with the events/b
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.containsKey(key);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 	public boolean containsValue(Object value) {
-		return core.containsValue(value);
+		Props.getPropSystem().getChangeSystem().prepareRead(this);
+		try {
+			return core.containsValue(value);
+		} finally {
+			Props.getPropSystem().getChangeSystem().concludeRead(this);
+		}
 	}
 
 }

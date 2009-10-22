@@ -353,9 +353,28 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 */
 	public <J, S> MapProp<J, S> createMap(Class<J> keyClass, Class<S> valueClass, String name);
 	
+	/**
+	 * Create a {@link Prop} of {@link Integer} constrained
+	 * to a given range, inclusive
+	 * @param name		The {@link Prop}'s name
+	 * @param value		The initial value
+	 * @param low		The lowest accepted value
+	 * @param high		The highest accepted value
+	 * @return			A new constrained {@link Prop}
+	 */
+	public Prop<Integer> ranged(String name, int value, int low, int high);
 	
-	
-	
+	/**
+	 * Create a {@link Prop} of {@link Double} constrained
+	 * to a given range, inclusive
+	 * @param name		The {@link Prop}'s name
+	 * @param value		The initial value
+	 * @param low		The lowest accepted value
+	 * @param high		The highest accepted value
+	 * @return			A new constrained {@link Prop}
+	 */
+	public Prop<Double> ranged(String name, double value, double low, double high);
+
 	//#########################################################################
 	//###																	###
 	//###  Auto-generated factory methods for Props with immutable content	###
@@ -690,7 +709,6 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 * @return			The new {@link Prop} itself (already added to the {@link BeanFeatures})
 	 */
 	public Prop<ImmutableIcon> editable(String name, ImmutableIcon value);
-
 
 	
 }

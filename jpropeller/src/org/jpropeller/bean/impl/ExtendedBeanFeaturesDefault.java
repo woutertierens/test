@@ -12,6 +12,8 @@ import org.jpropeller.bean.MutableBeanFeatures;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
+import org.jpropeller.comparison.ComparisonType;
+import org.jpropeller.comparison.Filters;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
@@ -31,6 +33,7 @@ import org.jpropeller.properties.map.impl.MapPropDefault;
 import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.properties.values.ValueProcessor;
+import org.jpropeller.properties.values.Values;
 import org.jpropeller.ui.impl.ImmutableIcon;
 
 /**
@@ -158,6 +161,23 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 			String name, Prop<? extends S> core){
 		return add(new SuperClassProp<S>(PropName.create(clazz, name), core));
 	}
+	
+	public Prop<Integer> ranged(String name, int value, int low, int high) {
+		//Check we have a valid range, and value is in it
+		if (value > high || value < low) {
+			throw new IllegalArgumentException("Must have low <= value <= high");
+		}
+		return create(name, value, Values.range(Filters.comparison(ComparisonType.MORE_THAN_OR_EQUAL, low), Filters.comparison(ComparisonType.LESS_THAN_OR_EQUAL, high)));			
+	}
+
+	public Prop<Double> ranged(String name, double value, double low, double high) {
+		//Check we have a valid range, and value is in it
+		if (value > high || value < low) {
+			throw new IllegalArgumentException("Must have low <= value <= high");
+		}
+		return create(name, value, Values.range(Filters.comparison(ComparisonType.MORE_THAN_OR_EQUAL, low), Filters.comparison(ComparisonType.LESS_THAN_OR_EQUAL, high)));			
+	}
+
 
 	/////////////////////////////////////////////////////////////////
 	//                                                             //
