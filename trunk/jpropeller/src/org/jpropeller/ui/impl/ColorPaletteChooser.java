@@ -22,12 +22,12 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class ColorPaletteChooser implements ActionListener {
 
-	JPanel panel;
-	Map<Object, Color> buttonToColor;
-	Color selectedColor = null;
-	Color previousColor = Color.BLACK;
-	private JTabButton previousButton;
-	private JTabButton selectedButton;
+	private final JPanel panel;
+	private final Map<Object, Color> buttonToColor;
+	private Color selectedColor = null;
+	private Color previousColor = Color.BLACK;
+	private final JTabButton previousButton;
+	private final JTabButton selectedButton;
 	
 	/**
 	 * Create a chooser
