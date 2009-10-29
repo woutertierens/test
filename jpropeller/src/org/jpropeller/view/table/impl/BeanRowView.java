@@ -163,7 +163,7 @@ public class BeanRowView implements TableRowView<Bean> {
 			//The prop class of ed's name gives us the accepted class,
 			//so we can safely set any value where this class is
 			//assignable from the value
-			if (ed.getName().getPropClass().isAssignableFrom(value.getClass())) {
+			if (value == null || ed.getName().getPropClass().isAssignableFrom(value.getClass())) {
 				try {
 					ed.set(value);
 				} catch (ReadOnlyException e) {
