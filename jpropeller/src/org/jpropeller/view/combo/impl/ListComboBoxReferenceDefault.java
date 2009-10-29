@@ -21,15 +21,26 @@ public class ListComboBoxReferenceDefault<T> extends BeanDefault implements List
 
 	/**
 	 * Create a {@link ListComboBoxReference}
-	 * @param value			The list
+	 * @param list			The list
 	 * @param selection		The selection in the list
 	 */
-	private ListComboBoxReferenceDefault(Prop<CList<T>> value, Prop<T> selection) {
+	private ListComboBoxReferenceDefault(Prop<CList<T>> list, Prop<T> selection) {
 		super();
-		this.value = addProp(value);
+		this.value = addProp(list);
 		this.selection = addProp(selection);
 	}
 
+	/**
+	 * Create a {@link ListComboBoxReference}
+	 * @param <T>			The type of value 
+	 * @param list			The list
+	 * @param selection		The selection in the list
+	 * @return 				A new {@link ListComboBoxReference}
+	 */
+	public static <T> ListComboBoxReferenceDefault<T> create(Prop<CList<T>> list, Prop<T> selection) {
+		return new ListComboBoxReferenceDefault<T>(list, selection);
+	}
+	
 	/**
 	 * Create a {@link ListComboBoxReference}
 	 * @param value			The list

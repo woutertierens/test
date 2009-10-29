@@ -52,6 +52,24 @@ public class ListComboView<T> implements JView {
 	
 	/**
 	 * Make a new {@link ListComboView}
+	 * @param valueClass 		The class of value in the list
+	 * @param list				The prop containing the list to display
+	 * @param selection			The prop containing the selection
+	 * 
+	 * @param <S>				The type of value in the list 
+	 * @return 					New {@link ListComboView}
+	 */
+	public static <S extends Changeable> ListComboView<S> create(
+			Class<S> valueClass, 
+			Prop<CList<S>> list, 
+			Prop<S> selection) {
+		ListComboBoxReference<S> comboRef = ListComboBoxReferenceDefault.create(list, selection);
+		ListComboBoxModel<S> comboModel = new ListComboBoxModel<S>(comboRef, valueClass);
+		return new ListComboView<S>(comboModel);
+	}
+	
+	/**
+	 * Make a new {@link ListComboView}
 	 * @param model				The model for the view
 	 * @param valueClass 		The class of value in the list
 	 * @param <S>				The type of value in the list 
