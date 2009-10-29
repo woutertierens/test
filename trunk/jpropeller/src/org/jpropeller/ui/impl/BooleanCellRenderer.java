@@ -16,6 +16,7 @@ import org.jpropeller.view.Views;
 public class BooleanCellRenderer extends DefaultTableCellRenderer {
 
 	private final static Icon tick = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "tick");
+	private final static Icon untick = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "untick");
 	
 	private final static BooleanCellRenderer instance = new BooleanCellRenderer();
 	
@@ -30,7 +31,7 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 	/**
 	 * Create a renderer
 	 */
-	private BooleanCellRenderer() {
+	BooleanCellRenderer() {
 		super();
 		setHorizontalAlignment(JLabel.CENTER);
 	}
@@ -38,11 +39,7 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 	@Override
 	public void setValue(Object value) {
 		if (value instanceof Boolean) {
-			if ((Boolean)value){
-				setIcon(tick);
-			} else {
-				setIcon(null);
-			}
+			setIcon(((Boolean)value) ? tick : untick);
 		} else {
 			setIcon(null);	
 		}

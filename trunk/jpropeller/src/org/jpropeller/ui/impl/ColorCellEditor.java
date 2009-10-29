@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -20,15 +19,11 @@ import javax.swing.table.TableCellEditor;
  */
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor {
 
-	//FIXME can we extend DefaultCellEditor here to get better default behaviour?
-	
-	Color currentColor;
-	JButton button;
-	ColorPaletteChooser chooser;
-	protected static final String EDIT = "edit";
+	private Color currentColor;
+	private ColorPaletteChooser chooser;
 	
 	private final ColorSwatchIcon icon = new ColorSwatchIcon();
-	JLabel label = new JLabel(icon, SwingConstants.CENTER);
+	private final JLabel label = new JLabel(icon, SwingConstants.CENTER);
 
 	/**
 	 * Create a default {@link ColorCellEditor}

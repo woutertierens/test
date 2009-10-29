@@ -14,7 +14,8 @@ import org.jpropeller.view.info.Named;
 
 /**
  * Enforces unique naming of {@link Named} elements of
- * a {@link CCollection}, by appending bracketed, incrementing
+ * a {@link CCollection}, by trimming them, and then
+ * if necessary appending bracketed, incrementing
  * integers starting from 2 to the end of the names. 
  * 
  * See {@link StringUtilities#incrementName(String)} for details
@@ -31,8 +32,8 @@ public class UniqueNamesTask {
 	/**
 	 * Get a task
 	 * @param collection		The collection on which to enforce unique naming
-	 * @return					A {@link Task} that will rename elements of the
-	 * 							collection to ensure they are uniquely named.
+	 * @return					A {@link Task} that will trim and if necessary rename 
+	 * 							elements of the collection to ensure they are uniquely named.
 	 */
 	public final static Task get(final Prop<? extends CCollection<? extends Named>> collection) {
 		return BuildTask.on(collection).withResponse(new CancellableResponse() {
@@ -42,8 +43,9 @@ public class UniqueNamesTask {
 				try {
 					Set<String> names = new HashSet<String>();
 					for (Named s : collection.get()) {
-						String name = s.name().get();
-						boolean changed = false;
+						String rawName = s.name().get();
+						String name = rawName.trim();
+						boolean changed = !rawName.equals(name);
 						while (names.contains(name)) {
 							name = StringUtilities.incrementName(name);
 							changed = true;

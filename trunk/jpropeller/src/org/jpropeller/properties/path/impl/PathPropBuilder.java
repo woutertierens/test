@@ -9,7 +9,7 @@ import org.jpropeller.path.Paths;
 import org.jpropeller.path.impl.BeanPathBuilder;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.values.ValueProcessor;
-import org.jpropeller.properties.values.impl.ReadOnlyProcessor;
+import org.jpropeller.properties.values.impl.AcceptProcessor;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.transformer.Transformer;
 
@@ -135,7 +135,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
 	 * The path must end at a {@link Prop} containing a {@link CList} of type T
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
@@ -148,7 +149,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <R extends Bean, T> PathPropBuilder<R, R, CList<T>> listFrom(Class<T> clazz, R pathRoot) {
-		return new PathPropBuilder<R, R, CList<T>>(PropName.createList(clazz, "pathProp"), pathRoot, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<CList<T>>get());
+		return new PathPropBuilder<R, R, CList<T>>(PropName.createList(clazz, "pathProp"), pathRoot, BeanPathBuilder.<R>create(), AcceptProcessor.<CList<T>>get());
 	}
 	
 	/**
@@ -194,7 +195,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * The path must end at a {@link Prop} containing a {@link CList} of type T
 	 * Path must start from a {@link Reference}, and will then go to the value of that
 	 * reference.
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <M>
 	 * 		The type of value in the reference
 	 * @param <R>
@@ -209,7 +211,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <M extends Bean, R extends Reference<M>, T> PathPropBuilder<R, M, CList<T>> listFromRef(Class<T> clazz, R reference) {
-		return new PathPropBuilder<R, R, CList<T>>(PropName.createList(clazz, "pathProp"), reference, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<CList<T>>get()).via(Paths.modelToValue(reference));
+		return new PathPropBuilder<R, R, CList<T>>(PropName.createList(clazz, "pathProp"), reference, BeanPathBuilder.<R>create(), AcceptProcessor.<CList<T>>get()).via(Paths.modelToValue(reference));
 	}
 	
 	/**
@@ -259,7 +261,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * The path must end at a {@link Prop} containing a {@link CList} of type T
 	 * Path must start from a {@link Reference}, and will then go to the value of that
 	 * reference.
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <M>
 	 * 		The type of value in the reference
 	 * @param <R>
@@ -278,7 +281,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <M extends Bean, R extends Reference<M>, K, V> PathPropBuilder<R, M, CMap<K, V>> mapFromRef(Class<K> keyClass, Class<V> valueClass, R reference) {
-		return new PathPropBuilder<R, R, CMap<K, V>>(PropName.createMap(keyClass, valueClass, "pathProp"), reference, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<CMap<K,V>>get()).via(Paths.modelToValue(reference));
+		return new PathPropBuilder<R, R, CMap<K, V>>(PropName.createMap(keyClass, valueClass, "pathProp"), reference, BeanPathBuilder.<R>create(), AcceptProcessor.<CMap<K,V>>get()).via(Paths.modelToValue(reference));
 	}
 	
 	/**
@@ -322,7 +325,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
 	 * The path must end at a {@link Prop} containing a {@link CList} of type T
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <K>
@@ -339,7 +343,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <R extends Bean, K, V> PathPropBuilder<R, R, CMap<K, V>> mapFrom(Class<K> keyClass, Class<V> valueClass, R pathRoot) {
-		return new PathPropBuilder<R, R, CMap<K, V>>(PropName.createMap(keyClass, valueClass, "pathProp"), pathRoot, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<CMap<K,V>>get());
+		return new PathPropBuilder<R, R, CMap<K, V>>(PropName.createMap(keyClass, valueClass, "pathProp"), pathRoot, BeanPathBuilder.<R>create(), AcceptProcessor.<CMap<K,V>>get());
 	}
 	
 	/**
@@ -383,7 +387,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * </pre>
 	 * Path must start from a {@link Reference}, and will then go to the value of that
 	 * reference.
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <M>
 	 * 		The type of value in the reference
 	 * @param <R>
@@ -398,7 +403,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <M extends Bean, R extends Reference<M>, T> PathPropBuilder<R, M, T> fromRef(Class<T> clazz, R reference) {
-		return new PathPropBuilder<R, R, T>("pathProp", clazz, reference, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<T>get()).via(Paths.modelToValue(reference));
+		return new PathPropBuilder<R, R, T>("pathProp", clazz, reference, BeanPathBuilder.<R>create(), AcceptProcessor.<T>get()).via(Paths.modelToValue(reference));
 	}
 
 	/**
@@ -465,7 +470,8 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * <pre>
 	 * PathProp<String> mirrorOfZ = from(nameOfMirrorOfZ, b).via(x.getName()).via(y.getName).to(z.getName);
 	 * </pre>
-	 * The name of the {@link Prop} will be "pathProp", and it will be read only
+	 * The name of the {@link Prop} will be "pathProp", and it will accept any values the 
+	 * linked {@link Prop} will accept.
 	 * @param <R>
 	 * 		The type of the root bean for the {@link BeanPath} 
 	 * @param <T>
@@ -478,7 +484,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * 		A builder to be used to make a {@link PathProp}
 	 */
 	public static <R extends Bean, T> PathPropBuilder<R, R, T> from(Class<T> clazz, R pathRoot) {
-		return new PathPropBuilder<R, R, T>("pathProp", clazz, pathRoot, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<T>get());
+		return new PathPropBuilder<R, R, T>("pathProp", clazz, pathRoot, BeanPathBuilder.<R>create(), AcceptProcessor.<T>get());
 	}
 	
 	/**
