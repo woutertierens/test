@@ -120,5 +120,58 @@ public class StringUtilities {
 	public static String doubleArrayToString(double[] array) {
 		return doubleArrayToString(array, "\t", false, DEFAULT_DOUBLE_FORMAT);
 	}
+	
+	/**
+	 * Generate a new name, guaranteed to be different from the
+	 * provided name.
+	 * 
+	 * Where the provided name ends with "(x)", where x is a 
+	 * valid string representation of an integer >= 2, the returned 
+	 * name will be the same, but with "(x)" replaced by "(y)", where 
+	 * y is the standard string representation of the integer x+1.
+	 * 
+	 * Where the provided name does NOT end with "(x)", the returned
+	 * name will be the provided name with " (2)" appended to it.
+	 * 
+	 * Hence this naming is compatible (for example) with attempting 
+	 * to alter duplicate strings so they have a "copy number" appended.
+	 * To do this, repeatedly call {@link #incrementName(String)} on a
+	 * candidate name, until the returned string is unique. The candidate
+	 * name should be set to the returned string on each call, to "count"
+	 * the string through copy numbers until it is unique. This is slightly
+	 * inefficient, but acceptable for fairly small sets of strings.
+	 * 
+	 * @param name		The input name
+	 * @return			The (different) output name.
+	 */
+	public final static String incrementName(String name) {
+		//See if we already have a number - if we do, increment it
+		//We need a closing bracket at end
+		if (name.endsWith(")")) {
+			//Now we need an opening bracket - it must be before
+			//the last character of the string since ")" is at the end
+			int openIndex = name.lastIndexOf("(");
+			if (openIndex > -1) {
+				
+				//Pull out the number (if it is one)
+				String numberString = name.substring(openIndex+1, name.length()-1);
+				try {
+					//If we do have a number in the string, then increment it 
+					//and return the result
+					int number = Integer.parseInt(numberString);
+					if (number >= 2) {
+						number++;
+						return name.substring(0, openIndex) + "(" + number + ")"; 
+					}
+				} catch (NumberFormatException nfe) {
+					//Nothing to do - just fall through to default name
+				}
+			}
+		}
+		
+		//Default is just to add (2) - we start from 2 so that
+		//we will have "name", "name (2)", "name (3)" etc.
+		return name + " (2)";
+	}
 
 }
