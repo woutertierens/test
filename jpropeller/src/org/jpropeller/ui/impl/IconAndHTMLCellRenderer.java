@@ -14,11 +14,13 @@ import org.jpropeller.ui.IconAndHTMLRenderer;
  */
 public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 
-	IconAndHTMLRenderer delegate;
-	int verticalAlignment;
+	private final IconAndHTMLRenderer delegate;
+	private final int verticalAlignment;
+	private final boolean showIcon; 
+	private final boolean showHTML; 
 	
 	/**
-	 * Create a renderer
+	 * Create a renderer showing icon and html, with label aligned centrally
 	 * 
 	 * @param delegate		The delegate used to render to icon and/or html 
 	 */
@@ -27,7 +29,7 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	}
 
 	/**
-	 * Create a renderer
+	 * Create a renderer showing icon and html
 	 * 
 	 * @param delegate			The delegate used to render to icon and/or html
 	 * @param verticalAlignment The alignment of the label used to render - one 
@@ -35,9 +37,25 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	 * 							or {@link SwingConstants#CENTER}
 	 */
 	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment) {
+		this(delegate, verticalAlignment, true, true);
+	}
+	
+	/**
+	 * Create a renderer
+	 * 
+	 * @param delegate			The delegate used to render to icon and/or html
+	 * @param verticalAlignment The alignment of the label used to render - one 
+	 * 							of {@link SwingConstants#TOP}, {@link SwingConstants#BOTTOM}
+	 * 							or {@link SwingConstants#CENTER}
+	 * @param showIcon			True to show icon 
+	 * @param showHTML 			True to show html
+	 */
+	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment, boolean showIcon, boolean showHTML) {
 		super();
 		this.delegate = delegate;
 		this.verticalAlignment = verticalAlignment;
+		this.showIcon = showIcon;
+		this.showHTML = showHTML;
 	}
 
 	@Override
@@ -45,8 +63,8 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 		
 		//If we can render, do so. Otherwise retain default behaviour.
 		if (delegate.canRender(value)) {
-			setIcon(delegate.getIcon(value));
-			setText("<html>" + delegate.getHTML(value) + "</html>");
+			setIcon(showIcon ? delegate.getIcon(value) : null);
+			setText(showHTML ? "<html>" + delegate.getHTML(value) + "</html>" : "");
 		} else {
 			setIcon(null);
 			super.setValue(value);
