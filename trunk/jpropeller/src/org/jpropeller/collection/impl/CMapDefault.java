@@ -203,11 +203,12 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	 */
 	private boolean trackAroundMapChange(Callable<Boolean> action) {
 		
+		int oldSize = -1;
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
-
-		int oldSize = size();
-		
 		try {
+
+			 oldSize = size();
+
 			//To start with, clear all references, and stop listening to all contents.
 			//The action is assumed to be a major enough operation that we don't 
 			//try to track it in detail
@@ -346,13 +347,13 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	public V remove(Object key) {
 		
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
-
-		//If the key is not present, then nothing to do
-		if (!core.containsKey(key)) {
-			return null;
-		}
-		
 		try {
+			
+			//If the key is not present, then nothing to do
+			if (!core.containsKey(key)) {
+				return null;
+			}
+
 			//The key IS present, so is of type K
 			K k = (K)key;
 			
