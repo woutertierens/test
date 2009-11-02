@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.reference.impl.ReferenceToChangeable;
@@ -48,7 +49,7 @@ public class ListTableViewDemo {
 				final ReferenceToChangeable<CList<LotsOfProps>> reference = ReferenceToChangeable.createObservableListReference(LotsOfProps.class, l);
 				
 				//Make table model based on reference and row view displaying properties as columns
-				ListTableView<LotsOfProps> view = new ListTableView<LotsOfProps>(reference, new BeanRowView(example));
+				ListTableView<LotsOfProps> view = new ListTableView<LotsOfProps>(reference, new BeanRowView<Bean>(example));
 				
 				//Default table using model
 				JTable table = view.getComponent();

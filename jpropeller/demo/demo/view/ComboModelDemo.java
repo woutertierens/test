@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
@@ -63,7 +64,7 @@ public class ComboModelDemo {
 				JFrame frame = new JFrame("Combo Model Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source, true);
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
 				final ListAndSelectionAndValueReference<LotsOfProps> reference = view.getReference();
 				
 				ListComboView<LotsOfProps> listComboView = ListComboView.create(reference.value(), LotsOfProps.class, true, true);

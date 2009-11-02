@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
@@ -81,7 +82,7 @@ public class SingleSelectionListTableViewDemo {
 				final ListAndSelectionAndValueReference<LotsOfProps> reference = new ListAndSelectionAndValueReferenceDefault<LotsOfProps>(LotsOfProps.class, l);
 				
 				//Make table model based on reference and row view displaying properties as columns
-				SingleSelectionListTableView<LotsOfProps> view = new SingleSelectionListTableView<LotsOfProps>(reference, new BeanRowView(example));
+				SingleSelectionListTableView<LotsOfProps> view = new SingleSelectionListTableView<LotsOfProps>(reference, new BeanRowView<Bean>(example));
 				
 				//Default table using model
 				JTable table = view.getComponent();

@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
@@ -75,7 +76,7 @@ public class ListEditViewDemo {
 				//final ListSelectionEditableValueReference<LotsOfProps> reference = new ListSelectionEditableValueReferenceDefault<LotsOfProps>(l, LotsOfProps.class);
 				//ListEditView<LotsOfProps> view = new ListEditView<LotsOfProps>(reference, LotsOfProps.class, new BeanRowView(example), source);
 
-				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source, true);
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
 				final ListAndSelectionAndValueReference<LotsOfProps> reference = view.getReference();
 				
 				JPanel buttons = new JPanel();

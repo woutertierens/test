@@ -65,7 +65,7 @@ public class ListSelectionSourceDemo {
 		ListAndSelectionAndValueReferenceDefault<Person> targetRef = 
 			new ListAndSelectionAndValueReferenceDefault<Person>(Person.class, targetList.friends());
 
-		TableRowView<Bean> rowView = new BeanRowView(a);
+		TableRowView<Bean> rowView = new BeanRowView<Bean>(a);
 		
 		Source<Person> sourceSource = new Source<Person>() {
 			int i = 0;
