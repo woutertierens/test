@@ -1,7 +1,9 @@
 package org.jpropeller.view.table.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,14 +20,16 @@ import org.jpropeller.view.table.TableRowViewListener;
 
 /**
  * A {@link TableRowView} of {@link Bean} instances
+ * @param <R>		The type of {@link Bean} displayed
  */
-public class BeanRowView implements TableRowView<Bean> {
+public class BeanRowView<R extends Bean> implements TableRowView<R> {
 
 	private final static Logger logger = GeneralUtils.logger(BeanRowView.class);
 	
 	private List<Prop<?>> props;
-	private Bean bean;
+	private R bean;
 	private final boolean editable;
+	private final Map<Class<?>, BeanRowValueProcessor<R, ?>> filters = new HashMap<Class<?>, BeanRowValueProcessor<R, ?>>();
 
 	/**
 	 * Create a {@link BeanRowView} showing all
@@ -33,7 +37,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * 
 	 * @param bean		The bean to use as a "template"
 	 */
-	public BeanRowView(Bean bean) {
+	public BeanRowView(R bean) {
 		this(bean, buildFilteredPropsList(bean), true);
 	}
 
@@ -44,19 +48,8 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * @param bean		The bean to use as a "template"
 	 * @param editable	True to enable editing of editable props, false to disable all editing
 	 */
-	public BeanRowView(Bean bean, boolean editable) {
+	public BeanRowView(R bean, boolean editable) {
 		this(bean, buildFilteredPropsList(bean), editable);
-	}
-	
-	private final static List<Prop<?>> buildFilteredPropsList(Bean bean) {
-		List<Prop<?>> list = PropUtils.buildNonGenericPropsList(bean);
-		List<Prop<?>> filtered = new ArrayList<Prop<?>>(list.size());
-		for (Prop<?> prop : list) {
-			if (!prop.features().hasMetadata(OMIT_FROM_TABLE_ROW_VIEW)) {
-				filtered.add(prop);
-			}
-		}
-		return filtered;
 	}
 	
 	//FIXME it would be nicer to use a list of propnames
@@ -78,11 +71,47 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * 					props to display
 	 * @param editable	True to enable editing of editable props, false to disable all editing
 	 */
-	public BeanRowView(Bean bean, List<Prop<?>> props, boolean editable) {
+	public BeanRowView(R bean, List<Prop<?>> props, boolean editable) {
 		super();
 		this.bean = bean;
 		this.props = props;
 		this.editable = editable;
+	}
+	
+	/**
+	 * Put a {@link BeanRowValueProcessor} for a given type.
+	 * This will be asked to {@link BeanRowValueProcessor#process(Object, Object)}
+	 * any new values columns having the specified class.
+	 * This allows for value filtering that will only be applied
+	 * in the context of a given row view, rather than at the {@link Prop}
+	 * level.
+	 * @param <T>			The type
+	 * @param clazz			The {@link Class} of the type
+	 * @param filter		The {@link BeanRowValueProcessor}
+	 */
+	public <T> void putFilter(Class<T> clazz, BeanRowValueProcessor<R, T> filter) {
+		filters.put(clazz, filter);
+	}
+	
+	/**
+	 * Remove a {@link BeanRowValueProcessor} registered for the
+	 * specified class using {@link #putFilter(Class, BeanRowValueProcessor)} 
+	 * @param <T>			The type
+	 * @param clazz			The {@link Class} of the type
+	 */
+	public <T> void removeFilter(Class<T> clazz) {
+		filters.remove(clazz);
+	}
+	
+	private final static List<Prop<?>> buildFilteredPropsList(Bean bean) {
+		List<Prop<?>> list = PropUtils.buildNonGenericPropsList(bean);
+		List<Prop<?>> filtered = new ArrayList<Prop<?>>(list.size());
+		for (Prop<?> prop : list) {
+			if (!prop.features().hasMetadata(OMIT_FROM_TABLE_ROW_VIEW)) {
+				filtered.add(prop);
+			}
+		}
+		return filtered;
 	}
 
 	/**
@@ -96,7 +125,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	 * in the specified {@link Bean} for the required {@link PropName}
 	 * at the specified column
 	 */
-	private Prop<?> findBeanProp(Bean row, int column) {
+	private Prop<?> findBeanProp(R row, int column) {
 		//Get name from the prop for the column, then use this
 		//to look up the value of the corresponding prop in the bean
 		PropName<?> name = props.get(column).getName();
@@ -105,7 +134,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	}
 	
 	@Override
-	public Object getColumn(Bean row, int column) {
+	public Object getColumn(R row, int column) {
 		Prop<?> beanProp = findBeanProp(row, column);
 		
 		//Null value where prop does not exist in current bean
@@ -132,7 +161,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	}
 
 	@Override
-	public boolean isEditable(Bean row, int column) {
+	public boolean isEditable(R row, int column) {
 		//Not editable if all editing disables
 		if (!editable) return false;
 		
@@ -148,7 +177,7 @@ public class BeanRowView implements TableRowView<Bean> {
 	//See below for explanation of suppression
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setColumn(Bean row, int column, Object value) {
+	public void setColumn(R row, int column, Object value) {
 		Prop<?> beanProp = findBeanProp(row, column);
 		
 		//Can't edit where prop does not exist in current bean
@@ -160,12 +189,26 @@ public class BeanRowView implements TableRowView<Bean> {
 			//the value is off a suitable class directly
 			Prop ed = (Prop)beanProp;
 			
+			Class<?> propClass = ed.getName().getPropClass();
+			
 			//The prop class of ed's name gives us the accepted class,
 			//so we can safely set any value where this class is
 			//assignable from the value
-			if (value == null || ed.getName().getPropClass().isAssignableFrom(value.getClass())) {
+			if (value == null || propClass.isAssignableFrom(value.getClass())) {
 				try {
-					ed.set(value);
+					//Filter is placed in map only for matching class,
+					//so we know it will accept the value, which is
+					//an instance of the class as checked just above
+					BeanRowValueProcessor filter = filters.get(propClass);
+					if (filter != null) {
+						try {
+							ed.set(filter.process(row, value));
+						} catch (IllegalArgumentException iae) {
+							//If edit is rejected, do nothing
+						}
+					} else {
+						ed.set(value);
+					}
 				} catch (ReadOnlyException e) {
 					logger.log(Level.SEVERE, "Read-only exception setting new value - should not occur since row view marks read-only props as uneditable");
 				} catch (InvalidValueException e) {

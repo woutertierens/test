@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.ui.impl.Tabs;
@@ -80,8 +81,8 @@ public class TabsDemo {
 				JFrame frame = new JFrame("BeanListTableModel Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source, true);
-				ListEditView<LotsOfProps> view2 = ListEditView.create(l2, LotsOfProps.class, new BeanRowView(example), source, true);
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
+				ListEditView<LotsOfProps> view2 = ListEditView.create(l2, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
 
 				Tabs tabs = new Tabs();
 				JTabbedPane tabbedPane = tabs.getComponent();

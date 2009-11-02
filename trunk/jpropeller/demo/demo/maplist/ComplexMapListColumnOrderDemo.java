@@ -12,6 +12,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
@@ -124,8 +125,8 @@ public class ComplexMapListColumnOrderDemo {
 		final LotsList l = makeBeanList();
 		final LotsList l2 = makeBeanList();
 
-		ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source, true);
-		ListEditView<LotsOfProps> view2 = ListEditView.create(l2, LotsOfProps.class, new BeanRowView(example), source, true);
+		ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
+		ListEditView<LotsOfProps> view2 = ListEditView.create(l2, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
 
 		Tabs tabs = new Tabs();
 		JTabbedPane tabbedPane = tabs.getComponent();
@@ -144,7 +145,7 @@ public class ComplexMapListColumnOrderDemo {
 		m.map().get().put(0, l);
 		m.map().get().put(1, l2);
 		
-		BeanRowView rowView = new BeanRowView(example);
+		BeanRowView<Bean> rowView = new BeanRowView<Bean>(example);
 		
 		MapListTableModelColumnOrder<Integer, LotsOfProps, LotsList> tableModel = 
 			new MapListTableModelColumnOrder<Integer, LotsOfProps, LotsList>(m.map(), m.keys(), rowView);

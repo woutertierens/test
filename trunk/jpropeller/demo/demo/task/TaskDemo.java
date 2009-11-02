@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.collection.impl.IdentityHashSet;
@@ -75,7 +76,7 @@ public class TaskDemo {
 				JFrame frame = new JFrame("Task Demo");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView(example), source, true);
+				ListEditView<LotsOfProps> view = ListEditView.create(l, LotsOfProps.class, new BeanRowView<Bean>(example), source, true);
 				
 				FormLayout layout = new FormLayout(
 						"fill:default:grow",
