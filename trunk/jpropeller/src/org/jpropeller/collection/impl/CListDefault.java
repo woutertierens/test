@@ -195,7 +195,7 @@ public class CListDefault<E> implements CList<E> {
 	 * 		If the action throws a non-runtime exception
 	 */
 	private boolean trackAroundListChange(Callable<Boolean> action) {
-		int oldSize = size();
+		int oldSize = -1;
 		
 		//First prepare for change
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
@@ -204,6 +204,8 @@ public class CListDefault<E> implements CList<E> {
 		//happens - even if something causes an exception, including a runtime exception
 		//in the action (which may happen after it makes some changes)
 		try {
+			
+			oldSize = size();
 			
 			//To start with, clear all references, and stop listening to all contents.
 			//The list action is assumed to be a major enough operation that we don't 
@@ -404,12 +406,13 @@ public class CListDefault<E> implements CList<E> {
 	}
 
 	public boolean remove(Object o) {
+		int oldSize = -1;
 		
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
-
-		int oldSize = core.size();
-		
 		try {
+			
+			oldSize = core.size();
+			
 			//Try to remove from core - if we get a runtime exception the 
 			//element is not removed, so nothing to do
 			boolean success = core.remove(o);

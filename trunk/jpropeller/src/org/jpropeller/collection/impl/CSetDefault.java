@@ -207,16 +207,18 @@ public class CSetDefault<E> implements CSet<E> {
 	 * @throws CCollectionRuntimeException	If the action throws a non-runtime exception
 	 */
 	private boolean trackAroundSetChange(Callable<Boolean> action) {
-		
+
+		int oldSize = -1;
+
 		//First prepare for change
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
-
-		int oldSize = size();
 		
 		//Now make sure we will retrack all contents and commit/conclude the change, no matter what
 		//happens - even if something causes an exception, including a runtime exception
 		//in the action (which may happen after it makes some changes)
 		try {
+			
+			oldSize = size();
 			
 			//To start with, clear all references, and stop listening to all contents.
 			//The action is assumed to be a major enough operation that we don't 
