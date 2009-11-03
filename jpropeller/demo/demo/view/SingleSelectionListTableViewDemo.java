@@ -17,8 +17,8 @@ import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
-import org.jpropeller.reference.impl.PathReference;
-import org.jpropeller.reference.impl.PathReferenceBuilder;
+import org.jpropeller.properties.path.impl.PathPropBuilder;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.transformer.BeanPathTo;
 import org.jpropeller.undo.UndoSystem;
 import org.jpropeller.undo.delegates.impl.UndoDelegateSourceDefault;
@@ -187,7 +187,7 @@ public class SingleSelectionListTableViewDemo {
 					ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 				
 				//Editor for current selection
-				final PathReference<LotsOfProps> selectedReference = PathReferenceBuilder.from(LotsOfProps.class, reference).to(refToSelected);
+				final Reference<LotsOfProps> selectedReference = PathPropBuilder.from(LotsOfProps.class, reference).toRef(refToSelected);
 				final BeanEditor<LotsOfProps> selectedEditor = BeanEditor.create(selectedReference);
 				JScrollPane selectedEditorScroll = new JScrollPane(selectedEditor.getComponent());
 				selectedEditorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

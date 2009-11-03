@@ -5,8 +5,8 @@ import javax.swing.JComponent;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.reference.impl.PathReferenceBuilder;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.JViewSource;
@@ -31,7 +31,7 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 		super();
 		this.model = model;
 	
-		Reference<T> ref = PathReferenceBuilder.fromRef(displayedName.getPropClass(), model).to(displayedName);	
+		Reference<T> ref = PathPropBuilder.fromRef(displayedName.getPropClass(), model).toRef(displayedName);	
 		view = viewSource.get(ref);
 	}
 
