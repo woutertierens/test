@@ -46,7 +46,8 @@ public class StringUtilities {
 	/**
 	 * Iterate over an iterable object, converting each element
 	 * of the iteration into a String via {@link Object#toString()},
-	 * with a separator between each element. 
+	 * with a separator between each element.
+	 * No maximimum line length or count
 	 * @param iterable
 	 * 		Object to be iterated
 	 * @param separator
@@ -59,7 +60,7 @@ public class StringUtilities {
 	 * 		A string with iterated elements converted to strings
 	 */
 	public static String iterateToString(Iterable<?> iterable, String separator, boolean finalSeparator) {
-		return iterateToString(iterable, separator, finalSeparator, -1);
+		return iterateToString(iterable, separator, finalSeparator, -1, -1);
 	}
 
 	/**
@@ -71,23 +72,23 @@ public class StringUtilities {
 	 * occurs after the item that increases the line length over this limit,
 	 * so the longest line may still be longer than maxLineLength.
 	 * The last line will not have a "\n" appended.
-	 * @param iterable
-	 * 		Object to be iterated
-	 * @param separator
-	 * 		Separator between each element, and optionally also at the
-	 * end of the string
-	 * @param finalSeparator
-	 * 		True to end the string with a final separator, false to
-	 * have separators only between pairs of elements
-	 * @param maxLineLength
-	 * 		The maximum length in characters of a line before "\n" is appended to it. 
+	 * @param iterable			Object to be iterated
+	 * @param separator			Separator between each element, and optionally also 
+	 * 							at the end of the string
+	 * @param finalSeparator	True to end the string with a final separator, false to
+	 * 							have separators only between pairs of elements
+	 * @param maxLineLength		The maximum length in characters of a line before "\n" 
+	 * 							is appended to it.
+	 * @param maxLineCount		The maximum number of lines before following lines are
+	 * 							skipped and replaced by "..." 
 	 * @return
 	 * 		A string with iterated elements converted to strings
 	 */
-	public static String iterateToString(Iterable<?> iterable, String separator, boolean finalSeparator, int maxLineLength) {
+	public static String iterateToString(Iterable<?> iterable, String separator, boolean finalSeparator, int maxLineLength, int maxLineCount) {
 		StringBuilder s = new StringBuilder();
 		Iterator<?> it = iterable.iterator();
 		int lastBreak = 0;
+		int lineCount = 0;
 		while (it.hasNext()) {
 			Object o = it.next();
 			s.append(o.toString());
@@ -101,6 +102,11 @@ public class StringUtilities {
 			if (it.hasNext() && maxLineLength >= 0 && (length - lastBreak) > maxLineLength) {
 				s.append("\n");
 				lastBreak = s.length();
+				lineCount++;
+				if (maxLineCount >= 0 && lineCount >= maxLineCount) {
+					s.append("...");
+					return s.toString();
+				}
 			}
 		}
 		
