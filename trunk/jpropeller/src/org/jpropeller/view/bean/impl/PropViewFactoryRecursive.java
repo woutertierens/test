@@ -2,12 +2,9 @@ package org.jpropeller.view.bean.impl;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.reference.impl.PathReference;
-import org.jpropeller.reference.impl.PathReferenceBuilder;
 import org.jpropeller.view.JView;
-import org.jpropeller.view.bean.impl.PropViewFactory;
-import org.jpropeller.view.bean.impl.PropViewFactoryDefault;
 import org.jpropeller.view.impl.LabelPropView;
 
 /**
@@ -52,8 +49,8 @@ public class PropViewFactoryRecursive implements PropViewFactory {
 		JView view = basicFactory.viewFor(model, displayedName);
 		
 		if (!displayedName.isTGeneric() && Bean.class.isAssignableFrom(displayedName.getPropClass())) {
-			final PathReference<Bean> ref = 
-				PathReferenceBuilder.fromRef(Bean.class, model).to((PropName<Bean>)displayedName);
+			final Reference<Bean> ref = 
+				PathPropBuilder.fromRef(Bean.class, model).toRef((PropName<Bean>)displayedName);
 			
 			if(view == null) {
 				view = RecursiveBeanEditor.create(ref, this, false);

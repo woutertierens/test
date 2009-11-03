@@ -15,8 +15,8 @@ import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
-import org.jpropeller.reference.impl.PathReference;
-import org.jpropeller.reference.impl.PathReferenceBuilder;
+import org.jpropeller.properties.path.impl.PathPropBuilder;
+import org.jpropeller.reference.Reference;
 import org.jpropeller.transformer.BeanPathTo;
 import org.jpropeller.ui.external.SimpleInternalFrame;
 import org.jpropeller.util.Source;
@@ -56,7 +56,7 @@ public class ListEditView<T> implements JView{
 	List<View> views = new LinkedList<View>();
 
 	CompositeViewHelper helper;
-	private PathReference<T> selectedReference;
+	private Reference<T> selectedReference;
 	
 	/**
 	 * Create a {@link ListEditView}, using a new 
@@ -136,7 +136,7 @@ public class ListEditView<T> implements JView{
 		BeanPathTo<ListAndSelectionAndValueReference<T>, T> refToSelected = 
 			ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 		
-		selectedReference = PathReferenceBuilder.from(clazz, model).to(refToSelected);
+		selectedReference = PathPropBuilder.from(clazz, model).toRef(refToSelected);
 		
 		//Make table view, put table in a scroll pane
 		tableView = new SingleSelectionListTableView<T>(model, rowView);
@@ -180,7 +180,7 @@ public class ListEditView<T> implements JView{
 	 * selected in the list.
 	 * @return		Reference to selected item
 	 */
-	public PathReference<T> referenceToSelected() {
+	public Reference<T> referenceToSelected() {
 		return selectedReference;
 	}
 	

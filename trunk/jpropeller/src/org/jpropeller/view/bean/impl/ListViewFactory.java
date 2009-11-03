@@ -9,8 +9,8 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
+import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.reference.impl.PathReferenceBuilder;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.table.TableRowView;
@@ -49,7 +49,7 @@ public class ListViewFactory implements PropViewFactory {
 				return (Prop<CList<?>>) s.features().getUnsafe(displayedName);
 			}
 		}; 
-		Prop<CList<?>> pathProp = PathReferenceBuilder.listFromRef((Class)genericType, model).to(transformer).value();
+		Prop<CList<?>> pathProp = PathPropBuilder.listFromRef((Class)genericType, model).to(transformer);
 		final ListAndSelectionAndValueReference<?> ref = 
 			new ListAndSelectionAndValueReferenceDefault(genericType, pathProp);
 		
