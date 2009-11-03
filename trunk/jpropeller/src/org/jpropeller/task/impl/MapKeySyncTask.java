@@ -25,6 +25,9 @@ import org.jpropeller.util.Source;
  * and any requiredKeys that do not have mappings will have a mapping
  * added, to a new value got from a valueSource.
  * 
+ * The update is performed only when the list of required keys changes,
+ * not when the map changes.
+ * 
  * @param <K>	The type of key in the map
  * @param <V> 	The type of value in the map
  */
