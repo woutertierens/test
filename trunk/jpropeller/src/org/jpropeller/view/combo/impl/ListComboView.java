@@ -59,7 +59,7 @@ public class ListComboView<T> implements JView {
 	 * @param <S>				The type of value in the list 
 	 * @return 					New {@link ListComboView}
 	 */
-	public static <S extends Changeable> ListComboView<S> create(
+	public static <S> ListComboView<S> create(
 			Class<S> valueClass, 
 			Prop<CList<S>> list, 
 			Prop<S> selection) {
