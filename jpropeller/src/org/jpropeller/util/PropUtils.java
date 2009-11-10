@@ -63,6 +63,24 @@ public class PropUtils {
 	}
 	
 	/**
+	 * Find the user-readable, localised name for a class of {@link Bean}
+	 * @param beanClass		The class of bean containing the prop
+	 * @return				The user readable class name. This will be 
+	 * 						localised as far as possible for the current 
+	 * 						{@link Locale}, using resource bundles for the class
+	 * 						name. If no resource is found, the value of 
+	 * 						{@link Class#getName()} will be returned.
+	 */
+	public static String localisedClassName(Class<?> beanClass) {
+		try {
+			ResourceBundle res = ResourceBundle.getBundle(beanClass.getCanonicalName());
+			return res.getString("Bean.Class");
+		} catch (MissingResourceException mre) {
+			return beanClass.getName(); 
+		}
+	}
+	
+	/**
 	 * Build a list of the {@link Prop}s in the bean - this
 	 * filters out {@link Prop}s that have a generic {@link PropName} 
 	 * @param b		The bean from which to get names of {@link Prop}s
