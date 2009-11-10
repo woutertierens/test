@@ -1,6 +1,7 @@
 package org.jpropeller.properties.list.impl;
 
 import java.util.Iterator;
+
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.info.PropAccessType;

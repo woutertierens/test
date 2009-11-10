@@ -2,8 +2,8 @@ package org.jpropeller.properties.change;
 
 import java.util.List;
 
-import org.jpropeller.collection.MapDelta;
 import org.jpropeller.collection.CMap;
+import org.jpropeller.collection.MapDelta;
 
 /**
  * A {@link Change} applying to a {@link CMap}, and hence

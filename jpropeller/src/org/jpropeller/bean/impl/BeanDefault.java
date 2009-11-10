@@ -1,6 +1,7 @@
 package org.jpropeller.bean.impl;
 
 import java.awt.Color;
+
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.BeanFeatures;
