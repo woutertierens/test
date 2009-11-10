@@ -12,8 +12,8 @@ import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.properties.values.impl.AcceptProcessor;
 import org.jpropeller.properties.values.impl.ReadOnlyProcessor;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.transformer.Transformer;
 import org.jpropeller.reference.impl.ReferenceDefault;
+import org.jpropeller.transformer.Transformer;
 
 /**
  * This is a temporary builder object that is used to make a {@link PathProp}

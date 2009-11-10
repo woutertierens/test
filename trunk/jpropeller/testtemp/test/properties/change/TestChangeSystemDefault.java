@@ -7,11 +7,12 @@ import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.impl.ChangeSystemDefault;
-import test.example.contacts.Address;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import test.example.contacts.Address;
 
 /**
  * Test the {@link ChangeSystemDefault} implementation

@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CollectionChangeType;
 import org.jpropeller.collection.ListDelta;
-import org.jpropeller.collection.CList;
 import org.jpropeller.info.PropAccessType;
 import org.jpropeller.info.PropEditability;
 import org.jpropeller.name.PropName;

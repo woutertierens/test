@@ -25,8 +25,8 @@ package org.jpropeller.collection.impl;
 import java.util.Collection;
 import java.util.List;
 
-import org.jpropeller.collection.ListDelta;
 import org.jpropeller.collection.CollectionChangeType;
+import org.jpropeller.collection.ListDelta;
 
 /**
  * Default implementation of {@link ListDelta}, with factory methods for 
