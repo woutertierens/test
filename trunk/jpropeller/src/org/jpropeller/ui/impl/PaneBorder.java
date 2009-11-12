@@ -20,7 +20,7 @@ import javax.swing.border.EmptyBorder;
  * Blends with {@link JTabButton}s displayed down its left
  * hand side.
  */
-public class RoundedPaneBorder extends EmptyBorder {
+public class PaneBorder extends EmptyBorder {
 
 	/**
 	 * Default background color
@@ -31,7 +31,7 @@ public class RoundedPaneBorder extends EmptyBorder {
      * Creates an initially unselected toggle button
      * without setting the text or image.
      */
-	public RoundedPaneBorder() {
+	public PaneBorder() {
 		super(4,4,4,4);
 	}
 
@@ -42,7 +42,15 @@ public class RoundedPaneBorder extends EmptyBorder {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
-		int radius = 10;
+//		int highlightAlpha = 100;
+//		int highlightAlpha1 = 10;
+//		int highlightAlpha2 = 120;
+//		int highlightSize = 5;
+		
+//		int highlightAlpha1 = 100;
+//		int highlightAlpha2 = 120;
+
+		
 		int shadowSize = 4;
 		int shadowAlpha = 20;
 		Color shadowColor = new Color(0,0,0,shadowAlpha);
@@ -74,14 +82,35 @@ public class RoundedPaneBorder extends EmptyBorder {
 				clear, 
 				false);
 
-		Color outline = new Color(0,0,0,120);
+//		GradientPaint highlight1 = new GradientPaint(
+//				0, 0, 
+//				new Color(0,0,0,highlightAlpha1), 
+//				0, highlightSize, 
+//				new Color(0,0,0,0), 
+//				false);
+//		
+//		GradientPaint highlight2 = new GradientPaint(
+//				0, h - highlightSize-1, 
+//				new Color(255,255,255,0), 
+//				0, h-1, 
+//				new Color(255,255,255,highlightAlpha2), 
+//				false);
+
+		
+//		GradientPaint highlight = new GradientPaint(		//highlight
+//				0, 1, 
+//				new Color(0,0,0,highlightAlpha1), 
+//				0, h-3, 
+//				new Color(255,255,255,highlightAlpha2), 
+//				false);
+		Color highlight = new Color(0,0,0,120);
 
 		//Draw bg
 		g2d.setPaint(DEFAULT_BG);
-		g2d.fillRoundRect(0, 0, w-1, h-1, radius, radius);
+		g2d.fillRect(0, 0, w-1, h-1);
 
 		g2d.setPaint(shadowColor);
-		g2d.fillRoundRect(1, 1, w-2, 30, radius, radius);
+		g2d.fillRect(1, 1, w-2, 30);
 
 		//Draw shadow
 		g2d.setPaint(shadow1);
@@ -93,8 +122,15 @@ public class RoundedPaneBorder extends EmptyBorder {
 		g2d.setPaint(shadow4);
 		g2d.fillRect(1, 1, w-2, h-2);
 
-		g2d.setPaint(outline);
-		g2d.drawRoundRect(0, 0, w-1, h-1, radius, radius);
+		//Draw highlight
+//		g2d.setPaint(highlight1);
+//		g2d.drawRect(0, 0, w-1, h-1);
+//		
+//		g2d.setPaint(highlight2);
+//		g2d.drawRect(0, 0, w-1, h-1);
+
+		g2d.setPaint(highlight);
+		g2d.drawRect(0, 0, w-1, h-1);
 
 		g2d.dispose();
 	}
@@ -139,7 +175,7 @@ public class RoundedPaneBorder extends EmptyBorder {
 
 	private static JPanel buildPanel(String s) {
 		JPanel panel = new JPanel();
-		panel.setBorder(new RoundedPaneBorder());
+		panel.setBorder(new PaneBorder());
 		panel.add(new JLabel(s));
 		return panel;
 	}
