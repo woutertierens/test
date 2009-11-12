@@ -38,7 +38,7 @@ public class PaneBottom extends EmptyBorder {
 			false);
 	private final Color outline = new Color(0,0,0,120);
 	private final Color bg = DEFAULT_BG;
-	private final boolean shadows = false;
+	private final boolean shadows = true;
 
     /**
      * Creates a border with no extra padding

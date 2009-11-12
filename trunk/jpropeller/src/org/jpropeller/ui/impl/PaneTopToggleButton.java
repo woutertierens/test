@@ -52,7 +52,7 @@ public class PaneTopToggleButton extends JToggleButton {
 			false);
 	private boolean drawLeft = true;
 	private boolean drawRight = true;
-	private boolean shadows = false;
+	private boolean shadows = true;
 	
 	{
 		setFocusable(false);

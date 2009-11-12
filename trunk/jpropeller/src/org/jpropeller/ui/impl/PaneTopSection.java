@@ -52,7 +52,7 @@ public class PaneTopSection extends EmptyBorder {
 	private final boolean drawLeft;
 	private final boolean drawRight;
 	private final boolean selected;
-	private final boolean shadows = false;
+	private final boolean shadows = true;
 	
     /**
      * Creates an initially unselected toggle button
