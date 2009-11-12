@@ -26,7 +26,7 @@ public class PaneBottom extends EmptyBorder {
 	private final int pad = 6;
 	private final int radius = 10;
 	private final int shadowSize = 4;
-	private final int shadowAlpha = 20;
+	private final int shadowAlpha = 40;
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
 	private final Color halfShadowColor = new Color(0,0,0,shadowAlpha/2);
 	private final Color clear = new Color(0,0,0,0);
@@ -38,15 +38,21 @@ public class PaneBottom extends EmptyBorder {
 			false);
 	private final Color outline = new Color(0,0,0,120);
 	private final Color bg = DEFAULT_BG;
-
+	private final boolean shadows = false;
 
     /**
-     * Creates an initially unselected toggle button
-     * without setting the text or image.
+     * Creates a border with no extra padding
      */
 	public PaneBottom() {
-		//FIXME look at this
-		super(0,4,4,4);
+		this(0);
+	}
+	
+    /**
+     * Creates a border
+     * @param extraPadding		The number of extra pixels of padding
+     */
+	public PaneBottom(int extraPadding) {
+		super(2+extraPadding,4+extraPadding,4+extraPadding,4+extraPadding);
 	}
 
 	@Override
@@ -75,13 +81,15 @@ public class PaneBottom extends EmptyBorder {
 		g2d.fillRoundRect(0, -pad, w-1, h-1+pad, radius, radius);
 
 		//Draw shadow
-		g2d.setPaint(shadow2);
-		g2d.fillRect(1, 0, w-2, h-1);
-		g2d.setPaint(shadow3);
-		g2d.fillRect(1, 0, w-2, h-1);
-		g2d.setPaint(shadow4);
-		g2d.fillRect(1, 0, w-2, h-1);
-
+		if (shadows) {
+			g2d.setPaint(shadow2);
+			g2d.fillRect(1, 0, w-2, h-1);
+			g2d.setPaint(shadow3);
+			g2d.fillRect(1, 0, w-2, h-1);
+			g2d.setPaint(shadow4);
+			g2d.fillRect(1, 0, w-2, h-1);
+		}
+		
 		g2d.setPaint(outline);
 		g2d.drawRoundRect(0, -pad, w-1, h-1+pad, radius, radius);
 

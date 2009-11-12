@@ -3,6 +3,7 @@ package demo.ui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -10,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import org.jpropeller.ui.impl.PaneBottom;
 import org.jpropeller.ui.impl.PaneTopSection;
+import org.jpropeller.ui.impl.PaneTopToggleButton;
 import org.jpropeller.util.GeneralUtils;
 
 /**
@@ -58,17 +60,16 @@ public class PaneDemo {
 	private static JPanel buildPanel(int selected, String... s) {
 		
 		JPanel top = new JPanel(new GridLayout(1, s.length, 0, 0));
+		ButtonGroup group = new ButtonGroup();
 		for (int i = 0; i < s.length; i++) {
-			JPanel tab = new JPanel();
-			tab.setBorder(new PaneTopSection(i==0, i==s.length-1, i==selected));
-			tab.add(new JLabel(
-					"<html>" + 
-					(i==selected ? "<b>":"") + 
-					s[i] +
-					(i==selected ? "<b>":"") + 
-					"<html>"
-					  ));
-			top.add(tab);
+			PaneTopToggleButton toggleButton = new PaneTopToggleButton(s[i]);
+			toggleButton.setDrawLeft(i==0);
+			toggleButton.setDrawRight(i==s.length-1);
+			top.add(toggleButton);
+			group.add(toggleButton);
+			if (i==0) {
+				toggleButton.setSelected(true);
+			}
 		}
 		
 		JPanel center = new JPanel();
