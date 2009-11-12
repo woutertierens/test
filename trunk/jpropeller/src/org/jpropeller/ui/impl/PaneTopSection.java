@@ -52,17 +52,18 @@ public class PaneTopSection extends EmptyBorder {
 	private final boolean drawLeft;
 	private final boolean drawRight;
 	private final boolean selected;
-
+	private final boolean shadows = false;
 	
     /**
      * Creates an initially unselected toggle button
      * without setting the text or image.
+     * @param border		The size of border - should be at least 4
      * @param drawLeft		True to draw right border 
      * @param drawRight 	True to draw left border
      * @param selected		Whether the tab is selected
      */
-	public PaneTopSection(boolean drawLeft, boolean drawRight, boolean selected) {
-		super(4,4,4,4);
+	public PaneTopSection(int border, boolean drawLeft, boolean drawRight, boolean selected) {
+		super(border, border, border, border);
 		this.drawLeft = drawLeft;
 		this.drawRight = drawRight;
 		this.selected = selected;
@@ -76,9 +77,9 @@ public class PaneTopSection extends EmptyBorder {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		GradientPaint shadowRight = new GradientPaint(
-				w-2, 1, 
+				x + w-2, y + 1, 
 				shadowColor, 
-				w-shadowSize-2, 1, 
+				x + w-shadowSize-2, y + 1, 
 				clear, 
 				false);
 
@@ -87,37 +88,41 @@ public class PaneTopSection extends EmptyBorder {
 		
 		//Draw bg
 		g2d.setPaint(bg);
-		g2d.fillRoundRect(-leftPad, 0, w - 1 + leftPad + rightPad, h - 1 + pad, radius, radius);
+		g2d.fillRoundRect(x-leftPad, y, w - 1 + leftPad + rightPad, h - 1 + pad, radius, radius);
 
 		
 		if (selected) {
 			g2d.setPaint(selectionColor);
 			Shape oldClip = g2d.getClip();
 			if (!drawRight) {
-				g2d.clipRect(0, 0, w-1, h);
+				g2d.clipRect(x, y, w-1, h);
 			}
-			g2d.fillRoundRect(1-leftPad, 1, w-2+leftPad+rightPad, h-2+pad, radius, radius);
+			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius, radius);
 			g2d.setClip(oldClip);
 		}
 		
 		//Draw shadow
-		g2d.setPaint(shadowTop);
-		g2d.fillRect(1-leftPad, 1, w-2+leftPad + rightPad, h-1);
-		if (drawLeft) {
-			g2d.setPaint(shadowLeft);
-			g2d.fillRect(1-leftPad, 1, w-2+leftPad + rightPad, h-1);
+		if (shadows) {
+			g2d.setPaint(shadowTop);
+			g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+			if (drawLeft) {
+				g2d.setPaint(shadowLeft);
+				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+			}
+			if (drawRight) {
+				g2d.setPaint(shadowRight);
+				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+			}
 		}
-		if (drawRight) {
-			g2d.setPaint(shadowRight);
-			g2d.fillRect(1-leftPad, 1, w-2+leftPad + rightPad, h-1);
-		} else {
+
+		//Draw divider line
+		if (!drawRight) {
 			g2d.setPaint(outline);
-			g2d.fillRect(w-1, 1+lineMargin, w-1, h-1-lineMargin*2);
-			
+			g2d.fillRect(x + w-1, y + 1+lineMargin, w-1, h-1-lineMargin*2);
 		}
 		
 		g2d.setPaint(outline);
-		g2d.drawRoundRect(-leftPad, 0, w-1+leftPad+rightPad, h-1+pad, radius, radius);
+		g2d.drawRoundRect(x-leftPad, y, w-1+leftPad+rightPad, h-1+pad, radius, radius);
 
 		g2d.dispose();
 	}
