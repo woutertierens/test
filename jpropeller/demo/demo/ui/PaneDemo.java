@@ -13,6 +13,7 @@ import org.jpropeller.ui.impl.PaneBottom;
 import org.jpropeller.ui.impl.PaneTopSection;
 import org.jpropeller.ui.impl.PaneTopToggleButton;
 import org.jpropeller.util.GeneralUtils;
+import org.jpropeller.util.ViewUtils;
 
 /**
  * Demonstrate use of {@link PaneBottom} and {@link PaneTopSection}s to
@@ -50,6 +51,8 @@ public class PaneDemo {
 		mainPanel.add(buildPanel(1, "Option 1", "Option 2", "Option 3", "Option 4"));
 		mainPanel.add(buildPanel(0, "Single Contents Title"));
 		mainPanel.add(buildPanel(0, "Option 1", "Option 2"));
+
+		mainPanel.add(ViewUtils.groupPane(new JLabel("No Title on this one")));
 		
 		frame.add(mainPanel);
 		

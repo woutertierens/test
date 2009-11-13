@@ -97,28 +97,28 @@ public class PaneTopSection extends EmptyBorder {
 			if (!drawRight) {
 				g2d.clipRect(x, y, w-1, h);
 			}
-			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius, radius);
+			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius-1, radius-1);
 			g2d.setClip(oldClip);
 		}
 		
 		//Draw shadow
 		if (shadows) {
 			g2d.setPaint(shadowTop);
-			g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+			g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			if (drawLeft) {
 				g2d.setPaint(shadowLeft);
-				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+				g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			}
 			if (drawRight) {
 				g2d.setPaint(shadowRight);
-				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+				g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			}
 		}
 
 		//Draw divider line
 		if (!drawRight) {
 			g2d.setPaint(outline);
-			g2d.fillRect(x + w-1, y + 1+lineMargin, w-1, h-1-lineMargin*2);
+			g2d.fillRect(x + w-1, y + 1+lineMargin, 1, h-1-lineMargin*2);
 		}
 		
 		g2d.setPaint(outline);

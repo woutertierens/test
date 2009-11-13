@@ -14,8 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import org.jpropeller.util.GeneralUtils;
-
 /**
  * Border designed to be used round the panel displaying
  * contents selected by a {@link JTabButton}.
@@ -49,12 +47,13 @@ public class JTabBorder extends EmptyBorder {
 
 	private void updateBoxes(int w, int h) {
 		selected = new PaintBox(
-				new GradientPaint(		//bg
-						0, 1, 
-						selColor, 
-						0, h-3, 
-						GeneralUtils.scaleColor(selColor, 0.9), 
-						true),
+//				new GradientPaint(		//bg
+//						0, 1, 
+//						selColor, 
+//						0, h-3, 
+//						GeneralUtils.scaleColor(selColor, 0.9), 
+//						true),
+				selColor,
 				outlineColor,			//outline
 				new GradientPaint(		//highlight
 						0, 1, 
