@@ -1,6 +1,7 @@
 package org.jpropeller.util;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JComponent;
@@ -55,9 +56,51 @@ public class ViewUtils {
 		panel.add(top, BorderLayout.NORTH);
 		panel.add(center, BorderLayout.CENTER);
 		
+		top.setOpaque(false);
+		center.setOpaque(false);
+		panel.setOpaque(false);
+		
 		return panel;
 	}
+
+	/**
+	 * Create a group pane, with no title, only a content component
+	 * @param content	{@link JComponent} to display as content (unaltered)
+	 * @return			A new {@link JPanel}
+	 */
+	public final static JPanel groupPane(JComponent content) {
+
+		JPanel center = new JPanel(new BorderLayout());
+		center.setBorder(new PaneBottom(6, true));
+		center.add(content);
+		
+		return center;
+	}
 	
+	//FIXME move this to a proper UI color
+	private final static Color BG = new Color(190, 200, 220);
+	
+	/**
+	 * Format a {@link JComponent} as an "outer" component, which does not contain
+	 * View components
+	 * @param component		The {@link JComponent}
+	 */
+	public final static void outerise(JComponent component) {
+		component.setBackground(BG);
+		//component.setOpaque(false);
+	}
+
+	/**
+	 * Format a list of {@link JComponent}s as "outer" components, which do not contain
+	 * View components
+	 * @param components		The {@link JComponent}s
+	 */
+	public final static void outerise(JComponent... components) {
+		for (JComponent c : components) {
+			outerise(c);
+		}
+	}
+
 	/**
 	 * Return a panel, containing specified component, with
 	 * a {@link Borders#DIALOG_BORDER}
@@ -65,6 +108,21 @@ public class ViewUtils {
 	 * @return				Panel containing component, with border
 	 */
 	public final static JPanel dialogPanel(JComponent component) {
+		JPanel panel = backgroundPanel(component);
+		panel.setBorder(Borders.DIALOG_BORDER);
+		outerise(panel);
+		return panel;
+	}
+	
+	
+	/**
+	 * Return a panel, containing specified component, with
+	 * a {@link Borders#DIALOG_BORDER}
+	 * This is for inner padding, so will not be {@link #outerise(JComponent)}d
+	 * @param component		The component to contain
+	 * @return				Panel containing component, with border
+	 */
+	public final static JPanel dialogPanelInner(JComponent component) {
 		JPanel panel = backgroundPanel(component);
 		panel.setBorder(Borders.DIALOG_BORDER);
 		return panel;
@@ -79,15 +137,29 @@ public class ViewUtils {
 	public final static JPanel smallBorderPanel(JComponent component) {
 		JPanel panel = backgroundPanel(component);
 		panel.setBorder(Borders.DLU4_BORDER);
+		outerise(panel);
 		return panel;
 	}
-	
+
+	/**
+	 * Return a panel, containing specified component, with
+	 * a {@link Borders#DLU4_BORDER}
+	 * This is for inner padding, so will not be {@link #outerise(JComponent)}d
+	 * @param component		The component to contain
+	 * @return				Panel containing component, with border
+	 */
+	public final static JPanel smallBorderPanelInner(JComponent component) {
+		JPanel panel = backgroundPanel(component);
+		panel.setBorder(Borders.DLU4_BORDER);
+		return panel;
+	}
+
 	/**
 	 * Return a panel, containing specified component.
 	 * @param component		The component to contain
 	 * @return				Panel containing component
 	 */
-	public final static JPanel backgroundPanel(JComponent component) {
+	private final static JPanel backgroundPanel(JComponent component) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(component);
 		return panel;

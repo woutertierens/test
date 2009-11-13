@@ -28,11 +28,12 @@ public class PaneTopToggleButton extends JToggleButton {
 	public final static Color DEFAULT_BG = new JLabel().getBackground();
 	
 	private final int lineMargin = 5;
-	private final int pad = 6;
+	private int pad = 6;
 	private final int radius = 10;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = 40;
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
+	private final Color halfShadowColor = new Color(0,0,0,shadowAlpha/2);
 	private final Color clear = new Color(0,0,0,0);
 	private final Color outline = new Color(120,120,120);
 	private final Color bg = GeneralUtils.scaleColor(DEFAULT_BG, 0.9f);
@@ -78,6 +79,14 @@ public class PaneTopToggleButton extends JToggleButton {
 	}
 
 	/**
+	 * True to draw bottom, false to miss it out
+	 * @param drawBottom	Draw bottom
+	 */
+	public void setDrawBottom(boolean drawBottom) {
+		pad = drawBottom ? 0 : 6;
+	}
+	
+	/**
 	 * True if right border should be drawn (if it is the rightmost tab)
 	 * @return	draw right
 	 */
@@ -113,6 +122,13 @@ public class PaneTopToggleButton extends JToggleButton {
 				clear, 
 				false);
 
+		GradientPaint shadowBottom = new GradientPaint(
+				1, h-2, 
+				halfShadowColor, 
+				1, h-shadowSize/2-2, 
+				clear, 
+				false);
+
 		int leftPad = drawLeft ? 0 : 6;
 		int rightPad = drawRight ? 0 : 6;
 		
@@ -127,27 +143,31 @@ public class PaneTopToggleButton extends JToggleButton {
 			if (!drawRight) {
 				g2d.clipRect(x, y, w-1, h);
 			}
-			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius, radius);
+			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius-1, radius-1);
 			g2d.setClip(oldClip);
 		}
 		
 		//Draw shadow
 		if (shadows) {
 			g2d.setPaint(shadowTop);
-			g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+			g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			if (drawLeft) {
 				g2d.setPaint(shadowLeft);
-				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+				g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			}
 			if (drawRight) {
 				g2d.setPaint(shadowRight);
-				g2d.fillRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1);
+				g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
+			}
+			if (pad == 0) {
+				g2d.setPaint(shadowBottom);
+				g2d.fillRoundRect(x + 1-leftPad, y + 1, w-2+leftPad + rightPad, h-1+pad, radius, radius);
 			}
 		}
 		
 		if (!drawRight) {
 			g2d.setPaint(outline);
-			g2d.fillRect(x + w-1, y + 1+lineMargin, w-1, h-1-lineMargin*2);
+			g2d.fillRect(x + w-1, y + 1+lineMargin, 1, h-1-lineMargin*2);
 		}
 		
 		g2d.setPaint(outline);

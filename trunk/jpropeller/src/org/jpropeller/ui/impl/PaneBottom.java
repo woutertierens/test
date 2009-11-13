@@ -23,7 +23,7 @@ public class PaneBottom extends EmptyBorder {
 	 */
 	public final static Color DEFAULT_BG = new JLabel().getBackground();
 	
-	private final int pad = 6;
+	private final int pad;
 	private final int radius = 10;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = 40;
@@ -36,9 +36,17 @@ public class PaneBottom extends EmptyBorder {
 			1 + shadowSize, 1, 
 			clear, 
 			false);
+	private final GradientPaint shadow1 = new GradientPaint(
+			1, 1, 
+			shadowColor, 
+			1, 1 + shadowSize, 
+			clear, 
+			false);
+
 	private final Color outline = new Color(0,0,0,120);
 	private final Color bg = DEFAULT_BG;
 	private final boolean shadows = true;
+	private final boolean showTop;
 
     /**
      * Creates a border with no extra padding
@@ -52,9 +60,20 @@ public class PaneBottom extends EmptyBorder {
      * @param extraPadding		The number of extra pixels of padding
      */
 	public PaneBottom(int extraPadding) {
-		super(2+extraPadding,4+extraPadding,4+extraPadding,4+extraPadding);
+		this(extraPadding, false);
 	}
 
+    /**
+     * Creates a border
+     * @param extraPadding		The number of extra pixels of padding
+     * @param showTop			True to show top border, false otherwise
+     */
+	public PaneBottom(int extraPadding, boolean showTop) {
+		super((showTop ? 4 : 2)+extraPadding,4+extraPadding,4+extraPadding,4+extraPadding);
+		pad = showTop ? 0 : 6;
+		this.showTop = showTop;
+	}
+	
 	@Override
 	public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
 		Graphics2D g2d = (Graphics2D) g.create();
@@ -82,12 +101,16 @@ public class PaneBottom extends EmptyBorder {
 
 		//Draw shadow
 		if (shadows) {
+			if (showTop) {
+				g2d.setPaint(shadow1);
+				g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
+			}
 			g2d.setPaint(shadow2);
-			g2d.fillRect(1, 0, w-2, h-1);
+			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
 			g2d.setPaint(shadow3);
-			g2d.fillRect(1, 0, w-2, h-1);
+			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
 			g2d.setPaint(shadow4);
-			g2d.fillRect(1, 0, w-2, h-1);
+			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
 		}
 		
 		g2d.setPaint(outline);

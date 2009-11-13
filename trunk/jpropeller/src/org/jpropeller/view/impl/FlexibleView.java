@@ -16,6 +16,7 @@ import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.reference.impl.ReferenceWithClassFilter;
 import org.jpropeller.system.Props;
+import org.jpropeller.util.ViewUtils;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.JViewSource;
@@ -88,6 +89,8 @@ public class FlexibleView implements JView, ChangeListener {
 		this.viewSystem = viewSystem;
 
 		panel = new JPanel(new BorderLayout());
+		
+		ViewUtils.outerise(panel);
 		
 		//Initial view using label
 		labelView = new LabelView(ref);
