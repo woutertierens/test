@@ -3,8 +3,10 @@ package org.jpropeller.view.impl;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
@@ -17,26 +19,30 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.update.UpdateManager;
 
 /**
- * A {@link JView} of any Object, which will display its
- * {@link Object#toString()} result as a {@link JLabel}
+ * A {@link JView} of a {@link Prop} of Integer value, which will display its
+ * value as a count, with an icon appearing when the count is not 0
  */
-public class LabelView implements JView, ChangeListener {
+public class CountView implements JView, ChangeListener {
 
-	private Prop<?> prop;
+	private Prop<Integer> prop;
 	private UpdateManager updateManager;
 	private JLabel label;
-
+	private final Icon icon;
 	
 	/**
-	 * Create a {@link LabelView}
+	 * Create a {@link CountView}
 	 * 
 	 * @param prop		The {@link Prop} to display
+	 * @param icon		The icon to display for non-zero counts, or null if no icon is required.
 	 */
-	public LabelView(Prop<?> prop) {
+	public CountView(Prop<Integer> prop, Icon icon) {
 		super();
 		this.prop = prop;
+		this.icon = icon;
 		
 		label = new JLabel();
+		label.setHorizontalTextPosition(SwingConstants.LEFT);
+		label.setVerticalTextPosition(SwingConstants.TOP);
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
 		updateManager.registerUpdatable(this);
@@ -49,12 +55,13 @@ public class LabelView implements JView, ChangeListener {
 	}
 	
 	/**
-	 * Create a {@link LabelView}
+	 * Create a {@link CountView}
 	 * 
 	 * @param ref		The reference to display
+	 * @param icon		The icon to display for non-zero counts, or null if no icon is required.
 	 */
-	public LabelView(Reference<?> ref) {
-		this(ref.value());
+	public CountView(Reference<Integer> ref, Icon icon) {
+		this(ref.value(), icon);
 	}
 
 	@Override
@@ -66,15 +73,21 @@ public class LabelView implements JView, ChangeListener {
 
 	@Override
 	public void update() {
-		Object value = prop.get();
+		Integer value = prop.get();
 		
 		String s = "";
-		if (value != null) {
+		if (value != null && value.intValue() != 0) {
 			s = value.toString();
 		}
 		
 		if (!s.equals(label.getText())) {
 			label.setText(s);
+		}
+		
+		if (value != 0) {
+			label.setIcon(icon);
+		} else {
+			label.setIcon(null);
 		}
 	}
 
