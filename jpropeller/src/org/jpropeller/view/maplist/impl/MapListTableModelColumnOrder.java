@@ -74,6 +74,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 	//The base for row numbers displayed in index column
 	private final int indexBase;
 	
+	private final boolean prependKey;
+	
 	private final ChangeListener mapListener = new ChangeListener() {
 		@Override
 		public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
@@ -88,8 +90,10 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 		}
 	};
 
+	
 	/**
-	 * Create a {@link MapListTableModelRowOrder} with no index column
+	 * Create a {@link MapListTableModelRowOrder} with no index column,
+	 * where column names have key name prepended
 	 * @param map			The map of keys to lists of data
 	 * @param keys			The list of keys whose mapped lists will be displayed
 	 * @param rowView		The view of each element as a row
@@ -99,7 +103,24 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 			Prop<? extends CList<K>> keys, 
 			TableRowView<? super V> rowView
 			){
-		this(map, keys, rowView, false, "", 0);
+		this(map, keys, rowView, false, "", 0, false);
+	}
+	
+	/**
+	 * Create a {@link MapListTableModelRowOrder} with no index column
+	 * @param map			The map of keys to lists of data
+	 * @param keys			The list of keys whose mapped lists will be displayed
+	 * @param rowView		The view of each element as a row
+	 * @param prependKey	True to prepend key name to column names, false 
+	 * 						just to display value column names
+	 */
+	public MapListTableModelColumnOrder(
+			Prop<? extends CMap<K, L>> map,
+			Prop<? extends CList<K>> keys, 
+			TableRowView<? super V> rowView,
+			boolean prependKey
+			){
+		this(map, keys, rowView, false, "", 0, prependKey);
 	}
 	
 	
@@ -113,6 +134,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 	 * @param indexBase		The offset for displayed indices - e.g. 0 to
 	 * 						display 0-based indices 0, 1, 2 ... or
 	 * 						1 to display 1-based indices 1, 2, 3 ...
+	 * @param prependKey	True to prepend key name to column names, false 
+	 * 						just to display value column names
 	 */
 	public MapListTableModelColumnOrder(
 			Prop<? extends CMap<K, L>> map,
@@ -120,7 +143,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 			TableRowView<? super V> rowView,
 			boolean indexColumn,
 			String indexName, 
-			int indexBase) {
+			int indexBase,
+			boolean prependKey) {
 		super();
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
@@ -138,6 +162,8 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 		this.indexColumn = indexColumn ? 0 : -1;
 		this.firstRowViewColumn = this.indexColumn + 1;
 		this.indexName = indexName;
+		
+		this.prependKey = prependKey;
 		
 		//We need to see changes to
 		//both keys prop and value prop
@@ -257,7 +283,7 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 		} else {
 			K k = getKeyAt(columnIndex - firstRowViewColumn);
 			String base = k != null ? k + ", " : "";
-			return base + rowView.getColumnName((columnIndex - firstRowViewColumn) % viewColumnCount);
+			return (prependKey ? base : "") + rowView.getColumnName((columnIndex - firstRowViewColumn) % viewColumnCount);
 		}
 	}
 
