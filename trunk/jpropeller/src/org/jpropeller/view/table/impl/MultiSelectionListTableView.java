@@ -1,6 +1,7 @@
 package org.jpropeller.view.table.impl;
 
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
@@ -15,6 +16,8 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.TableView;
+import org.jpropeller.view.table.columns.ColumnLayout;
+import org.jpropeller.view.table.columns.impl.ColumnUpdater;
 
 /**
  * A {@link JView} displaying an {@link CList} as a table,
@@ -27,7 +30,7 @@ public class MultiSelectionListTableView implements JView, TableView {
 
 	JTable table;
 	FiringTableModel tableModel;
-	
+	private ColumnUpdater columnUpdater;
 	
 	/**
 	 * Make a new {@link MultiSelectionListTableView}
@@ -53,13 +56,28 @@ public class MultiSelectionListTableView implements JView, TableView {
 	}
 	
 	/**
-	 * Make a new {@link MultiSelectionListTableView}
+	 * Make a new {@link MultiSelectionListTableView} using 
+	 * default column layout behaviour of {@link JTable}
 	 * @param firingTableModel	The actual table model to display
 	 * @param selection			The prop giving selected indices
 	 */
 	public MultiSelectionListTableView(
 			FiringTableModel firingTableModel,
 			Prop<? extends CCollection<Integer>> selection
+			) {
+		this(firingTableModel, selection, null);
+	}
+	
+	/**
+	 * Make a new {@link MultiSelectionListTableView}
+	 * @param firingTableModel	The actual table model to display
+	 * @param selection			The prop giving selected indices
+	 * @param columnLayout		The layout of the table columns, or null to use default {@link JTable} behaviour
+	 */
+	public MultiSelectionListTableView(
+			FiringTableModel firingTableModel,
+			Prop<? extends CCollection<Integer>> selection,
+			ColumnLayout columnLayout
 			) {
 		
 		this.tableModel = firingTableModel;
@@ -76,7 +94,14 @@ public class MultiSelectionListTableView implements JView, TableView {
 		
 		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
 		
-		table = new JTableImproved(tableModel);
+		if (columnLayout == null) {
+			table = new JTableImproved(tableModel);
+		} else {
+			final DefaultTableColumnModel cm = new DefaultTableColumnModel();
+			table = new JTableImproved(tableModel, cm);
+			columnUpdater = new ColumnUpdater(tableModel, cm, columnLayout);
+		}
+		
 		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(selection, filter, table);
 		table.setSelectionModel(listSelectionModel);
 		
@@ -169,6 +194,13 @@ public class MultiSelectionListTableView implements JView, TableView {
 
 	@Override
 	public void dispose() {
+		
+		//Dispose of our column updater, if any
+		if (columnUpdater != null) {
+			columnUpdater.dispose();
+			columnUpdater = null;
+		}
+		
 		//Dispose our model
 		tableModel.dispose();
 	}
