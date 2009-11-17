@@ -45,7 +45,7 @@ public class ViewUtils {
 	public final static JPanel groupPane(JComponent title, JComponent content) {
 
 		JPanel top = new JPanel(new BorderLayout());
-		top.setBorder(new PaneTopSection(6, true, true, false));
+		top.setBorder(new PaneTopSection(6, true, true, true));
 		top.add(title);
 		
 		JPanel center = new JPanel(new BorderLayout());

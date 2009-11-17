@@ -494,22 +494,12 @@ public class JTabButtonAlt extends JToggleButton {
 	 */
 	private class PaintBox {
 		private Paint bg;
-		private Paint outline;
-		private Paint highlight;
 		public PaintBox(Paint bg, Paint outline, Paint highlight) {
 			super();
 			this.bg = bg;
-			this.outline = outline;
-			this.highlight = highlight;
 		}
 		public Paint getBg() {
 			return bg;
-		}
-		public Paint getOutline() {
-			return outline;
-		}
-		public Paint getHighlight() {
-			return highlight;
 		}
 	}
 }
