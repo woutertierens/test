@@ -54,7 +54,7 @@ public class ListViewFactory implements PropViewFactory {
 			new ListAndSelectionAndValueReferenceDefault(genericType, pathProp);
 		
 		//FIXME Is this required, or can it be a normal row view
-		TableRowView<?> rowView = new TableRowView<?>(){
+		TableRowView<?> rowView = new TableRowView<Object>(){
 		
 			@Override
 			public void setColumn(Object row, int column, Object value) {
