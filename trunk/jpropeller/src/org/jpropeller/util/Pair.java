@@ -3,6 +3,9 @@ package org.jpropeller.util;
 /**
  * A pair of objects
  *
+ * Shallow-immutable but of course the a and b objects may change
+ * in a deep way
+ *
  * @param <A>	Type of first element
  * @param <B>	Type of second element
  */
