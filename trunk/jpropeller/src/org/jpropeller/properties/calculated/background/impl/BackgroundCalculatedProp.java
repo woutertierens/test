@@ -25,12 +25,11 @@ package org.jpropeller.properties.calculated.background.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.jpropeller.calculation.Calculation;
 import org.jpropeller.concurrency.Responder;
 import org.jpropeller.concurrency.impl.BackgroundResponder;
-import org.jpropeller.concurrency.impl.DaemonThreadFactory;
+import org.jpropeller.concurrency.impl.ExecutorUtils;
 import org.jpropeller.info.PropAccessType;
 import org.jpropeller.info.PropEditability;
 import org.jpropeller.name.PropName;
@@ -85,27 +84,36 @@ public class BackgroundCalculatedProp<T> implements Prop<T> {
 		}
 	};
 	
-	//FIXME should share one executor and threadpool between all props, by default (still allow overriding
-	//to use a custom executor for a prop - e.g. for low latency use by reserving a thread just for one prop, etc.)
-	/**
-	 * Default executor
-	 */
-	ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThreadFactory.getSharedInstance());
-	
 	/**
 	 * Handles updating in the background - just calculates a new value and then
 	 * sets it in this prop
 	 */
-	Responder backgroundUpdater = new BackgroundResponder(updateRunnable, executor);
-	
+	Responder backgroundUpdater;// = new BackgroundResponder(updateRunnable, executor);
+
 	/**
-	 * Create a prop
+	 * Create a prop using default {@link ExecutorService} from {@link ExecutorUtils}
 	 * @param name The name of the prop
 	 * @param propCalculation The calculation used for the prop value
 	 * @param initialValue The initial value for the prop, used until the first
 	 * calculation result is ready
 	 */
 	public BackgroundCalculatedProp(PropName<T> name, Calculation<T> propCalculation, T initialValue) {
+		this(name, propCalculation, initialValue, ExecutorUtils.getExecutorService());
+	}
+	
+	/**
+	 * Create a prop
+	 * @param name 				The name of the prop
+	 * @param propCalculation 	The calculation used for the prop value
+	 * @param initialValue 		The initial value for the prop, used until the first
+	 * 							calculation result is ready
+	 * @param executor			The {@link ExecutorService} actually used to 
+	 * 							run background calculation
+	 */
+	public BackgroundCalculatedProp(PropName<T> name, Calculation<T> propCalculation, T initialValue, ExecutorService executor) {
+
+		this.backgroundUpdater = new BackgroundResponder(updateRunnable, executor);
+		
 		this.name = name;
 		this.calculation = propCalculation;
 		this.cachedValue = initialValue;

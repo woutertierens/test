@@ -3,11 +3,10 @@ package org.jpropeller.task.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.jpropeller.concurrency.impl.BackgroundResponder;
 import org.jpropeller.concurrency.impl.CancellingBackgroundResponder;
-import org.jpropeller.concurrency.impl.DaemonThreadFactory;
+import org.jpropeller.concurrency.impl.ExecutorUtils;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -24,21 +23,24 @@ import org.jpropeller.task.Task;
  */
 public class TaskExecutor implements ChangeListener {
 
-	//FIXME should share one executor and threadpool between all TaskExecutors, by default (still allow overriding
-	//to use a custom executor for a prop - e.g. for low latency use by reserving a thread just for one executor, etc.)
-	/**
-	 * Default executor
-	 */
-	ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThreadFactory.getSharedInstance());
-
 	private final CancellingBackgroundResponder responder;
 	private final Task task;
+
+	/**
+	 * Create a {@link TaskExecutor} using the default {@link ExecutorService}
+	 * with a small pool of threads
+	 * @param task		The task to execute
+	 */
+	public TaskExecutor(Task task) {
+		this(task, ExecutorUtils.getExecutorService());
+	}
 	
 	/**
 	 * Create a {@link TaskExecutor}
 	 * @param task		The task to execute
+	 * @param executor	The {@link ExecutorService} that actually runs tasks in the background
 	 */
-	public TaskExecutor(Task task) {
+	public TaskExecutor(Task task, ExecutorService executor) {
 		this.task = task;
 		
 		//Responder decides when to run the task
