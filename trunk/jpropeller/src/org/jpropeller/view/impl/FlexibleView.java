@@ -85,28 +85,41 @@ public class FlexibleView implements JView, ChangeListener {
 	 * 						don't have a more specific view.
 	 */
 	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, Class<?>... classes) {
-		this.ref = ref;
-		this.viewSystem = viewSystem;
+		init(ref, viewSystem);
+		
+		for (Class<?> clazz : classes) {
+			makeView(clazz);
+		}
+		
+		registerListeners(ref);
+		
+		//Initial update
+		update();	
+	}
 
-		panel = new JPanel(new BorderLayout());
-		
-		ViewUtils.outerise(panel);
-		
-		//Initial view using label
-		labelView = new LabelView(ref);
-		currentView = labelView;
-		changeToView(labelView);
-		
+	
+	
+	/**
+	 * Make a {@link FlexibleView}
+	 * 
+	 * @param ref			The reference to view
+	 * @param viewSystem 	The {@link ViewSystem} to use to look up views for classes,
+	 * 						this will be checked before {@link Views#getViewSystem()}
+	 * @param classes		All classes this view will support.
+	 * 						Note, you can include {@link Bean} here
+	 * 						if you wish to fall back to a generic
+	 * 						{@link BeanEditor} for classes that
+	 * 						don't have a more specific view.
+	 */
+	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, Iterable<Class<?>> classes) {
+		init(ref, viewSystem);
+				
 		//Prepare views
 		for (Class<?> clazz : classes) {
 			makeView(clazz);
 		}
 		
-		updateManager = Props.getPropSystem().getUpdateManager();
-		updateManager.registerUpdatable(this);
-
-		//Listen to just the value of the reference
-		ref.value().features().addListener(this);
+		registerListeners(ref);
 		
 		//Initial update
 		update();
@@ -153,6 +166,29 @@ public class FlexibleView implements JView, ChangeListener {
 		panel.repaint();
 
 		currentView = newView;
+	}
+	
+	private void registerListeners(Reference<?> ref) {
+		updateManager = Props.getPropSystem().getUpdateManager();
+		updateManager.registerUpdatable(this);
+
+		//Listen to just the value of the reference
+		ref.value().features().addListener(this);
+	}
+
+
+	private void init(Reference<?> ref, ViewSystem viewSystem) {
+		this.ref = ref;
+		this.viewSystem = viewSystem;
+
+		panel = new JPanel(new BorderLayout());
+		
+		ViewUtils.outerise(panel);
+		
+		//Initial view using label
+		labelView = new LabelView(ref);
+		currentView = labelView;
+		changeToView(labelView);
 	}
 	
 	//Safe to ignore the raw reference made by class filter - it exists to
