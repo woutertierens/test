@@ -27,6 +27,7 @@ public class ColumnCompositeTableModel extends AbstractTableModel implements Fir
 	int[] columnStarts;
 	
 	int currentRowCount = 0;
+	int currentColumnCount = 0;
 	
 	private final AtomicBoolean firing = new AtomicBoolean(false);
 	
@@ -51,6 +52,7 @@ public class ColumnCompositeTableModel extends AbstractTableModel implements Fir
 		updateForSizes();
 		
 		currentRowCount = getRowCount();
+		currentColumnCount = getColumnCount();
 		
 		firing.set(true);
 		fireTableStructureChanged();
@@ -61,56 +63,70 @@ public class ColumnCompositeTableModel extends AbstractTableModel implements Fir
 	public void tableChanged(TableModelEvent e) {
 		
 		firing.set(true);
-
-		//If the incoming event is for a structure change, then perform a complete
-		//update which will update sizes and fire a structure change event
-		if (
-				(e.getFirstRow() == TableModelEvent.HEADER_ROW)
-				|| (e.getLastRow() == TableModelEvent.HEADER_ROW) ){
-			updateForSizes();
-			fireTableStructureChanged();		
-		
-		//If we have an update, then fire on with the same rows,
-		//since we always map rows through directly from our constituent
-		//models. We will expand scope to all columns even if only one column
-		//is affected - OPTIMIZE we could translate column numbers, but it seems
-		//fairly unimportant
-		} else if (e.getType() == TableModelEvent.UPDATE) {
-			//Note we need to update sizes here, since UPDATE may still
-			//include changes to size of rows (in this case the last row
-			//is set to a very large number).
-			updateForSizes();
+		try {
+			//If the incoming event is for a structure change, then perform a complete
+			//update which will update sizes and fire a structure change event
+			if (
+					(e.getFirstRow() == TableModelEvent.HEADER_ROW)
+					|| (e.getLastRow() == TableModelEvent.HEADER_ROW) ){
+				updateForSizes();
+				fireTableStructureChanged();		
 			
-			//Fire appropriate event depending on current row count
-			if (currentRowCount != getRowCount()) {
-				fireTableDataChanged();
+			//If we have an update, then fire on with the same rows,
+			//since we always map rows through directly from our constituent
+			//models. We will expand scope to all columns even if only one column
+			//is affected - OPTIMIZE we could translate column numbers, but it seems
+			//fairly unimportant
+			} else if (e.getType() == TableModelEvent.UPDATE) {
+				//Note we need to update sizes here, since UPDATE may still
+				//include changes to size of rows (in this case the last row
+				//is set to a very large number).
+				updateForSizes();
+				
+				//Fire appropriate event depending on current row and column count
+				if (currentColumnCount != getColumnCount()) {
+					fireTableStructureChanged();
+				} else if (currentRowCount != getRowCount()) {
+					fireTableDataChanged();
+				} else {
+					fireTableRowsUpdated(e.getFirstRow(), e.getLastRow());
+				}
+				
+			//Otherwise, just fire a complete data change - this allows for
+			//changes to any row, and to number of rows, but not to columns
+			//We cannot react more finely to insert/delete events, since
+			//e.g. inserting a row into a single constituent model will not
+			//result in a row insert to the composite model, but rather to
+			//a change in number of rows and cell contents etc.
 			} else {
-				fireTableRowsUpdated(e.getFirstRow(), e.getLastRow());
+				//Note we need to update sizes in case row counts have changed
+				updateForSizes();
+	
+				//Fire appropriate event depending on current row and column count
+				if (currentColumnCount != getColumnCount()) {
+					fireTableStructureChanged();
+				} else if (currentRowCount != getRowCount()) {
+					fireTableDataChanged();
+				} else {
+					//Any row could have changed
+					fireTableRowsUpdated(0, getRowCount()-1);
+				}
 			}
 			
-		//Otherwise, just fire a complete data change - this allows for
-		//changes to any row, and to number of rows, but not to columns
-		//We cannot react more finely to insert/delete events, since
-		//e.g. inserting a row into a single constituent model will not
-		//result in a row insert to the composite model, but rather to
-		//a change in number of rows and cell contents etc.
-		} else {
-			//Note we need to update sizes in case row counts have changed
-			updateForSizes();
-
-			//Fire appropriate event depending on current row count
-			if (currentRowCount != getRowCount()) {
-				fireTableDataChanged();
-			} else {
-				//Any row could have changed
-				fireTableRowsUpdated(0, getRowCount()-1);
-			}
+// For now we will just deal with exceptions if we have any more after column count fix.
+// TODO: use code below if required
+//		//If we get a run time exception we can try to fire again with structure changed, for fragile listeners to get a message they should always handle
+//		} catch (RuntimeException ex) {
+//			updateForSizes();
+//			fireTableStructureChanged();
+//			throw ex;
+		} finally {
+			//Store new row and column counts
+			currentRowCount = getRowCount();
+			currentColumnCount = getColumnCount();
+			
+			firing.set(false);
 		}
-
-		//Store new row count
-		currentRowCount = getRowCount();
-		
-		firing.set(false);
 	}
 	
 	/**
