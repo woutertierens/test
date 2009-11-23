@@ -36,5 +36,10 @@ public class ProblemDefault extends BeanDefault implements Problem {
 
 	@Override
 	public Prop<ProblemSeverity> severity() {return severity;}
+	
+	@Override
+	public String toString() {
+		return description().get() + " at " + location().get() + ", " + severity().get();
+	}
 
 }
