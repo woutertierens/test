@@ -36,7 +36,7 @@ public class MapKeySyncTask<K, V> implements Task {
 	private final Prop<? extends CCollection<? extends K>> requiredKeys;
 	private final Prop<? extends CMap<K, V>> map;
 	private final Set<Prop<?>> sources;
-	private final Source<V> valueSource;
+	private final Source<? extends V> valueSource;
 
 	/**
 	 * Create a {@link MapKeySyncTask}
@@ -47,7 +47,7 @@ public class MapKeySyncTask<K, V> implements Task {
 	public MapKeySyncTask(
 			Prop<? extends CCollection<? extends K>> requiredKeys, 
 			Prop<? extends CMap<K, V>> map,
-			Source<V> valueSource) {
+			Source<? extends V> valueSource) {
 		super();
 		this.requiredKeys = requiredKeys;
 		this.map = map;
