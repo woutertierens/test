@@ -1,8 +1,11 @@
 package org.jpropeller.properties.list.impl;
 
 import java.util.Iterator;
+import java.util.List;
 
+import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
+import org.jpropeller.collection.impl.CListCalculated;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.info.PropAccessType;
 import org.jpropeller.name.PropName;
@@ -99,6 +102,20 @@ public class ListPropDefault<L> extends ChangeablePropDefault<CList<L>> implemen
 		return new ListPropDefault<S>(propName, data, AcceptProcessor.<CList<S>>get());
 	}
 	
+	/**
+	 * Create a new read-only {@link ListPropDefault}
+	 * based on a {@link CListCalculated}
+	 * @param contentsClass		The class of data in the list/indexed property
+	 * @param name 				The string value of the property name
+	 * @param calculation		The {@link Calculation} giving list contents
+	 * @param <S>				The type of data in the list/indexed property
+	 * @return					The new {@link ListPropDefault}
+	 */
+	public static <S> ListPropDefault<S> calculated(Class<S> contentsClass, String name, Calculation<List<S>> calculation) {
+		CListCalculated<S> calculatedList = 
+			new CListCalculated<S>(calculation);
+		return create(contentsClass, name, calculatedList);
+	}
 	
 	@Override
 	public PropAccessType getAccessType() {
