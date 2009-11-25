@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.jpropeller.transformer.Transformer;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.info.Colored;
 
@@ -17,16 +18,40 @@ import org.jpropeller.view.info.Colored;
 public class ColoredBackgroundCellRenderer extends DefaultTableCellRenderer {
 
 	private Color color = null;
+	private Transformer<Object, Color> colorer;
+	
+	/**
+	 * Create a renderer using {@link Color} from {@link Colored}
+	 * objects only
+	 */
+	public ColoredBackgroundCellRenderer() {
+		this(null);
+	}
+	
+	/**
+	 * Create a renderer using a {@link Transformer} to convert objects
+	 * to colors
+	 * @param colorer		{@link Transformer} from objects to colors
+	 */
+	public ColoredBackgroundCellRenderer(Transformer<Object, Color> colorer) {
+		this.colorer = colorer;
+	}
 	
 	@Override
 	public void setValue(Object value) {
 
-		if (value instanceof Colored) {
-			Colored colored = (Colored) value;
-			double alpha = 0.2;
-			color = GeneralUtils.transparentColor(colored.color().get(), alpha);
+		double alpha = 0.2;
+
+		if (colorer == null) {
+			if (value instanceof Colored) {
+				Colored colored = (Colored) value;
+				color = GeneralUtils.transparentColor(colored.color().get(), alpha);
+			} else {
+				color = null;
+			}
 		} else {
-			color = null;
+			color = colorer.transform(value);
+			color = GeneralUtils.transparentColor(color, alpha);
 		}
 		
 		super.setValue(value);

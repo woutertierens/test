@@ -1,11 +1,14 @@
 package org.jpropeller.bean;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.joda.time.DateTime;
+import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
+import org.jpropeller.collection.impl.CListCalculated;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.calculated.impl.ListCalculation;
@@ -137,6 +140,18 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 * 		The new {@link ListPropDefault}
 	 */
 	public <S> ListPropDefault<S> createList(Class<S> contentsClass, String name, CList<S> data);
+	
+	/**
+	 * Create a new read-only {@link ListPropDefault}
+	 * based on a {@link CListCalculated}
+	 * and add to this {@link BeanFeatures}
+	 * @param contentsClass		The class of data in the list/indexed property
+	 * @param name 				The string value of the property name
+	 * @param calculation		The {@link Calculation} giving list contents
+	 * @param <S>				The type of data in the list/indexed property
+	 * @return					The new {@link ListPropDefault}
+	 */
+	public <S> ListPropDefault<S> calculatedList(Class<S> contentsClass, String name, Calculation<List<S>> calculation);
 	
 	/**
 	 * Create a new {@link ListPropDefault}, using

@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.ExtendedBeanFeatures;
 import org.jpropeller.bean.MutableBeanFeatures;
+import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
@@ -105,6 +106,11 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		return add(ListPropDefault.create(contentsClass, name, data));
 	}
 
+	public <S> ListPropDefault<S> calculatedList(Class<S> contentsClass,
+			String name, Calculation<List<S>> calculation) {
+		return add(ListPropDefault.calculated(contentsClass, name, calculation));
+	}
+	
 	public <S> ListPropDefault<S> editableList(Class<S> contentsClass, String name, CList<S> data) {
 		return add(ListPropDefault.editable(contentsClass, name, data));
 	}
