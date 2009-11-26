@@ -79,6 +79,21 @@ public class MultiSelectionListTableView implements JView, TableView {
 			Prop<? extends CCollection<Integer>> selection,
 			ColumnLayout columnLayout
 			) {
+		this(firingTableModel, selection, columnLayout, true);
+	}
+	/**
+	 * Make a new {@link MultiSelectionListTableView}
+	 * @param firingTableModel	The actual table model to display
+	 * @param selection			The prop giving selected indices
+	 * @param columnLayout		The layout of the table columns, or null to use default {@link JTable} behaviour
+	 * @param sorting			True to allow sorting of table, false otherwise
+	 */
+	public MultiSelectionListTableView(
+			FiringTableModel firingTableModel,
+			Prop<? extends CCollection<Integer>> selection,
+			ColumnLayout columnLayout,
+			boolean sorting
+			) {
 		
 		this.tableModel = firingTableModel;
 		
@@ -92,7 +107,6 @@ public class MultiSelectionListTableView implements JView, TableView {
 			}
 		};
 		
-		TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
 		
 		if (columnLayout == null) {
 			table = new JTableImproved(tableModel);
@@ -104,8 +118,11 @@ public class MultiSelectionListTableView implements JView, TableView {
 		
 		IntegersListSelectionModel listSelectionModel = new IntegersListSelectionModel(selection, filter, table);
 		table.setSelectionModel(listSelectionModel);
-		
-		table.setRowSorter(sorter);
+
+		if (sorting) {
+			TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
+			table.setRowSorter(sorter);
+		}
 	}
 	
 	/**

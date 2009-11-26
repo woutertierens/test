@@ -282,8 +282,9 @@ public class MapListTableModelColumnOrder<K, V, L extends CList<V>> extends Abst
 			return indexName;
 		} else {
 			K k = getKeyAt(columnIndex - firstRowViewColumn);
-			String base = k != null ? k + ", " : "";
-			return (prependKey ? base : "") + rowView.getColumnName((columnIndex - firstRowViewColumn) % viewColumnCount);
+			String rowViewName = rowView.getColumnName((columnIndex - firstRowViewColumn) % viewColumnCount);
+			String base = k != null ? k + (rowViewName.length()>0 ?", ":"") : "";
+			return (prependKey ? base : "") + rowViewName;
 		}
 	}
 

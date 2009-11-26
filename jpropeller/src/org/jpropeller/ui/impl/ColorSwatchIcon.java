@@ -14,12 +14,28 @@ import javax.swing.Icon;
  */
 public class ColorSwatchIcon implements Icon {
 
-	Color color = Color.BLUE;
+	Color color;
 	Color outlineColor = Color.BLACK;
 	int width = 20;
 	int height = 12;
 	int borderWidth = 0;
 	int borderHeight = 0;
+	
+	/**
+	 * Create a 20x12 icon with default blue color,
+	 * black outline
+	 */
+	public ColorSwatchIcon() {
+		this(Color.BLUE);
+	}
+	
+	/**
+	 * Create a 20x12 icon with default black outline
+	 * @param color		Initial color
+	 */
+	public ColorSwatchIcon(Color color) {
+		this.color = color;
+	}
 	
 	@Override
 	public int getIconHeight() {

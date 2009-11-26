@@ -2,6 +2,7 @@ package org.jpropeller.util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JComponent;
@@ -46,6 +47,7 @@ public class ViewUtils {
 
 		JPanel top = new JPanel(new BorderLayout());
 		top.setBorder(new PaneTopSection(6, true, true, true));
+		top.setPreferredSize(new Dimension(10, 30));
 		top.add(title);
 		
 		JPanel center = new JPanel(new BorderLayout());
