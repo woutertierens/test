@@ -123,9 +123,10 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	 * @return
 	 * 		The {@link Prop}, or null if there is no {@link Prop}
 	 * in the specified {@link Bean} for the required {@link PropName}
-	 * at the specified column
+	 * at the specified column, or if the bean is null
 	 */
 	private Prop<?> findBeanProp(R row, int column) {
+		if (row == null) return null;
 		//Get name from the prop for the column, then use this
 		//to look up the value of the corresponding prop in the bean
 		PropName<?> name = props.get(column).getName();
