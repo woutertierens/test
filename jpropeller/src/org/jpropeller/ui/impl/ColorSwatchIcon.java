@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.Icon;
 
@@ -14,15 +16,15 @@ import javax.swing.Icon;
  */
 public class ColorSwatchIcon implements Icon {
 
-	Color color;
-	Color outlineColor = Color.BLACK;
+	Paint fill;
+	Paint outline = Color.BLACK;
 	int width = 20;
 	int height = 12;
 	int borderWidth = 0;
 	int borderHeight = 0;
 	
 	/**
-	 * Create a 20x12 icon with default blue color,
+	 * Create a 20x12 icon with default blue fill,
 	 * black outline
 	 */
 	public ColorSwatchIcon() {
@@ -31,10 +33,10 @@ public class ColorSwatchIcon implements Icon {
 	
 	/**
 	 * Create a 20x12 icon with default black outline
-	 * @param color		Initial color
+	 * @param fill		Initial color
 	 */
-	public ColorSwatchIcon(Color color) {
-		this.color = color;
+	public ColorSwatchIcon(Paint fill) {
+		this.fill = fill;
 	}
 	
 	@Override
@@ -51,53 +53,69 @@ public class ColorSwatchIcon implements Icon {
 	public void paintIcon(Component c, Graphics graphics, int x, int y) {
 		Graphics2D g = (Graphics2D) graphics;
 		
-		Color originalColor = g.getColor();
+		Paint originalPaint = g.getPaint();
 		
-		if (color != null) {
-			g.setColor(color);
-			g.fillRect(x + borderWidth, y + borderHeight, width, height);
+		if (fill != null) {
+			AffineTransform oldTransform = g.getTransform();
+			
+			AffineTransform newTransform = new AffineTransform(oldTransform);
+			newTransform.concatenate(AffineTransform.getTranslateInstance(x+borderWidth, y+borderHeight));
+			g.setTransform(newTransform);
+
+			g.setPaint(fill);
+			g.fillRect(0, 0, width, height);
+			
+			g.setTransform(oldTransform);
 		}
 		
-		g.setColor(outlineColor);
+		g.setPaint(outline);
 		g.drawRect(x + borderWidth, y + borderHeight, width, height);
 		
-		g.setColor(originalColor);
+		g.setPaint(originalPaint);
 	}
 
 	/**
-	 * Get color to fill swatch - if null, swatch is just an outline
+	 * Get {@link Paint} to fill swatch - if null, swatch is just an outline
+	 * Note that the {@link Paint} will be applied to a rectangle with top left at
+	 * the origin, (0, 0), with width and height according toe {@link #getWidth()}
+	 * and {@link #getHeight()}. Hence for example gradients should be set up
+	 * to have correct scale, but start from (0, 0).
 	 * @return
 	 * 		swatch color
 	 */
-	public Color getColor() {
-		return color;
+	public Paint getFill() {
+		return fill;
 	}
 
 	/**
-	 * Set color to fill swatch - if null, swatch is just an outline
-	 * @param color
+	 * Set {@link Paint} to fill swatch - if null, swatch is just an outline
+	 * Note that the {@link Paint} will be applied to a rectangle with top left at
+	 * the origin, (0, 0), with width and height according toe {@link #getWidth()}
+	 * and {@link #getHeight()}. Hence for example gradients should be set up
+	 * to have correct scale, but start from (0, 0).
+	 * @param fill
 	 * 		swatch color
 	 */
-	public void setColor(Color color) {
-		this.color = color;
+	public void setFill(Paint fill) {
+		this.fill = fill;
 	}
 
 	/**
-	 * Get color to outline swatch
+	 * Get {@link Paint} to outline swatch
 	 * @return
-	 * 		outline color
+	 * 		outline {@link Paint}
 	 */
-	public Color getOutlineColor() {
-		return outlineColor;
+	public Paint getOutline() {
+		return outline;
 	}
 
 	/**
 	 * Set color to outline swatch
-	 * @param outlineColor
+	 * @param outline
 	 * 		outline color
 	 */
-	public void setOutlineColor(Color outlineColor) {
-		this.outlineColor = outlineColor;
+	public void setOutline(Paint outline) {
+		this.outline = outline;
 	}
 
 	/**

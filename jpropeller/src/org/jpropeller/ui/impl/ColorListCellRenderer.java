@@ -37,7 +37,7 @@ public class ColorListCellRenderer extends DefaultListCellRenderer {
 		this();
 		icon.setWidth(width);
 		icon.setHeight(height);
-		icon.setOutlineColor(outlineColor);
+		icon.setOutline(outlineColor);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ColorListCellRenderer extends DefaultListCellRenderer {
 				cellHasFocus);
 		if (value instanceof Color) {
 			Color color = (Color) value;
-			icon.setColor(color);
+			icon.setFill(color);
 			setIcon(icon);
 			setText("");
 		} else {
