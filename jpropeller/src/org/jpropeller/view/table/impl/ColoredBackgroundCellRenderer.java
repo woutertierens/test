@@ -51,7 +51,9 @@ public class ColoredBackgroundCellRenderer extends DefaultTableCellRenderer {
 			}
 		} else {
 			color = colorer.transform(value);
-			color = GeneralUtils.transparentColor(color, alpha);
+			if (color != null) {
+				color = GeneralUtils.transparentColor(color, alpha);
+			}
 		}
 		
 		super.setValue(value);
