@@ -74,7 +74,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 			int row,
 			int column) {
 		currentColor = (Color)value;
-		icon.setColor(currentColor);
+		icon.setFill(currentColor);
 		edit();
 		return label;
 	}
