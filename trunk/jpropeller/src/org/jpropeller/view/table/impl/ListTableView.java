@@ -22,9 +22,8 @@ import org.jpropeller.view.table.TableView;
  */
 public class ListTableView<T> implements TableView {
 
-	JTable table;
-	Reference<? extends CList<T>> model;
-	ListTableModel<T> tableModel;
+	private final JTable table;
+	private final ListTableModel<T> tableModel;
 	
 	
 	/**
@@ -33,7 +32,6 @@ public class ListTableView<T> implements TableView {
 	 */
 	public ListTableView(ListTableModel<T> tableModel) {
 		this.tableModel = tableModel;
-		this.model = tableModel.getModel();
 		table = new JTableImproved(tableModel);
 	}
 	
