@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -38,7 +39,7 @@ import org.jpropeller.view.update.UpdateManager;
 public class ListTableModel<T> 	extends AbstractTableModel 
 								implements FiringTableModel, ChangeListener, Updatable, TableRowViewListener {
 
-	private Reference<? extends CList<T>> model;
+	private Prop<? extends CList<T>> list;
 	private TableRowView<? super T> rowView;
 	
 	//Track whether we have had a complete change and/or column change since last firing
@@ -55,21 +56,26 @@ public class ListTableModel<T> 	extends AbstractTableModel
 
 	/**
 	 * Create a {@link ListTableModel} that doesn't show the row index as a column
-	 * @param model
-	 * 		The model, a {@link Reference} to the {@link CList} we will display
-	 * @param rowView
-	 * 		The view of each row. SHould only be provided to ONE {@link ListTableModel}
+	 * @param model		The model, a {@link Reference} to the {@link CList} we will display
+	 * @param rowView	The view of each row. SHould only be provided to ONE {@link ListTableModel}
 	 */
 	public ListTableModel(Reference<? extends CList<T>> model, TableRowView<? super T> rowView) {
 		this(model, rowView, false, "", 0);
 	}
 	
 	/**
+	 * Create a {@link ListTableModel} that doesn't show the row index as a column
+	 * @param list		A {@link Prop} containing the {@link CList} we will display
+	 * @param rowView	The view of each row. SHould only be provided to ONE {@link ListTableModel}
+	 */
+	public ListTableModel(Prop<? extends CList<T>> list, TableRowView<? super T> rowView) {
+		this(list, rowView, false, "", 0);
+	}
+	
+	/**
 	 * Create a {@link ListTableModel}
-	 * @param model
-	 * 		The model, a {@link Reference} to the {@link CList} we will display
-	 * @param rowView
-	 * 		The view of each row
+	 * @param model		The model, a {@link Reference} to the {@link CList} we will display
+	 * @param rowView	The view of each row
 	 * @param indexColumn		True if the first column should show the row index 
 	 * @param indexName 		The name for first column, if indexColumn is true
 	 * @param indexBase 		The base for row index numbering - 0 to be 0-based, 0, 1, 2...
@@ -77,6 +83,25 @@ public class ListTableModel<T> 	extends AbstractTableModel
 	 */
 	public ListTableModel(
 			Reference<? extends CList<T>> model, 
+			TableRowView<? super T> rowView,
+			boolean indexColumn,
+			String indexName,
+			int indexBase) {
+		this(model.value(), rowView, indexColumn, indexName, indexBase);
+	}
+
+	
+	/**
+	 * Create a {@link ListTableModel}
+	 * @param list				A {@link Prop} containing the {@link CList} we will display
+	 * @param rowView			The view of each row
+	 * @param indexColumn		True if the first column should show the row index 
+	 * @param indexName 		The name for first column, if indexColumn is true
+	 * @param indexBase 		The base for row index numbering - 0 to be 0-based, 0, 1, 2...
+	 * 							1 to be 1-based, 1, 2, 3...
+	 */
+	public ListTableModel(
+			Prop<? extends CList<T>> list, 
 			TableRowView<? super T> rowView,
 			boolean indexColumn,
 			String indexName,
@@ -90,7 +115,7 @@ public class ListTableModel<T> 	extends AbstractTableModel
 		
 		rowView.addListener(this);
 		
-		this.model = model;
+		this.list = list;
 		
 		if (indexColumn) {
 			this.indexColumn = 0;
@@ -104,16 +129,16 @@ public class ListTableModel<T> 	extends AbstractTableModel
 		this.indexBase = indexBase;
 		
 		//Listen to the value prop of our model
-		model.value().features().addListener(this);
+		list.features().addListener(this);
 	}
-
+	
 	@Override
 	public int getColumnCount() {
 		return rowView.getColumnCount() + firstRowViewColumn;
 	}
 
 	private CList<T> list() {
-		return model.value().get();
+		return list.get();
 	}
 	
 	@Override
@@ -200,11 +225,11 @@ public class ListTableModel<T> 	extends AbstractTableModel
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		//FIXME fire finer-grained changes if possible
 		
-		//If the model has had a new instance set then we have a complete change
-		if (!changes.get(model.value()).sameInstances()) {
+		//If the prop has had a new instance set then we have a complete change
+		if (!changes.get(list).sameInstances()) {
 			handleChange(true, false);
 			
-		//If the model still points to the same list instance, see what change it has had
+		//If the prop still points to the same list instance, see what change it has had
 		} else {
 			//If instances are all the same in the list, then contents have changed
 			//only - we don't have more or less rows
@@ -261,15 +286,8 @@ public class ListTableModel<T> 	extends AbstractTableModel
 	@Override
 	public void dispose() {
 		updateManager.deregisterUpdatable(this);
-		model.value().features().removeListener(this);
+		list.features().removeListener(this);
 		rowView.removeListener(this);
 	}
-	
-	/**
-	 * The underlying reference displayed by this {@link TableModel}
-	 * @return		Model
-	 */
-	public Reference<? extends CList<T>> getModel() {
-		return model;
-	}
+
 }
