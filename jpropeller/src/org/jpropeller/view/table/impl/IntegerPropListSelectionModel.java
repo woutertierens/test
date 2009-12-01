@@ -125,7 +125,12 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 		adjustingDelegate = true;
 		try {
 	
-			int index = table.convertRowIndexToView(indexProp.get());
+			int index = -1;
+			try {
+				index = table.convertRowIndexToView(indexProp.get());
+			} catch (IndexOutOfBoundsException ioobe) {
+				//If index is out of bounds, treat as no selection
+			}
 	
 			//Note that index may be -1 if the model row is not visible
 			//in the table, due to filtering. However this still works since

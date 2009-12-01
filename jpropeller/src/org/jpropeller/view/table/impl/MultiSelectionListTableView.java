@@ -106,8 +106,7 @@ public class MultiSelectionListTableView implements JView, TableView {
 				return !tableModel.isFiring();
 			}
 		};
-		
-		
+				
 		if (columnLayout == null) {
 			table = new JTableImproved(tableModel);
 		} else {
