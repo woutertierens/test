@@ -1,15 +1,20 @@
 package org.jpropeller.view.table.impl;
 
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.columns.ColumnLayout;
+import org.jpropeller.view.table.columns.impl.ColumnUpdater;
 
 /**
  * A {@link JView} displaying an {@link CList} as a table,
@@ -24,9 +29,11 @@ public class SingleSelectionListTableView<T> implements JView {
 	JTable table;
 	ListAndSelectionAndValueReference<T> model;
 	ListTableModel<T> tableModel;
+	private ColumnUpdater columnUpdater;
 	
 	/**
-	 * Make a new {@link SingleSelectionListTableView}
+	 * Make a new {@link SingleSelectionListTableView}, with default column layout
+	 * and no sorting
 	 * @param model
 	 * 		The model to be displayed - references the list that will be displayed
 	 * as rows of a table
@@ -35,6 +42,24 @@ public class SingleSelectionListTableView<T> implements JView {
 	 * rows of the {@link JTable}
 	 */
 	public SingleSelectionListTableView(ListAndSelectionAndValueReference<T> model, TableRowView<? super T> rowView) {
+		this(model, rowView, null, false);
+	}
+	
+	/**
+	 * Make a new {@link SingleSelectionListTableView}
+	 * @param model				The model to be displayed - references the list 
+	 * 							that will be displayed as rows of a table
+	 * @param rowView			The {@link TableRowView} to convert from 
+	 * 							elements of the list to rows of the {@link JTable}
+	 * @param columnLayout 		The layout of the table columns, or null to 
+	 * 							use default {@link JTable} behaviour
+	 * @param sorting			True to allow sorting of table, false otherwise
+	 */
+	public SingleSelectionListTableView(
+			ListAndSelectionAndValueReference<T> model, 
+			TableRowView<? super T> rowView,
+			ColumnLayout columnLayout,
+			boolean sorting) {
 		this.model = model;
 		tableModel = new ListTableModel<T>(model, rowView);
 		
@@ -50,8 +75,21 @@ public class SingleSelectionListTableView<T> implements JView {
 			}
 		};
 		
-		table = new JTableImproved(tableModel);
+		if (columnLayout == null) {
+			table = new JTableImproved(tableModel);
+		} else {
+			final DefaultTableColumnModel cm = new DefaultTableColumnModel();
+			table = new JTableImproved(tableModel, cm);
+			columnUpdater = new ColumnUpdater(tableModel, cm, columnLayout);
+		}
+		
 		table.setSelectionModel(new IntegerPropListSelectionModel(model.selection(), filter, table));
+		
+		if (sorting) {
+			TableRowSorter<FiringTableModel> sorter = new TableRowSorter<FiringTableModel>(tableModel);
+			table.setRowSorter(sorter);
+		}
+
 	}
 
 	/**
@@ -142,6 +180,13 @@ public class SingleSelectionListTableView<T> implements JView {
 
 	@Override
 	public void dispose() {
+		
+		//Dispose of our column updater, if any
+		if (columnUpdater != null) {
+			columnUpdater.dispose();
+			columnUpdater = null;
+		}
+
 		//Dispose our model
 		tableModel.dispose();
 	}
