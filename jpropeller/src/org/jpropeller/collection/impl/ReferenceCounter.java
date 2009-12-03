@@ -15,7 +15,7 @@ public class ReferenceCounter<T> implements Iterable<T> {
 	private final static Integer ONE = 1;
 	Map<T, Integer> referenceCounts;
 	Map<T, Integer> umReferenceCounts;
-
+	
 	/**
 	 * Make a reference counter
 	 */

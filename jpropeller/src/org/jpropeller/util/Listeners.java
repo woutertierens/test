@@ -49,6 +49,10 @@ public class Listeners<L> implements Iterable<L> {
 		return listeners;
 	}
 	
+
+//Another weak implementation, currently can't be used. For example, 
+//task executors are sometimes only kept alive by the fact they are 
+//listening to something.
 //WEAK implementation
 //	 * References to the listeners are weak, so will not prevent
 //	 * the listeners from being garbage collected.
@@ -136,4 +140,36 @@ public class Listeners<L> implements Iterable<L> {
 //
 //	}
 	
+//	//TODO if this causes any problems, replace it with a ReferenceCounter
+//	private WeakReferenceCounter<L> listeners;
+//	
+//	/**
+//	 * Add a listener
+//	 * @param listener
+//	 */
+//	public void add(L listener) {
+//		listeners().addReference(listener);
+//	}
+//
+//	/**
+//	 * Remove a listener
+//	 * @param listener
+//	 * @return		True if the listener had been added (as expected),
+//	 * 				or false if the listener was not registered, and
+//	 * 				so had either not been added, or removed more times
+//	 * 				than added.
+//	 */
+//	public boolean remove(L listener) {
+//		return listeners().removeReferenceUnchecked(listener);
+//	}
+//
+//	@Override
+//	public Iterator<L> iterator() {
+//		return listeners().iterator();
+//	}
+//	
+//	private WeakReferenceCounter<L> listeners() {
+//		if (listeners == null) listeners = new WeakReferenceCounter<L>();
+//		return listeners;
+//	}
 }
