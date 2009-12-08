@@ -18,27 +18,39 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 	private final static Icon tick = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "tick");
 	private final static Icon untick = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "untick");
 	
-	private final static BooleanCellRenderer instance = new BooleanCellRenderer();
+	private final static BooleanCellRenderer opaque = new BooleanCellRenderer(true);
+	private final static BooleanCellRenderer transparent = new BooleanCellRenderer(false);
 	
 	/**
-	 * Get an instance of {@link BooleanCellRenderer}
+	 * Get an opaque instance of {@link BooleanCellRenderer}
 	 * @return		The {@link BooleanCellRenderer}
 	 */
-	public final static BooleanCellRenderer get() {
-		return instance;
+	public final static BooleanCellRenderer opaque() {
+		return opaque;
+	}
+	
+	/**
+	 * Get a transparent instance of {@link BooleanCellRenderer}
+	 * @return		The {@link BooleanCellRenderer}
+	 */
+	public final static BooleanCellRenderer transparent() {
+		return transparent;
 	}
 	
 	/**
 	 * Create a renderer
+	 * @param opaque Opaque or not.
 	 */
-	BooleanCellRenderer() {
-		super();
+	BooleanCellRenderer(boolean opaque) {
+		super();		
+		setOpaque(opaque);
 		setHorizontalAlignment(JLabel.CENTER);
 	}
 
 	@Override
 	public void setValue(Object value) {
 		if (value instanceof Boolean) {
+			
 			setIcon(((Boolean)value) ? tick : untick);
 		} else {
 			setIcon(null);	

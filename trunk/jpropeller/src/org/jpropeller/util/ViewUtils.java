@@ -8,6 +8,7 @@ import java.awt.Font;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import org.jpropeller.ui.impl.PaneBottom;
 import org.jpropeller.ui.impl.PaneTopSection;
@@ -80,7 +81,12 @@ public class ViewUtils {
 	}
 	
 	//FIXME move this to a proper UI color
-	private final static Color BG = new Color(190, 200, 220);
+	private final static Color BG;
+	
+	static {
+		BG = new Color(190, 200, 220);
+		UIManager.put("itis.bg", BG);
+	}
 	
 	/**
 	 * Format a {@link JComponent} as an "outer" component, which does not contain
