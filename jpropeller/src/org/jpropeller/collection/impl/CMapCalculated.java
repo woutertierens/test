@@ -24,13 +24,12 @@ package org.jpropeller.collection.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.jpropeller.calculation.Calculation;
-import org.jpropeller.collection.CList;
+import org.jpropeller.collection.CMap;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeSystem;
@@ -43,48 +42,48 @@ import org.jpropeller.system.PropSystem;
 import org.jpropeller.system.Props;
 
 /**
- * An {@link CListCalculated} uses a {@link Calculation} to
- * produce a {@link List} from source properties, and then makes that
- * {@link List} available for read-only access.
+ * An {@link CMapCalculated} uses a {@link Calculation} to
+ * produce a {@link Map} from source properties, and then makes that
+ * {@link Map} available for read-only access.
  * 
- * The {@link CListCalculated} changes only when a new calculation
+ * The {@link CMapCalculated} changes only when a new calculation
  * is required due to the sources of the calculation changing, 
  * and that calculation is performed lazily, and cached - this
  * behaviour is similar to that for {@link CalculatedProp}.
  * 
- * Note that the {@link CListCalculated} will NOT propagate changes
- * to the contents of previously calculated lists - it is assumed
+ * Note that the {@link CMapCalculated} will NOT propagate changes
+ * to the contents of previously calculated {@link Map}s - it is assumed
  * that {@link Calculation} will NOT produce changeable content as a result,
  * unless it can guarantee that any changes to the result will also involve
  * changes to the sources, triggering a new calculation. This is part of
  * the contract for {@link Calculation}. 
  * 
- * @param <E>		The type of element in the list
+ * @param <K>		The type of key in the map
+ * @param <V>		The type of value in the map
  */
-public class CListCalculated<E> implements CList<E> {
+public class CMapCalculated<K, V> implements CMap<K, V> {
 	
 	//Standard code block for a bean
 	private ChangeableFeatures features;
 
-	private Calculation<List<E>> calculation;
+	private Calculation<Map<K, V>> calculation;
 
-	//The current calculation list result we delegate 
+	//The current calculation map result we delegate 
 	//to for actual storage, etc., or null if no value
-	private List<E> core;	
+	private Map<K, V> core;	
 	private boolean cacheValid = false;
 
 	@Override
 	public ChangeableFeatures features() {
 		return features;
 	}
-
 	
 	/**
-	 * Create a new {@link CListCalculated}
+	 * Create a new {@link CMapCalculated}
 	 * 
-	 * @param calculation	The calculation yielding list contents
+	 * @param calculation	The calculation yielding map contents
 	 */
-	public CListCalculated(Calculation<List<E>> calculation) {
+	public CMapCalculated(Calculation<Map<K, V>> calculation) {
 		super();
 		
 		this.calculation = calculation;
@@ -134,14 +133,14 @@ public class CListCalculated<E> implements CList<E> {
 		
 		if (!cacheValid) {
 
-			List<E> newCore = calculation.calculate();
+			Map<K, V> newCore = calculation.calculate();
 			
 			//Null values are not acceptable - throw exception sooner rather than later
 			if (newCore == null) {
 				throw new NullPointerException("Null list returned by calculation");
 			}
 			
-			core = Collections.unmodifiableList(newCore);
+			core = Collections.unmodifiableMap(newCore);
 			
 			//We now have a usable value
 			cacheValid = true;
@@ -156,90 +155,10 @@ public class CListCalculated<E> implements CList<E> {
 	//also use read lock
 	
 	@Override
-	public boolean contains(Object o) {
-		try {
-			start();
-			return core.contains(o);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		try {
-			start();
-			return core.containsAll(c);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public E get(int index) {
-		try {
-			start();
-			return core.get(index);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public int indexOf(Object o) {
-		try {
-			start();
-			return core.indexOf(o);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
 	public boolean isEmpty() {
 		try {
 			start();
 			return core.isEmpty();
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		try {
-			start();
-			return new ImmutableCCollectionIterator<E>(core.iterator(), this);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public int lastIndexOf(Object o) {
-		try {
-			start();
-			return core.lastIndexOf(o);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public ListIterator<E> listIterator() {
-		try {
-			start();
-			return new ImmutableCCollectionListIterator<E>(core.listIterator(), this);
-		} finally {
-			end();
-		}
-	}
-
-	@Override
-	public ListIterator<E> listIterator(int index) {
-		try {
-			start();
-			return new ImmutableCCollectionListIterator<E>(core.listIterator(index), this);
 		} finally {
 			end();
 		}
@@ -254,65 +173,73 @@ public class CListCalculated<E> implements CList<E> {
 			end();
 		}
 	}
-
+	
 	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
+	public boolean containsKey(Object key) {
 		try {
 			start();
-			return new ImmutableCCollectionSublist<E>(core.subList(fromIndex, toIndex), this);
+			return core.containsKey(key);
 		} finally {
 			end();
 		}
 	}
 
 	@Override
-	public Object[] toArray() {
+	public boolean containsValue(Object value) {
 		try {
 			start();
-			return core.toArray();
+			return core.containsValue(value);
 		} finally {
 			end();
 		}
 	}
 
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public V get(Object key) {
 		try {
 			start();
-			return core.toArray(a);
+			return core.get(key);
 		} finally {
 			end();
 		}
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		//TODO implement the following, which will require a set wrapper
+		throw new UnsupportedOperationException("Can't get entrySet of " + CMapCalculated.class.getName());
+	}
+
+	@Override
+	public Set<K> keySet() {
+		//TODO implement the following, which will require a set wrapper
+		throw new UnsupportedOperationException("Can't get keySet of " + CMapCalculated.class.getName());
+	}
+
+	@Override
+	public Collection<V> values() {
+		//TODO implement the following, which will require a Collection wrapper
+		throw new UnsupportedOperationException("Can't get values of " + CMapCalculated.class.getName());
 	}
 	
 	//Unsupported operations
 	private void throwUnsupported(String operation) {
-		throw new UnsupportedOperationException("Can't " + operation + " " + CListCalculated.class.getName());		
+		throw new UnsupportedOperationException("Can't " + operation + " " + CMapCalculated.class.getName());		
 	}
-	private void throwUnsupportedAdd() {
-		throwUnsupported("add to");		
-	}
-	@Override
-	public void replace(Iterable<E> newContents) { throwUnsupported("replace");}
-	@Override
-	public boolean add(E e) {throwUnsupportedAdd(); return false;}
-	@Override
-	public void add(int index, E element) {throwUnsupportedAdd();}
-	@Override
-	public boolean addAll(Collection<? extends E> c) {throwUnsupportedAdd(); return false;}
-	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {throwUnsupportedAdd(); return false;}
 	@Override
 	public void clear() {throwUnsupported("clear");}
 	@Override
-	public boolean remove(Object o) {throwUnsupported("remove from");return false;}
+	public void replace(Map<? extends K, ? extends V> newContents) {throwUnsupported("replace");}
 	@Override
-	public E remove(int index) {throwUnsupported("remove from");return null;}
+	public V put(K key, V value) {
+		throw new UnsupportedOperationException("Can't put into " + CMapCalculated.class.getName());		
+	}
 	@Override
-	public boolean removeAll(Collection<?> c) {throwUnsupported("remove from");return false;}
+	public void putAll(Map<? extends K, ? extends V> m) {throwUnsupported("putAll");}
+
 	@Override
-	public boolean retainAll(Collection<?> c) {throwUnsupported("alter (by retainAll)");return false;}
-	@Override
-	public E set(int index, E element) {throwUnsupported("set elements of");return null;}
+	public V remove(Object key) {
+		throw new UnsupportedOperationException("Can't remove from " + CMapCalculated.class.getName());		
+	}
 	
 }
