@@ -39,6 +39,8 @@ public class MapRowView<R, K, V> implements TableRowView<R>, ChangeListener {
 	
 	private final Listeners<TableRowViewListener> listeners = new Listeners<TableRowViewListener>();
 	
+	private final String overridingName;
+
 	/**
 	 * Make a {@link MapRowView}
 	 * @param vClass	The {@link Class} of value in the maps
@@ -48,10 +50,24 @@ public class MapRowView<R, K, V> implements TableRowView<R>, ChangeListener {
 	 * 							key (type K) to value (type V)
 	 */
 	public MapRowView(Class<V> vClass, Prop<? extends CList<? extends K>> keys, Transformer<? super R, ? extends Map<K, V>> transformer) {
+		this(vClass, keys, transformer, null);
+	}
+	
+	/**
+	 * Make a {@link MapRowView}
+	 * @param vClass	The {@link Class} of value in the maps
+	 * @param keys		The keys for which to display values, this determines
+	 * 					the column list
+	 * @param transformer	The {@link Transformer} from a Row of type R to a {@link Map} from
+	 * 							key (type K) to value (type V)
+	 * @param overridingName	If null, this name is used for the column, regardless of key name
+	 */
+	public MapRowView(Class<V> vClass, Prop<? extends CList<? extends K>> keys, Transformer<? super R, ? extends Map<K, V>> transformer, String overridingName) {
 		this.vClass = vClass;
 		this.keys = keys;
 		keys.features().addListener(this);
 		this.transformer = transformer;
+		this.overridingName = overridingName;
 	}
 	
 	@Override
@@ -106,7 +122,11 @@ public class MapRowView<R, K, V> implements TableRowView<R>, ChangeListener {
 			return null;
 		}
 		
-		return keyList.get(column).toString();
+		if (overridingName == null) {
+			return keyList.get(column).toString();
+		} else {
+			return overridingName;
+		}
 	}
 
 	@Override
