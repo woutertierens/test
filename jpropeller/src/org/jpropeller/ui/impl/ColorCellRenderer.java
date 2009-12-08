@@ -24,6 +24,7 @@ public class ColorCellRenderer extends DefaultTableCellRenderer {
 
 	/**
 	 * Create a renderer
+	 * @param opaque Whether the renderer should render a background or not.
 	 * @param width
 	 * 		Width of color swatch in display 
 	 * @param height 
@@ -31,8 +32,9 @@ public class ColorCellRenderer extends DefaultTableCellRenderer {
 	 * @param outlineColor
 	 * 		Outline color of color swatch in display 
 	 */
-	public ColorCellRenderer(int width, int height, Color outlineColor) {
+	public ColorCellRenderer(boolean opaque, int width, int height, Color outlineColor) {
 		this();
+		setOpaque(opaque);
 		icon.setWidth(width);
 		icon.setHeight(height);
 		icon.setOutline(outlineColor);

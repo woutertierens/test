@@ -92,7 +92,7 @@ public class JTableImproved extends JTable {
 		
 		setDefaultRenderer(ImmutableIcon.class, 	new IconCellRenderer());
 		setDefaultRenderer(Color.class, 			new ColorCellRenderer());
-		setDefaultRenderer(Boolean.class, 			BooleanCellRenderer.get());
+		setDefaultRenderer(Boolean.class, 			BooleanCellRenderer.opaque());
 
 		//Set sensible row height
 		setRowHeight(26);

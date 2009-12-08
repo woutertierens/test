@@ -24,7 +24,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
 	private Boolean originalValue = false;
 	private Boolean inComponent = false;
 
-	private final BooleanCellRenderer renderer = new BooleanCellRenderer();
+	private final BooleanCellRenderer renderer = new BooleanCellRenderer(true);
 	private Component rendererComponent = null;
 
 	private final static Color highlightColour = new Color(255, 255, 255, 50);

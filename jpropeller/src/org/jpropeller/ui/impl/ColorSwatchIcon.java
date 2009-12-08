@@ -1,10 +1,12 @@
 package org.jpropeller.ui.impl;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 
 import javax.swing.Icon;
@@ -22,6 +24,8 @@ public class ColorSwatchIcon implements Icon {
 	int height = 12;
 	int borderWidth = 0;
 	int borderHeight = 0;
+	private final static Stroke stroke = new BasicStroke();
+	
 	
 	/**
 	 * Create a 20x12 icon with default blue fill,
@@ -54,6 +58,7 @@ public class ColorSwatchIcon implements Icon {
 		Graphics2D g = (Graphics2D) graphics;
 		
 		Paint originalPaint = g.getPaint();
+		Stroke oldStroke = g.getStroke();
 		
 		if (fill != null) {
 			AffineTransform oldTransform = g.getTransform();
@@ -61,6 +66,8 @@ public class ColorSwatchIcon implements Icon {
 			AffineTransform newTransform = new AffineTransform(oldTransform);
 			newTransform.concatenate(AffineTransform.getTranslateInstance(x+borderWidth, y+borderHeight));
 			g.setTransform(newTransform);
+			
+			
 
 			g.setPaint(fill);
 			g.fillRect(0, 0, width, height);
@@ -68,8 +75,13 @@ public class ColorSwatchIcon implements Icon {
 			g.setTransform(oldTransform);
 		}
 		
+		
+		g.setStroke(stroke);
 		g.setPaint(outline);
 		g.drawRect(x + borderWidth, y + borderHeight, width, height);
+		
+		
+		g.setStroke(oldStroke);
 		
 		g.setPaint(originalPaint);
 	}

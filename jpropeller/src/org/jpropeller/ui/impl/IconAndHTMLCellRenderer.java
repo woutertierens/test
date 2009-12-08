@@ -37,7 +37,7 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	 * 							or {@link SwingConstants#CENTER}
 	 */
 	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment) {
-		this(delegate, verticalAlignment, true, true);
+		this(delegate, verticalAlignment, true, true, true);
 	}
 	
 	/**
@@ -49,9 +49,11 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	 * 							or {@link SwingConstants#CENTER}
 	 * @param showIcon			True to show icon 
 	 * @param showHTML 			True to show html
+	 * @param opaque 			True to render opaque
 	 */
-	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment, boolean showIcon, boolean showHTML) {
+	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment, boolean showIcon, boolean showHTML, boolean opaque) {
 		super();
+		setOpaque(opaque);
 		this.delegate = delegate;
 		this.verticalAlignment = verticalAlignment;
 		this.showIcon = showIcon;
