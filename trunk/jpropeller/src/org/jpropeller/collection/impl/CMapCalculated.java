@@ -56,7 +56,10 @@ import org.jpropeller.system.Props;
  * that {@link Calculation} will NOT produce changeable content as a result,
  * unless it can guarantee that any changes to the result will also involve
  * changes to the sources, triggering a new calculation. This is part of
- * the contract for {@link Calculation}. 
+ * the contract for {@link Calculation}.
+ * 
+ * NOTE: Currently {@link #keySet()}, {@link #entrySet()} and {@link #values()}
+ * will throw {@link UnsupportedOperationException}.
  * 
  * @param <K>		The type of key in the map
  * @param <V>		The type of value in the map
