@@ -1,5 +1,7 @@
 package org.jpropeller.ui.impl;
 
+import java.awt.Color;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -37,7 +39,7 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	 * 							or {@link SwingConstants#CENTER}
 	 */
 	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment) {
-		this(delegate, verticalAlignment, true, true, true);
+		this(delegate, verticalAlignment, true, true, true, null);
 	}
 	
 	/**
@@ -50,14 +52,18 @@ public class IconAndHTMLCellRenderer extends DefaultTableCellRenderer {
 	 * @param showIcon			True to show icon 
 	 * @param showHTML 			True to show html
 	 * @param opaque 			True to render opaque
+	 * @param foreground		The foreground color, null to ignore
 	 */
-	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment, boolean showIcon, boolean showHTML, boolean opaque) {
+	public IconAndHTMLCellRenderer(IconAndHTMLRenderer delegate, int verticalAlignment, boolean showIcon, boolean showHTML, boolean opaque, Color foreground) {
 		super();
 		setOpaque(opaque);
 		this.delegate = delegate;
 		this.verticalAlignment = verticalAlignment;
 		this.showIcon = showIcon;
 		this.showHTML = showHTML;
+		if (foreground != null) {
+			setForeground(foreground);
+		}
 	}
 
 	@Override
