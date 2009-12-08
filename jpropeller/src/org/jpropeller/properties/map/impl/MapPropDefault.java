@@ -1,10 +1,16 @@
 package org.jpropeller.properties.map.impl;
 
+import java.util.Map;
+
+import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CMap;
+import org.jpropeller.collection.impl.CListCalculated;
+import org.jpropeller.collection.impl.CMapCalculated;
 import org.jpropeller.collection.impl.CMapDefault;
 import org.jpropeller.info.PropAccessType;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.changeable.impl.ChangeablePropDefault;
+import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.MapProp;
 import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.properties.values.impl.AcceptProcessor;
@@ -51,6 +57,23 @@ public class MapPropDefault<K, T> extends ChangeablePropDefault<CMap<K,T>> imple
 		return new MapPropDefault<K, T>(PropName.<K,T>createMap(keyClass, valueClass, name), data, AcceptProcessor.<CMap<K, T>>get());
 	}
 
+	/**
+	 * Create a new read-only {@link ListPropDefault}
+	 * based on a {@link CListCalculated}
+	 * @param keyClass			The class of key in the map
+	 * @param valueClass		The class of value in the map
+	 * @param name 				The string value of the property name
+	 * @param calculation		The {@link Calculation} giving list contents
+	 * @param <K> 				The type of key in the map
+	 * @param <V> 				The type of value in the map
+	 * @return					The new {@link ListPropDefault}
+	 */
+	public static <K, V> MapPropDefault<K, V> calculated(Class<K> keyClass, Class<V> valueClass, String name, Calculation<Map<K, V>> calculation) {
+		CMapCalculated<K, V> calculatedMap = 
+			new CMapCalculated<K, V>(calculation);
+		return create(keyClass, valueClass, name, calculatedMap);
+	}
+	
 	/**
 	 * Create a new {@link MapPropDefault}, which will
 	 * always accept new values.
