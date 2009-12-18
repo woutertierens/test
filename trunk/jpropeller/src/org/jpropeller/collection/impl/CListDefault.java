@@ -134,7 +134,7 @@ public class CListDefault<E> implements CList<E> {
 	 * @param contents	The list contents
 	 * @return			A new unmodifiable {@link CList}
 	 */
-	public static <T> CListDefault<T> create(Collection<T> contents) {
+	public static <T> CListDefault<T> create(Collection<? extends T> contents) {
 		return new CListDefault<T>(Collections.unmodifiableList(new ArrayList<T>(contents)));
 	}
 	

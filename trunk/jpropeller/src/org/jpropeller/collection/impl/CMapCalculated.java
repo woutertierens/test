@@ -24,6 +24,7 @@ package org.jpropeller.collection.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -208,21 +209,34 @@ public class CMapCalculated<K, V> implements CMap<K, V> {
 	}
 
 	@Override
-	public Set<java.util.Map.Entry<K, V>> entrySet() {
-		//TODO implement the following, which will require a set wrapper
-		throw new UnsupportedOperationException("Can't get entrySet of " + CMapCalculated.class.getName());
+	public Set<Entry<K, V>> entrySet() {
+		try {
+			start();
+			return new SetShell<Entry<K,V>>(core.entrySet());
+		} finally {
+			end();
+		}
 	}
+
 
 	@Override
 	public Set<K> keySet() {
-		//TODO implement the following, which will require a set wrapper
-		throw new UnsupportedOperationException("Can't get keySet of " + CMapCalculated.class.getName());
+		try {
+			start();
+			return new SetShell<K>(core.keySet());
+		} finally {
+			end();
+		}
 	}
-
+	
 	@Override
 	public Collection<V> values() {
-		//TODO implement the following, which will require a Collection wrapper
-		throw new UnsupportedOperationException("Can't get values of " + CMapCalculated.class.getName());
+		try {
+			start();
+			return new CollectionShell<V>(core.values());
+		} finally {
+			end();
+		}
 	}
 	
 	//Unsupported operations
@@ -243,6 +257,205 @@ public class CMapCalculated<K, V> implements CMap<K, V> {
 	@Override
 	public V remove(Object key) {
 		throw new UnsupportedOperationException("Can't remove from " + CMapCalculated.class.getName());		
+	}
+
+	
+	
+	
+	
+
+	/**
+	 *	Wraps an iterator, and makes main class fire property change (complete list
+	 *	change) when remove is used, and adds appropriate locking.
+	 */
+	private class IteratorShell<T> implements Iterator<T>{
+		
+		//The wrapped iterator
+		private final Iterator<T> it;
+		
+		/**
+		 * Make a wrapper 
+		 * @param it The iterator to wrap
+		 */
+		private IteratorShell(Iterator<T> it) {
+			this.it = it;
+		}
+
+		//Method must ensure listbean compliance
+		public void remove() {
+			throw new UnsupportedOperationException("Cannot remove from CMapCalculated-derived iterators");
+		}
+		
+		//Methods delegated directly to the wrapped iterator
+		public boolean equals(Object obj) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return it.equals(obj);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public int hashCode() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return it.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public boolean hasNext() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return it.hasNext();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public T next() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return it.next();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public String toString() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return it.toString();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+	}
+
+	/**
+	 * Wrap a collection to make it unmodifiable, and to respect locking, 
+	 * and to pass on these restrictions to iterators on it
+	 */
+	private class CollectionShell<T> implements Collection<T> {
+		private final Collection<T> coreCollection;
+
+		private CollectionShell(Collection<T> coreList) {
+			this.coreCollection = Collections.unmodifiableCollection(coreList);
+		}
+
+		private CollectionShell(Collection<T> coreList, boolean alreadyUnmodifiable) {
+			this.coreCollection = alreadyUnmodifiable ? coreList : Collections.unmodifiableCollection(coreList);
+		}
+
+		//This is complex - must wrap the core iterator to pass on
+		//locking
+		public Iterator<T> iterator() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return new IteratorShell<T>(coreCollection.iterator());
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		
+		//These methods are simple - just lock around reading
+		public boolean contains(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.contains(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public boolean containsAll(Collection<?> c) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.containsAll(c);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public boolean equals(Object o) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.equals(o);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public int hashCode() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.hashCode();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public boolean isEmpty() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.isEmpty();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public int size() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.size();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public Object[] toArray() {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.toArray();
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}
+		public <S> S[] toArray(S[] a) {
+			Props.getPropSystem().getChangeSystem().prepareRead(CMapCalculated.this);
+			try {
+				return coreCollection.toArray(a);
+			} finally {
+				Props.getPropSystem().getChangeSystem().concludeRead(CMapCalculated.this);
+			}
+		}	
+		
+		//Methods that modify the collection will all fail due to unmodifiable view
+		//TODO: Note we could actually support these without a huge effort by tracking around
+		//changes
+		public boolean remove(Object o) {
+			return coreCollection.remove(o);
+		}
+		public boolean removeAll(Collection<?> c) {
+			return coreCollection.removeAll(c);
+		}
+		public boolean retainAll(Collection<?> c) {
+			return coreCollection.retainAll(c);
+		}
+		public boolean add(T e) {
+			return coreCollection.add(e);
+		}
+		public boolean addAll(Collection<? extends T> c) {
+			return coreCollection.addAll(c);
+		}
+		public void clear() {
+			coreCollection.clear();
+		}
+		
+	}
+	
+	/**
+	 * Wrap a Set to make it unmodifiable, and to respect locking, 
+	 * and to pass on these restrictions to iterators on it
+	 * Note: This is pretty much identical to CollectionShell, since
+	 * Set is the same as Collection, apart from contracts.
+	 */
+	private class SetShell<T> extends CollectionShell<T> implements Set<T>{
+		private SetShell(Set<T> coreSet) {
+			super(Collections.unmodifiableSet(coreSet), 
+					true);	//already unmodifiable - super won't wrap again
+		}
 	}
 	
 }
