@@ -69,7 +69,7 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 	 * 
 	 * Now consider what can go wrong. When stage 3 occurs - if we were to look at ONLY the allChanges map,
 	 * we would now see that we already had a change to X, so we don't bother to propagate the new
-	 * change. Hence X never sees the new change, and does not invalidate its cache again at stage 3.
+	 * change. Hence C never sees the new change, and does not invalidate its cache again at stage 3.
 	 * Now when we read C at stage 4, it gives us the old, out of date value it calculated at stage 2,
 	 * NOT the new value from the value of X set in stage 3.
 	 * 
