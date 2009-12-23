@@ -84,7 +84,7 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 	
 	@Override
 	public void dispose() {
-		value.features().removeListener(this);
+		name.features().removeListener(this);
 		value.features().removeListener(this);
 	}
 	
