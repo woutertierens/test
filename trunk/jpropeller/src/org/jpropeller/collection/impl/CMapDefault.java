@@ -46,7 +46,7 @@ import org.jpropeller.system.Props;
  * An {@link CMapDefault} wraps an underlying {@link Map} implementation, 
  * delegating actual storage of elements to this core map, and adding 
  * tracking of the elements so that events are generated as required 
- * for {@link CMapDefault} compliance.
+ * for {@link CMap} compliance.
  * 
  * @param <K> 		The type of key in the map.
  * @param <V>		The type of element in the map.
