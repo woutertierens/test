@@ -9,6 +9,9 @@ import org.jpropeller.properties.change.MapChange;
 /**
  * An {@link CMap} is a {@link Map} that implements {@link Changeable}
  * to allow tracking of changes to the {@link Map} or its contents.
+ * Note that only the VALUES are tracked in a deep way - keys are expected
+ * to be immutable, since mutable values do not generally work as good
+ * map keys.
  * When any {@link Map} method is used to change the {@link Map} contents, 
  * the {@link CMap} will propagate a {@link Change}. 
  * This {@link Change} is specifically a {@link MapChange}
