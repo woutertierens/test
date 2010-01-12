@@ -6,7 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
@@ -31,16 +35,22 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	Reference<? extends Bean> model;
 	PropName<String> displayedName;
 	
-	JTextField field;
+	JTextComponent text;
+	JComponent component;
+	
 	Color defaultBackground;
 	
 	String valueAtStartOfEditing = null;
 	
+	private final boolean multiline;
+
 	private StringTextFieldEditor(Reference<? extends Bean> model,
-			PropName<String> displayedName) {
+			PropName<String> displayedName, boolean multiline) {
+
 		super();
 		this.model = model;
 		this.displayedName = displayedName;
+		this.multiline = multiline;
 		buildField();
 		
 		help = new PropViewHelp<Bean, String>(this, displayedName);
@@ -58,7 +68,24 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	 */
 	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
 			PropName<String> displayedName) {
-		return new StringTextFieldEditor(model, displayedName);
+		return create(model, displayedName, false);
+	}
+
+	/**
+	 * Create a {@link StringTextFieldEditor}
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+	 * @param multiline
+	 * 		True if the view should support multiline editing - if so,
+	 * 		it will not commit on pressing enter, only on losing focus.
+	 * @return
+	 * 		A new {@link StringTextFieldEditor}
+	 */
+	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
+			PropName<String> displayedName, boolean multiline) {
+		return new StringTextFieldEditor(model, displayedName, multiline);
 	}
 
 	@Override
@@ -72,28 +99,42 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	}
 
 	/**
-	 * Get the {@link JTextField} used for display/editing
+	 * Get the {@link JComponent} used for display/editing
 	 * @return
 	 * 		The text field
 	 */
-	public JTextField getComponent() {
-		return field;
+	public JComponent getComponent() {
+		return component;
 	}
 	
 	private boolean checkNull(String value) {
 		boolean n = (value == null);
 		if (n) {
-			field.setText("");
+			text.setText("");
 		}
-		field.setEnabled(!n);
+		text.setEnabled(!n);
 		return n;
 	}
 
 	
 	private void buildField() {
-		field = new JTextField();
-		defaultBackground = field.getBackground();
-		field.addFocusListener(new FocusListener() {
+		if (multiline) {
+			text = new JTextArea(10, 20);
+			component = new JScrollPane(text);
+		} else {
+			JTextField field = new JTextField();
+			field.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					commit();
+				}
+			});
+			text = field;
+			component = text;
+		}
+		
+		defaultBackground = text.getBackground();
+		text.addFocusListener(new FocusListener() {
 			//On focus lost, try to commit any pending edit.
 			public void focusLost(FocusEvent e) {
 				commit();
@@ -103,13 +144,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 				display();
 				
 				//Note the value we started from
-				valueAtStartOfEditing = field.getText();
-			}
-		});
-		field.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				commit();
+				valueAtStartOfEditing = text.getText();
 			}
 		});
 	}
@@ -122,9 +157,9 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 
 	private void error(boolean errored) {
 		if (errored) {
-			field.setBackground(Views.getViewSystem().getErrorBackgroundColor());
+			text.setBackground(Views.getViewSystem().getErrorBackgroundColor());
 		} else {
-			field.setBackground(defaultBackground);
+			text.setBackground(defaultBackground);
 		}
 	}
 	
@@ -133,7 +168,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		//If we are editing, set the new prop value
 		if (isEditing()) {
 			try {
-				help.setPropValue(field.getText());
+				help.setPropValue(text.getText());
 				error(false);
 				
 			//Notify user of any error
@@ -153,14 +188,14 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		if (checkNull(value)) return false;
 		
 		//We are editing if text field value is not the same as prop value
-		return (!field.getText().equals(value));
+		return (!text.getText().equals(value));
 	}
 
 	@Override
 	public void update() {
 		//If the text field is not focussed, then always update the display
 		//to the new prop value, if necessary.
-		if (!field.isFocusOwner()) {
+		if (!text.isFocusOwner()) {
 			display();
 			
 		//If the field is focussed, we only need to update if the new value
@@ -169,7 +204,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 			if (valueAtStartOfEditing != null && !valueAtStartOfEditing.equals(help.getPropValue())) {
 				display();
 				//Restart editing
-				valueAtStartOfEditing = field.getText();
+				valueAtStartOfEditing = text.getText();
 			}
 		}
 	}
@@ -183,7 +218,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 			//Can't display null values
 			if (checkNull(value)) value = "";
 			
-			field.setText(value);
+			text.setText(value);
 			
 			//We now know we are not errored, since we are displaying the actual value
 			error(false);
