@@ -32,8 +32,8 @@ import org.jpropeller.properties.map.impl.MapPropDefault;
 import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.properties.values.ValueProcessor;
+import org.jpropeller.system.Props;
 import org.jpropeller.ui.impl.ImmutableIcon;
-import org.jpropeller.util.P;
 
 /**
  * A default implementation of {@link ExtendedBeanFeatures} as a wrapper
@@ -167,11 +167,11 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	}
 	
 	public Prop<Integer> ranged(String name, int value, int low, int high) {
-		return add(P.ranged(name, value, low, high));			
+		return add(Props.ranged(name, value, low, high));			
 	}
 
 	public Prop<Double> ranged(String name, double value, double low, double high) {
-		return add(P.ranged(name, value, low, high));
+		return add(Props.ranged(name, value, low, high));
 	}
 
 
