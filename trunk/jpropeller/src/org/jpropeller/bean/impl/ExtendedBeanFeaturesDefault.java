@@ -13,8 +13,6 @@ import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
-import org.jpropeller.comparison.ComparisonType;
-import org.jpropeller.comparison.Filters;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
@@ -34,8 +32,8 @@ import org.jpropeller.properties.map.impl.MapPropDefault;
 import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.properties.values.ValueProcessor;
-import org.jpropeller.properties.values.Values;
 import org.jpropeller.ui.impl.ImmutableIcon;
+import org.jpropeller.util.P;
 
 /**
  * A default implementation of {@link ExtendedBeanFeatures} as a wrapper
@@ -169,19 +167,11 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	}
 	
 	public Prop<Integer> ranged(String name, int value, int low, int high) {
-		//Check we have a valid range, and value is in it
-		if (value > high || value < low) {
-			throw new IllegalArgumentException("Must have low <= value <= high");
-		}
-		return create(name, value, Values.range(Filters.comparison(ComparisonType.MORE_THAN_OR_EQUAL, low), Filters.comparison(ComparisonType.LESS_THAN_OR_EQUAL, high)));			
+		return add(P.ranged(name, value, low, high));			
 	}
 
 	public Prop<Double> ranged(String name, double value, double low, double high) {
-		//Check we have a valid range, and value is in it
-		if (value > high || value < low) {
-			throw new IllegalArgumentException("Must have low <= value <= high");
-		}
-		return create(name, value, Values.range(Filters.comparison(ComparisonType.MORE_THAN_OR_EQUAL, low), Filters.comparison(ComparisonType.LESS_THAN_OR_EQUAL, high)));			
+		return add(P.ranged(name, value, low, high));
 	}
 
 
@@ -191,7 +181,7 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	//                                                             //
 	/////////////////////////////////////////////////////////////////
 
-	public <P extends Prop<S>, S> P add(P prop) {
+	public <R extends Prop<S>, S> R add(R prop) {
 		return delegate.add(prop);
 	}
 

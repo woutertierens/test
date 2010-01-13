@@ -1,5 +1,6 @@
 package org.jpropeller.util;
 
+
 /**
  * Utils to generate repeated code for primitive types, etc.
  */
@@ -100,6 +101,50 @@ public class BuildUtils {
 
 		
 
+		String[] pMethods = new String[] {
+				"/**\n"+
+				" * Make a new read-only TYPE {@link Prop}\n"+
+				" * @param name\t\tThe name of the {@link Prop}\n"+
+				" * @param value\t\tThe value of the {@link Prop}\n"+
+				" * @return\t\t\tThe new {@link Prop}\n"+
+				" */\n" +
+				"public final static Prop<TYPE> create(String name, TYPE value){\n" +
+				"\treturn PropImmutable.create(name, value);\n" +
+				"}\n",
+				
+				"/**\n"+
+				" * Make a new TYPE {@link Prop}\n"+
+				" * @param name\t\tThe name of the {@link Prop}\n"+
+				" * @param value\t\tThe value of the {@link Prop}\n"+
+				" * @param processor\tThe processor used when new values are set\n"+ 
+				" * @return\t\t\tThe new {@link Prop}\n"+
+				" */\n" +
+				"public final static Prop<TYPE> create(String name, TYPE value, ValueProcessor<TYPE> processor){\n" +
+				"\treturn PropImmutable.create(name, value, processor);\n" +
+				"}\n",
+				
+				"/**\n"+
+				" * Make a new editable TYPE {@link Prop}, accepting all values\n" +
+				" * @param name\t\tThe name of the {@link Prop}\n"+
+				" * @param value\t\tThe value of the {@link Prop}\n"+
+				" * @return\t\t\tThe new {@link Prop}\n"+
+				" */\n" +
+				"public final static Prop<TYPE> editable(String name, TYPE value){\n" +
+				"\treturn PropImmutable.editable(name, value);\n" +
+				"}\n",
+				
+				"/**\n"+
+				" * Make a {@link Prop} containing the result of a {@link Calculation}\n"+
+				" * @param name				The name of the {@link Prop}\n"+
+				" * @param calculation		The {@link Calculation} giving list contents\n"+
+				" * @return					The {@link Prop}\n"+
+				" */\n"+
+				"public final static Prop<TYPE> calculatedTYPE(String name, Calculation<TYPE> calculation) {\n"+
+				"	return new CalculatedProp<TYPE>(PropName.create(TYPE.class, name), calculation);\n"+
+				"}\n",
+
+			};
+		
 		
 		
 		String[] types = new String[] {
@@ -144,6 +189,13 @@ public class BuildUtils {
 			}
 		}
 
+		System.out.println("//Auto generated methods");
+		System.out.println();
+		for (String type : types) {
+			for (String method : pMethods) {
+				System.out.print(method.replaceAll("TYPE", type));
+			}
+		}
 	}
 	
 }
