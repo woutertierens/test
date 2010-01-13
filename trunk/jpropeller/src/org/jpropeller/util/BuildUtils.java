@@ -1,7 +1,5 @@
 package org.jpropeller.util;
 
-
-
 /**
  * Utils to generate repeated code for primitive types, etc.
  */
