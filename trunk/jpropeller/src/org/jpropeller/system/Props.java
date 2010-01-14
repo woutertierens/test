@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
+import org.jpropeller.collection.CSet;
 import org.jpropeller.collection.impl.CListCalculated;
 import org.jpropeller.collection.impl.CMapCalculated;
 import org.jpropeller.comparison.ComparisonType;
@@ -26,6 +27,7 @@ import org.jpropeller.properties.impl.SuperClassProp;
 import org.jpropeller.properties.impl.ViewProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.impl.MapPropDefault;
+import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.properties.values.Values;
 import org.jpropeller.system.impl.PropSystemDefault;
@@ -119,6 +121,106 @@ public class Props {
 	 */
 	public static <T> Prop<CList<T>> editableList(Class<T> contentsClass, String name) {
 		return ListPropDefault.editable(contentsClass, name);
+	}
+	
+	/**
+	 * Make a read-only {@link Prop} containing a {@link CMap}
+	 * @param <K>				The type of map key
+	 * @param <V>				The type of map value
+	 * @param keyClass			The class of map key
+	 * @param valueClass		The class of map value
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CMap} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <K, V> Prop<CMap<K, V>> createMap(Class<K> keyClass, Class<V> valueClass, String name, CMap<K, V> contents) {
+		return MapPropDefault.create(keyClass, valueClass, name, contents);
+	}
+
+	/**
+	 * Make a read-only {@link Prop} containing a new, empty {@link CMap}
+	 * @param <K>				The type of map key
+	 * @param <V>				The type of map value
+	 * @param keyClass			The class of map key
+	 * @param valueClass		The class of map value
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <K, V> Prop<CMap<K, V>> createMap(Class<K> keyClass, Class<V> valueClass, String name) {
+		return MapPropDefault.create(keyClass, valueClass, name);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a {@link CMap}
+	 * @param <K>				The type of map key
+	 * @param <V>				The type of map value
+	 * @param keyClass			The class of map key
+	 * @param valueClass		The class of map value
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CMap} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <K, V> Prop<CMap<K, V>> editableMap(Class<K> keyClass, Class<V> valueClass, String name, CMap<K, V> contents) {
+		return MapPropDefault.editable(keyClass, valueClass, name, contents);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a new, empty {@link CMap}
+	 * @param <K>				The type of map key
+	 * @param <V>				The type of map value
+	 * @param keyClass			The class of map key
+	 * @param valueClass		The class of map value
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <K, V> Prop<CMap<K, V>> editableMap(Class<K> keyClass, Class<V> valueClass, String name) {
+		return MapPropDefault.editable(keyClass, valueClass, name);
+	}
+	
+	/**
+	 * Make a read-only {@link Prop} containing a {@link CSet}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CSet} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CSet<T>> createSet(Class<T> contentsClass, String name, CSet<T> contents) {
+		return SetPropDefault.create(contentsClass, name, contents);
+	}
+
+	/**
+	 * Make a read-only {@link Prop} containing a new, empty {@link CSet}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CSet<T>> createSet(Class<T> contentsClass, String name) {
+		return SetPropDefault.create(contentsClass, name);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a {@link CSet}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CSet} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CSet<T>> editableSet(Class<T> contentsClass, String name, CSet<T> contents) {
+		return SetPropDefault.editable(contentsClass, name, contents);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a new, empty {@link CSet}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CSet<T>> editableSet(Class<T> contentsClass, String name) {
+		return SetPropDefault.editable(contentsClass, name);
 	}
 	
 	/**
