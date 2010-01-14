@@ -76,6 +76,52 @@ public class Props {
 	//Methods for creating various Props
 	
 	/**
+	 * Make a read-only {@link Prop} containing a {@link CList}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CList} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CList<T>> createList(Class<T> contentsClass, String name, CList<T> contents) {
+		return ListPropDefault.create(contentsClass, name, contents);
+	}
+
+	/**
+	 * Make a read-only {@link Prop} containing a new, empty {@link CList}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CList<T>> createList(Class<T> contentsClass, String name) {
+		return ListPropDefault.create(contentsClass, name);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a {@link CList}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @param contents			The initial {@link CList} value for the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CList<T>> editableList(Class<T> contentsClass, String name, CList<T> contents) {
+		return ListPropDefault.editable(contentsClass, name, contents);
+	}
+
+	/**
+	 * Make an editable {@link Prop} containing a new, empty {@link CList}
+	 * @param <T>				The type of list contents
+	 * @param contentsClass		The class of list contents
+	 * @param name				The name of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<CList<T>> editableList(Class<T> contentsClass, String name) {
+		return ListPropDefault.editable(contentsClass, name);
+	}
+	
+	/**
 	 * Make a {@link Prop} containing a {@link CListCalculated}
 	 * @param <T>				The type of list contents
 	 * @param contentsClass		The class of list contents
