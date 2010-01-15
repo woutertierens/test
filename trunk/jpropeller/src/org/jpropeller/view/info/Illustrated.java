@@ -1,7 +1,7 @@
 package org.jpropeller.view.info;
 
 import org.jpropeller.properties.Prop;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 import org.jpropeller.ui.impl.ImmutableIcon;
 
 /**
@@ -19,7 +19,7 @@ public interface Illustrated {
 	/**
 	 * Path to {@link #illustration()}
 	 */
-	public final static BeanPathTo<Illustrated, ImmutableIcon> toIllustration = new BeanPathTo<Illustrated, ImmutableIcon>() {
+	public final static PathStep<Illustrated, ImmutableIcon> toIllustration = new PathStep<Illustrated, ImmutableIcon>() {
 		@Override
 		public Prop<ImmutableIcon> transform(Illustrated s) {
 			return s.illustration();

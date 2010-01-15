@@ -372,6 +372,12 @@ public abstract class BeanDefault implements Bean {
 	 * to something like:
 	 * 
 	 * private Prop<D> dByTransforms = from("dByTransforms", D.class, this).via(aToB).via(bToC).to(cToD);
+	 * @param clazz
+	 * 		The class of data in the property reached by the path (and hence in the built property)
+	 * @param name
+	 * 		The name of the property
+	 * @param pathRoot
+	 * 		The root of the path - often "this", but may be another bean.
 	 * 
 	 * @param <R>
 	 * 		The type of the root of the path
@@ -379,16 +385,10 @@ public abstract class BeanDefault implements Bean {
 	 * 		The type of property reached by the path
 	 * @param <T>
 	 * 		The type of data in the property reached by the path (and hence in the built property)
-	 * @param name
-	 * 		The name of the property
-	 * @param clazz
-	 * 		The class of data in the property reached by the path (and hence in the built property)
-	 * @param pathRoot
-	 * 		The root of the path - often "this", but may be another bean.
 	 * @return
 	 * 		A builder for a new property.
 	 */
-	protected <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, T> from(String name, Class<T> clazz, R pathRoot) {
+	protected <R extends Bean, P extends Prop<T>, T> PathPropBuilder<R, R, T> from(Class<T> clazz, String name, R pathRoot) {
 		return new BeanPathPropBuilder<R, R, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create(), ReadOnlyProcessor.<T>get());
 	}
 	

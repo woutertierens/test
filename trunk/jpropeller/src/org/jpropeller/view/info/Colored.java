@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 
 /**
  * {@link Colored} instances have a {@link Prop} giving their {@link Color} 
@@ -25,7 +25,7 @@ public interface Colored {
 	/**
 	 * Path to {@link #color()}
 	 */
-	public final static BeanPathTo<Colored, Color> toColor = new BeanPathTo<Colored, Color>() {
+	public final static PathStep<Colored, Color> toColor = new PathStep<Colored, Color>() {
 		@Override
 		public Prop<Color> transform(Colored s) {
 			return s.color();

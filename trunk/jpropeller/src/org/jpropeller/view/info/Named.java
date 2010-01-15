@@ -2,7 +2,7 @@ package org.jpropeller.view.info;
 
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 
 /**
  * {@link Named} instances have a {@link String} name {@link Prop}
@@ -24,7 +24,7 @@ public interface Named {
 	/**
 	 * Path to {@link #name()}
 	 */
-	public final static BeanPathTo<Named, String> toName = new BeanPathTo<Named, String>() {
+	public final static PathStep<Named, String> toName = new PathStep<Named, String>() {
 		@Override
 		public Prop<String> transform(Named s) {
 			return s.name();

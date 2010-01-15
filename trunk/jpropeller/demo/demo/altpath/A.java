@@ -3,7 +3,7 @@ package demo.altpath;
 import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 import org.jpropeller.transformer.BeanPathVia;
 
 /**
@@ -39,7 +39,7 @@ public class A extends BeanDefault {
 	/**
 	 * Transform from {@link C} to its {@link C#d()} property
 	 */
-	BeanPathTo<C, D> cToD = new BeanPathTo<C, D>() {
+	PathStep<C, D> cToD = new PathStep<C, D>() {
 		@Override
 		public Prop<D> transform(C s) {
 			return s.d();

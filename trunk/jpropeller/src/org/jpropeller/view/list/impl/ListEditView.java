@@ -17,7 +17,7 @@ import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReferenc
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 import org.jpropeller.ui.external.SimpleInternalFrame;
 import org.jpropeller.util.Source;
 import org.jpropeller.view.CompletionException;
@@ -133,7 +133,7 @@ public class ListEditView<T> implements JView{
 		this.clazz = clazz;
 
 		//Make a transform from the list reference to the selected value
-		BeanPathTo<ListAndSelectionAndValueReference<T>, T> refToSelected = 
+		PathStep<ListAndSelectionAndValueReference<T>, T> refToSelected = 
 			ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 		
 		selectedReference = PathPropBuilder.from(clazz, model).toRef(refToSelected);

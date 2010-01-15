@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.jpropeller.bean.Bean;
+import org.jpropeller.info.PropEditability;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
@@ -54,8 +55,11 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	//The views used for each property of current model bean, indexed by prop name
 	private Map<PropName<?>, JView> subViews = new HashMap<PropName<?>, JView>();
 	
-	//The views in order we will display them
+	//The view names in order we will display them
 	private List<PropName<?>> subViewNameList = new LinkedList<PropName<?>>();
+	
+	//The prop editability in order we will display props
+	private List<PropEditability> subViewEditabilityList = new LinkedList<PropEditability>();
 	
 	private M beanUsedForUI = null;
 
@@ -91,7 +95,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	}
 
 	/**
-	 * Make a new editor with default prop view factory
+	 * Make a new editor
 	 * 
 	 * @param <M> 		The type of bean in the model 
 	 * @param value		A {@link Prop} containing the bean to edit
@@ -99,7 +103,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return 			A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Prop<M> value, PropViewFactory factory) {
-		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault());
+		return new BeanEditor<M>(ReferenceDefault.create(value), factory);
 	}
 	
 	/**
@@ -110,7 +114,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model) {
-		return new BeanEditor<M>(model, new PropViewFactoryDefault());
+		return new BeanEditor<M>(model, new PropViewFactoryEditable());
 	}
 
 	/**
@@ -122,7 +126,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return 			A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, PropViewFactory factory) {
-		return new BeanEditor<M>(model, new PropViewFactoryDefault());
+		return new BeanEditor<M>(model, factory);
 	}
 
 	@Override
@@ -216,16 +220,29 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		
 		//If we have not changed value, nothing to do
 		if (oldModel == newModel) return;
+
+		//FIXME remove this FIXME after checking new behaviour is compatible - this
+		//line makes sure that we minimise the name/editability/class check below - 
+		// even if we don't rebuild the UI, we DO remember the model as being
+		//that used for UI, so if the bean has a deep change we don't recheck
+		//props, we just recognise that we are still viewing the same instance.
+		//The old behaviour was not to update beanUsedForUI until the UI is actually
+		//rebuilt, meaning that if we switch from one Bean to another instance with
+		//the same props, we will perform a name/editability/class check every
+		//time it has a deep change.
+		beanUsedForUI = newModel;
 		
 		//logger.finest("  ->new model");
 
 		//Find the non-generic names of the new model
 		List<PropName<?>> newViewNameList = new LinkedList<PropName<?>>();
+		List<PropEditability> newViewEditabilityList = new LinkedList<PropEditability>();
 		if (newModel != null) {
 			for (Prop<?> prop : newModel.features()) {
 				PropName<?> name = prop.getName();
 				if (!name.isTGeneric() && !prop.features().hasMetadata(NO_DISPLAY)) {
-					newViewNameList.add(name);					
+					newViewNameList.add(name);
+					newViewEditabilityList.add(prop.getEditability());					
 				}
 			}
 		}
@@ -233,7 +250,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		//If the old and new values have the same class, and
 		//the list of displayed names is the same as current one,
 		//then we don't need to alter displayed views
-		if (sameClass(oldModel, newModel) && newViewNameList.equals(subViewNameList)) {
+		if (sameClass(oldModel, newModel) && newViewNameList.equals(subViewNameList) && newViewEditabilityList.equals(subViewEditabilityList)) {
 			return;
 		}
 		
@@ -263,6 +280,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		//Use the new views
 		subViews = newViews;
 		subViewNameList = newViewNameList;
+		subViewEditabilityList = newViewEditabilityList;
 		
 		//Rebuild using new views
 		rebuild();
