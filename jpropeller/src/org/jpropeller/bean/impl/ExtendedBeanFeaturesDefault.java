@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
+import org.jpropeller.bean.BuildAndAddCalculatedProp;
 import org.jpropeller.bean.ExtendedBeanFeatures;
 import org.jpropeller.bean.MutableBeanFeatures;
 import org.jpropeller.calculation.Calculation;
@@ -15,6 +16,7 @@ import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.calculated.impl.BuildCalculation;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.calculated.impl.CalculationDefault;
 import org.jpropeller.properties.calculated.impl.ListCalculation;
@@ -34,6 +36,7 @@ import org.jpropeller.properties.set.impl.SetPropDefault;
 import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.system.Props;
 import org.jpropeller.ui.impl.ImmutableIcon;
+import org.jpropeller.util.Source;
 
 /**
  * A default implementation of {@link ExtendedBeanFeatures} as a wrapper
@@ -83,6 +86,37 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		return add(prop);
 	}
 
+	@Override
+	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz,
+			String name, Changeable... inputs) {
+		return new CalcBuilder<T>(clazz, name, BuildCalculation.<T>on(inputs), this);
+	}
+
+	/**
+	 * Allows building of a {@link CalculatedProp}, just
+	 * call {@link #returning(Source)}
+	 *
+	 * @param <T>	The type of calculated value
+	 */
+	private static class CalcBuilder<T> implements BuildAndAddCalculatedProp<T> {
+		private final BuildCalculation<T> buildCalculation;
+		private final Class<T> clazz;
+		private final String name;
+		private final ExtendedBeanFeaturesDefault features;
+		
+		private CalcBuilder(Class<T> clazz, String name, BuildCalculation<T> buildCalculation, ExtendedBeanFeaturesDefault features) {
+			this.clazz = clazz;
+			this.name = name;
+			this.buildCalculation = buildCalculation;
+			this.features = features;
+		}
+
+		@Override
+		public Prop<T> returning(Source<T> source) {
+			Calculation<T> calculation = buildCalculation.returning(source);
+			return features.add(Props.calculated(clazz, name, calculation)); 
+		}
+	}
 	
 	public <S extends Enum<S>> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
 		return add(PropImmutable.editable(clazz, name, value));

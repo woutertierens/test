@@ -16,6 +16,7 @@ import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.reference.Reference;
+import org.jpropeller.reference.impl.ReferenceDefault;
 import org.jpropeller.system.Props;
 import org.jpropeller.util.PropUtils;
 import org.jpropeller.view.CompletionException;
@@ -36,6 +37,8 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, ChangeListener {
 
+	//FIXME make this use a Prop directly, and make reference-using constructors just extract the value prop
+	
 	/**
 	 * Metadata key to indicate props should not be displayed in this editor
 	 */
@@ -74,6 +77,29 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		//Initial update
 		update();
 		
+	}
+	
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param value		A {@link Prop} containing the bean to edit
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Prop<M> value) {
+		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault());
+	}
+
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param value		A {@link Prop} containing the bean to edit
+	 * @param factory 	The {@link PropViewFactory} to use to produce {@link JView}s
+	 * @return 			A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Prop<M> value, PropViewFactory factory) {
+		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault());
 	}
 	
 	/**

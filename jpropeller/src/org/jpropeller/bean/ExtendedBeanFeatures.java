@@ -11,6 +11,7 @@ import org.jpropeller.collection.CSet;
 import org.jpropeller.collection.impl.CListCalculated;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.calculated.impl.ListCalculation;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
@@ -23,6 +24,7 @@ import org.jpropeller.properties.map.impl.MapPropDefault;
 import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.ui.impl.ImmutableIcon;
+import org.jpropeller.util.Source;
 
 /**
  * A {@link BeanFeatures} providing numerous convenience methods
@@ -47,6 +49,18 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 */
 	public <I extends Changeable, S> Prop<S> calculated(Class<S> clazz, String name, ListCalculation<I, S> calc, I firstInput, I... additionalInputs);
 
+	/**
+	 * Make a builder for a {@link CalculatedProp} operating on given inputs (sources).
+	 * Calling {@link BuildAndAddCalculatedProp#returning(Source)} on this
+	 * builder will produce a {@link CalculatedProp} and add to this bean.
+	 * @param clazz 		The class of {@link Changeable} value in the prop
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildAndAddCalculatedProp} - use this to get the {@link CalculatedProp} and add it to the bean.
+     * @param <T> 			The type of result produced
+	 */
+	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz, String name, Changeable... inputs);
+	
 	/**
 	 * Make a new {@link Prop} with an {@link Enum} value
 	 * and add to this bean

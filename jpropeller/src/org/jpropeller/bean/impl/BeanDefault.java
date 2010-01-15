@@ -5,13 +5,16 @@ import java.awt.Color;
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.BeanFeatures;
+import org.jpropeller.bean.BuildAndAddCalculatedProp;
 import org.jpropeller.bean.ExtendedBeanFeatures;
+import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.CSet;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.impl.BeanPathBuilder;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.calculated.impl.ListCalculation;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
@@ -28,6 +31,7 @@ import org.jpropeller.properties.values.impl.ReadOnlyProcessor;
 import org.jpropeller.system.Props;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.ui.impl.ImmutableIcon;
+import org.jpropeller.util.Source;
 
 /**
  * A default {@link Bean} with no properties, designed to be
@@ -52,11 +56,25 @@ public abstract class BeanDefault implements Bean {
 		return features.create(name, value, processor);
 	}
 
-	protected <I extends Changeable, S> Prop<S> calculated(Class<S> clazz,
+	protected <I extends Changeable, S> Prop<S> listCalculated(Class<S> clazz,
 			String name, ListCalculation<I, S> calc, I firstInput,
 			I... additionalInputs) {
 		return features.calculated(clazz, name, calc, firstInput,
 				additionalInputs);
+	}
+
+	/**
+	 * Make a builder for a {@link CalculatedProp} operating on given inputs (sources).
+	 * Calling {@link BuildAndAddCalculatedProp#returning(Source)} on this
+	 * builder will produce a {@link CalculatedProp} and add to this bean.
+	 * @param clazz 		The class of {@link Changeable} value in the prop
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildAndAddCalculatedProp} - use this to get the {@link CalculatedProp} and add it to the bean.
+     * @param <T> 			The type of result produced
+	 */
+	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz, String name, Changeable... inputs) {
+		return features.calculated(clazz, name, inputs);
 	}
 
 	protected <S extends Changeable> Prop<S> create(Class<S> clazz, String name,
