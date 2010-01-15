@@ -88,7 +88,7 @@ public class RecursiveBeanEditor<M extends Bean> implements JView, UpdatableSing
 	 * @return	 		A new {@link RecursiveBeanEditor}
 	 */
 	public static <M extends Bean> RecursiveBeanEditor<M> create(Reference<M> model) {
-		return create(model, new PropViewFactoryRecursive(new PropViewFactoryDefault()));
+		return create(model, new PropViewFactoryRecursive(new PropViewFactoryEditable()));
 	}
 
 	/**

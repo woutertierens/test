@@ -6,7 +6,7 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 
 /**
  * Default implementation of {@link ListAndSelectionAndValueReference}
@@ -27,8 +27,8 @@ public class ListAndSelectionAndValueReferenceDefault<T> extends BeanDefault imp
 	 * @return
 	 * 		Transformer
 	 */
-	public final static <S> BeanPathTo<ListAndSelectionAndValueReference<S>, S> transformerToSelectedValue() {
-		return new BeanPathTo<ListAndSelectionAndValueReference<S>, S>() {
+	public final static <S> PathStep<ListAndSelectionAndValueReference<S>, S> transformerToSelectedValue() {
+		return new PathStep<ListAndSelectionAndValueReference<S>, S>() {
 			@Override
 			public Prop<S> transform(ListAndSelectionAndValueReference<S> ref) {
 				return ref.selectedValue();

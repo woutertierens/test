@@ -11,5 +11,5 @@ import org.jpropeller.properties.Prop;
  * @param <S>		The type of {@link Bean} transformed from
  * @param <T>		The type of value in the property transformed to
  */
-public interface BeanPathTo<S, T> extends Transformer<S, Prop<T>>{
+public interface PathStep<S, T> extends Transformer<S, Prop<T>>{
 }

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
@@ -99,8 +100,10 @@ public class LabelPropView<T> implements JView, UpdatableSingleValueView<Bean> {
 		
 		if (t instanceof Number) {
 			s = format.format(((Number)t).doubleValue());
+			label.setHorizontalAlignment(SwingConstants.TRAILING);
 		} else {
 			s = (t==null) ? "" : t.toString();
+			label.setHorizontalAlignment(SwingConstants.LEADING);
 		}
 		
 		if (!label.getText().equals(s)) {

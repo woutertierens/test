@@ -19,7 +19,7 @@ import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReferenc
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
-import org.jpropeller.transformer.BeanPathTo;
+import org.jpropeller.transformer.PathStep;
 import org.jpropeller.undo.UndoSystem;
 import org.jpropeller.undo.delegates.impl.UndoDelegateSourceDefault;
 import org.jpropeller.undo.impl.UndoSystemDefault;
@@ -183,7 +183,7 @@ public class SingleSelectionListTableViewDemo {
 
 				
 				//Make a transform from the list reference to the selected value
-				BeanPathTo<ListAndSelectionAndValueReference<LotsOfProps>, LotsOfProps> refToSelected = 
+				PathStep<ListAndSelectionAndValueReference<LotsOfProps>, LotsOfProps> refToSelected = 
 					ListAndSelectionAndValueReferenceDefault.transformerToSelectedValue();
 				
 				//Editor for current selection

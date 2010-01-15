@@ -18,10 +18,10 @@ public class PropViewFactoryRecursive implements PropViewFactory {
 
 	/**
 	 * Create a new {@link PropViewFactoryRecursive},
-	 * based on a default {@link PropViewFactoryDefault}
+	 * based on a default {@link PropViewFactoryEditable}
 	 */
 	public PropViewFactoryRecursive() {
-		this(new PropViewFactoryDefault(false));
+		this(new PropViewFactoryEditable(false));
 	}
 	
 	/**
