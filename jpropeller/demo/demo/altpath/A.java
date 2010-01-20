@@ -3,8 +3,8 @@ package demo.altpath;
 import org.jpropeller.bean.impl.BeanDefault;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
-import org.jpropeller.transformer.PathStep;
 import org.jpropeller.transformer.BeanPathVia;
+import org.jpropeller.transformer.PathStep;
 
 /**
  * Simple demo class
@@ -54,7 +54,7 @@ public class A extends BeanDefault {
 	public Prop<B> b() {return b;} 
 	
 	
-	private Prop<D> dByTransforms = editableFrom("dByTransforms", D.class, this).via(aToB).via(bToC).to(cToD);
+	private Prop<D> dByTransforms = editableFrom(D.class, "dByTransforms", this).via(aToB).via(bToC).to(cToD);
 	
 	/**
 	 * {@link D} property, via transforms

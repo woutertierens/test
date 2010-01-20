@@ -79,6 +79,56 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	}
 	
 	/**
+	 * Create a {@link BeanRowView} showing all
+	 * non-generic {@link Prop}s of the specified {@link Bean}
+	 * 
+	 * @param <B>		The type of {@link Bean} 
+	 * @param bean		The bean to use as a "template"
+	 * @return			A new {@link BeanRowView} 
+	 */
+	public final static <B extends Bean> BeanRowView<B> create(B bean) {
+		return new BeanRowView<B>(bean);
+	}
+
+	/**
+	 * Create a {@link BeanRowView} showing all
+	 * non-generic {@link Prop}s of the specified {@link Bean}
+	 * 
+	 * @param <B>		The type of {@link Bean} 
+	 * @param bean		The bean to use as a "template"
+	 * @param editable	True to enable editing of editable props, false to disable all editing
+	 * @return			A new {@link BeanRowView} 
+	 */
+	public final static <B extends Bean> BeanRowView<B> create(B bean, boolean editable) {
+		return new BeanRowView<B>(bean, editable);
+	}
+	
+	//FIXME it would be nicer to use a list of propnames
+	//instead of props, but lists of PropName<? extends Prop<?>,?> are
+	//much harder to handle than List<Prop<?>>. There is no technical
+	//disadvantage to using Props instead, except that sometimes
+	//a user might wish to create a PropName from scratch, and it is
+	//harder to create a whole Prop just to act as a source for the
+	//PropName
+	/**
+	 * Create a {@link BeanRowView}
+	 * @param <B>		The type of {@link Bean} 
+	 * @param bean		The bean to use as a "template"
+	 * 
+ 	 * @param props		The properties to display, in order
+	 * 					Note that the names of these props
+	 * 					are used to look up the actual props 
+	 * 					to display for each bean - in essence 
+	 * 					these are "example" props, not the actual 
+	 * 					props to display
+	 * @param editable	True to enable editing of editable props, false to disable all editing
+	 * @return			A new {@link BeanRowView} 
+	 */
+	public final static <B extends Bean> BeanRowView<B> create(B bean, List<Prop<?>> props, boolean editable) {
+		return new BeanRowView<B>(bean, props, editable);
+	}
+	
+	/**
 	 * Put a {@link BeanRowValueProcessor} for a given type.
 	 * This will be asked to {@link BeanRowValueProcessor#process(Object, Object)}
 	 * any new values columns having the specified class.

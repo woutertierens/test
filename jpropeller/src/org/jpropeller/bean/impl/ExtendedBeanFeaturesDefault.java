@@ -27,6 +27,7 @@ import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.changeable.impl.ChangeablePropDefault;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
 import org.jpropeller.properties.impl.SuperClassProp;
+import org.jpropeller.properties.impl.ViewProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.MapProp;
@@ -79,6 +80,16 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	/////////////////////////////////////////////////////////////////
 
 	@Override
+	public <T> ViewProp<T> readOnly(Prop<T> viewed) {
+		return add(Props.readOnly(viewed));
+	}
+
+	@Override
+	public <T> ViewProp<T> readOnly(String newName, Prop<T> viewed) {
+		return add(Props.readOnly(newName, viewed));
+	}
+	
+	@Override
 	public <I extends Changeable, S> Prop<S> calculated(Class<S> clazz, String name, ListCalculation<I, S> calc, I firstInput, I... additionalInputs) {
 		Prop<S> prop = new CalculatedProp<S>(
 							PropName.create(clazz, name), 
@@ -89,7 +100,13 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 	@Override
 	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz,
 			String name, Changeable... inputs) {
-		return new CalcBuilder<T>(clazz, name, BuildCalculation.<T>on(inputs), this);
+		return new CalcBuilder<T>(clazz, name, BuildCalculation.<T>on(inputs), this, false, null);
+	}
+
+	@Override
+	public <T> BuildAndAddCalculatedProp<T> calculatedBackground(Class<T> clazz,
+			String name, T initialValue, Changeable... inputs) {
+		return new CalcBuilder<T>(clazz, name, BuildCalculation.<T>on(inputs), this, true, initialValue);
 	}
 
 	/**
@@ -103,18 +120,26 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		private final Class<T> clazz;
 		private final String name;
 		private final ExtendedBeanFeaturesDefault features;
+		private final boolean background;
+		private final T initialValue;
 		
-		private CalcBuilder(Class<T> clazz, String name, BuildCalculation<T> buildCalculation, ExtendedBeanFeaturesDefault features) {
+		private CalcBuilder(Class<T> clazz, String name, BuildCalculation<T> buildCalculation, ExtendedBeanFeaturesDefault features, boolean background, T initialValue) {
 			this.clazz = clazz;
 			this.name = name;
 			this.buildCalculation = buildCalculation;
 			this.features = features;
+			this.background = background;
+			this.initialValue = initialValue;
 		}
 
 		@Override
 		public Prop<T> returning(Source<T> source) {
 			Calculation<T> calculation = buildCalculation.returning(source);
-			return features.add(Props.calculated(clazz, name, calculation)); 
+			if (background) {
+				return features.add(Props.calculatedBackground(clazz, name, calculation, initialValue)); 
+			} else {
+				return features.add(Props.calculated(clazz, name, calculation)); 				
+			}
 		}
 	}
 	

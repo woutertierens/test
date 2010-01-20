@@ -19,6 +19,7 @@ import org.jpropeller.properties.calculated.impl.ListCalculation;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
+import org.jpropeller.properties.impl.ViewProp;
 import org.jpropeller.properties.list.ListProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
 import org.jpropeller.properties.map.MapProp;
@@ -51,6 +52,31 @@ public abstract class BeanDefault implements Bean {
 	
 	//Methods for making and adding props
 	
+	/**
+	 * Make an unmodifiable (read only) view of a given {@link Prop},
+	 * and add to the bean.
+	 * @param newName		The new string name for the {@link ViewProp}
+	 * @param viewed		The {@link Prop} we are viewing
+	 * @param <T>			The type of value in the {@link Prop}
+	 * 
+	 * @return				A read-only view of the {@link Prop}
+	 */
+	public <T> ViewProp<T> readOnly(String newName, Prop<T> viewed) {
+		return features.readOnly(newName, viewed);
+	}
+	
+	/**
+	 * Make an unmodifiable (read only) view of a given {@link Prop},
+	 * with the same name, and add to the bean.
+	 * @param viewed		The {@link Prop} we are viewing
+	 * @param <T>			The type of value in the {@link Prop}
+	 * 
+	 * @return				A read-only view of the {@link Prop}
+	 */
+	public <T> ViewProp<T> readOnly(Prop<T> viewed) {
+		return features.readOnly(viewed);
+	}
+	
 	protected Prop<Boolean> create(String name, Boolean value,
 			ValueProcessor<Boolean> processor) {
 		return features.create(name, value, processor);
@@ -77,6 +103,22 @@ public abstract class BeanDefault implements Bean {
 		return features.calculated(clazz, name, inputs);
 	}
 
+	/**
+	 * Make a builder for a {@link CalculatedProp} operating on given inputs (sources).
+	 * Calling {@link BuildAndAddCalculatedProp#returning(Source)} on this
+	 * builder will produce a {@link CalculatedProp} and add to this bean.
+	 * The calculation will be performed in a background thread.
+	 * @param clazz 		The class of {@link Changeable} value in the prop
+	 * @param name			The name of the {@link Prop}
+	 * @param initialValue	The initial value of the {@link Prop}
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildAndAddCalculatedProp} - use this to get the {@link CalculatedProp} and add it to the bean.
+     * @param <T> 			The type of result produced
+	 */
+	public <T> BuildAndAddCalculatedProp<T> calculatedBackground(Class<T> clazz, String name, T initialValue, Changeable... inputs) {
+		return features.calculatedBackground(clazz, name, initialValue, inputs);
+	}
+	
 	protected <S extends Changeable> Prop<S> create(Class<S> clazz, String name,
 			S value) {
 		return features.create(clazz, name, value);
@@ -354,7 +396,7 @@ public abstract class BeanDefault implements Bean {
 	 * @return
 	 * 		A builder for a new property.
 	 */
-	protected <R extends Bean, T> PathPropBuilder<R, R, T> editableFrom(String name, Class<T> clazz, R pathRoot) {
+	protected <R extends Bean, T> PathPropBuilder<R, R, T> editableFrom(Class<T> clazz, String name, R pathRoot) {
 		return new BeanPathPropBuilder<R, R, T>(name, clazz, pathRoot, BeanPathBuilder.<R>create(), AcceptProcessor.<T>get());
 	}
 

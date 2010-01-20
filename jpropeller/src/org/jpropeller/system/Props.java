@@ -18,6 +18,7 @@ import org.jpropeller.concurrency.CancellableResponse;
 import org.jpropeller.name.PropName;
 import org.jpropeller.path.BeanPath;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.calculated.background.impl.BackgroundCalculatedProp;
 import org.jpropeller.properties.calculated.impl.BuildCalculation;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.change.ChangeSystem;
@@ -38,6 +39,8 @@ import org.jpropeller.reference.Reference;
 import org.jpropeller.system.impl.PropSystemDefault;
 import org.jpropeller.task.Task;
 import org.jpropeller.task.impl.BuildTask;
+import org.jpropeller.task.impl.SynchronousTaskExecutor;
+import org.jpropeller.task.impl.TaskExecutor;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.util.NoInstanceAvailableException;
@@ -79,6 +82,28 @@ public class Props {
 		getPropSystem().getChangeSystem().release();
 	}
 
+	//Methods for scheduling tasks
+	
+	/**
+	 * Schedule a task to be executed in the foreground (synchronously)
+	 * @param task		The task
+	 * @return			The new {@link TaskExecutor} used - should be 
+	 * 					disposed when task no longer needs to run 
+	 */
+	public static SynchronousTaskExecutor scheduleForegroundTask(Task task) {
+		return new SynchronousTaskExecutor(task);
+	}
+	
+	/**
+	 * Schedule a task to be executed in the background (asynchronously)
+	 * @param task		The task
+	 * @return			The {@link TaskExecutor} used - should be 
+	 * 					disposed when task no longer needs to run
+	 */
+	public static TaskExecutor scheduleBackgroundTask(Task task) {
+		return new TaskExecutor(task);
+	}
+	
 	//Methods for creating various Props
 	
 	/**
@@ -266,6 +291,19 @@ public class Props {
 	}
 
 	/**
+	 * Make a {@link Prop} containing the result of a {@link Calculation}
+	 * @param <T>				The type of {@link Prop} contents
+	 * @param contentsClass		The class of {@link Prop} contents
+	 * @param name				The name of the {@link Prop}
+	 * @param calculation		The {@link Calculation} giving list contents
+	 * @param initialValue		The initial value of the {@link Prop}
+	 * @return					The {@link Prop}
+	 */
+	public static <T> Prop<T> calculatedBackground(Class<T> contentsClass, String name, Calculation<T> calculation, T initialValue) {
+		return new BackgroundCalculatedProp<T>(PropName.create(contentsClass, name), calculation, initialValue);
+	}
+	
+	/**
 	 * Make a new {@link SuperClassProp} with a given
 	 * core prop and name, and add to this bean.
 	 * @param <S>		The type of value
@@ -416,9 +454,24 @@ public class Props {
      * @param <T> 			The type of result produced
 	 */
 	public static <T> BuildCalculatedProp<T> calculated(Class<T> clazz, String name, Changeable... inputs) {
-		return new BuildCalculatedProp<T>(clazz, name, BuildCalculation.<T>on(inputs));
+		return new BuildCalculatedProp<T>(clazz, name, BuildCalculation.<T>on(inputs), false, null);
 	}
 
+	/**
+	 * Make a builder for a {@link BackgroundCalculatedProp} operating on given inputs (sources).
+	 * Calling {@link BuildCalculatedProp#returning(Source)} on this
+	 * builder will produce a {@link BackgroundCalculatedProp}
+	 * @param clazz 		The class of {@link Changeable} value in the prop
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @param initialValue	The initial value of the {@link Prop}
+	 * @return				A {@link BuildCalculatedProp} - use this to get the {@link CalculatedProp}
+     * @param <T> 			The type of result produced
+	 */
+	public static <T> BuildCalculatedProp<T> calculatedBackground(Class<T> clazz, String name, T initialValue, Changeable... inputs) {
+		return new BuildCalculatedProp<T>(clazz, name, BuildCalculation.<T>on(inputs), true, initialValue);
+	}
+	
 	/**
 	 * Allows building of a {@link CalculatedProp}, just
 	 * call {@link #returning(Source)}
@@ -429,10 +482,23 @@ public class Props {
 		private final BuildCalculation<T> buildCalculation;
 		private final Class<T> clazz;
 		private final String name;
-		private BuildCalculatedProp(Class<T> clazz, String name, BuildCalculation<T> buildCalculation) {
+		private final boolean background;
+		private final T initialValue;
+		
+		/**
+		 * Create a {@link BuildCalculatedProp}
+		 * @param clazz					The {@link Class} of value
+		 * @param name					The name of the {@link Prop}
+		 * @param buildCalculation		A builder for the {@link Calculation}
+		 * @param background			True to produce a {@link BackgroundCalculatedProp}, false to produce a {@link CalculatedProp}
+		 * @param initialValue			The initial value, used only if background is true, ignored otherwise 
+		 */
+		private BuildCalculatedProp(Class<T> clazz, String name, BuildCalculation<T> buildCalculation, boolean background, T initialValue) {
 			this.clazz = clazz;
 			this.name = name;
 			this.buildCalculation = buildCalculation;
+			this.background = background;
+			this.initialValue = initialValue;
 		}
 		
 		/**
@@ -445,7 +511,12 @@ public class Props {
 		 */
 		public Prop<T> returning(Source<T> source) {
 			Calculation<T> calculation = buildCalculation.returning(source);
-			return calculated(clazz, name, calculation); 
+			
+			if (background) {
+				return calculatedBackground(clazz, name, calculation, initialValue);
+			} else {
+				return calculated(clazz, name, calculation);
+			}
 		}
 	}
 	
