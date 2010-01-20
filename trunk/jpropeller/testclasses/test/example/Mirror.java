@@ -40,7 +40,7 @@ public class Mirror extends BeanDefault {
 
 	//Set up Props
 	private Prop<String> s = editable("s", "default s value");
-	private Prop<String> sMirror = editableFrom("sMirror", String.class, this).to(S_NAME);
+	private Prop<String> sMirror = editableFrom(String.class, "sMirror", this).to(S_NAME);
 	
 	/**
 	 * Access to s

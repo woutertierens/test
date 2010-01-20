@@ -5,6 +5,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.CompletionException;
@@ -46,6 +47,30 @@ public class ListTableView<T> implements TableView {
 	 */
 	public ListTableView(Reference<? extends CList<T>> model, TableRowView<? super T> rowView) {
 		this(new ListTableModel<T>(model, rowView));
+	}
+	
+	/**
+	 * Make a new {@link ListTableView}
+	 * @param model		The model to be displayed - a {@link Prop} containing 
+	 * 					the list that will be displayed as rows of a table
+	 * @param rowView	The {@link TableRowView} to convert from elements of 
+	 * 					the list to rows of the {@link JTable}
+	 */
+	public ListTableView(Prop<? extends CList<T>> model, TableRowView<? super T> rowView) {
+		this(new ListTableModel<T>(model, rowView));
+	}
+	
+	/**
+	 * Create a {@link ListTableView}
+	 * @param <T>		The type of item in the displayed {@link CList}
+	 * @param model		The model to be displayed - a {@link Prop} containing 
+	 * 					the list that will be displayed as rows of a table
+	 * @param rowView	The {@link TableRowView} to convert from elements of 
+	 * 					the list to rows of the {@link JTable}
+	 * @return			A new {@link ListTableView}
+	 */
+	public final static <T> ListTableView<T> create(Prop<? extends CList<T>> model, TableRowView<? super T> rowView) {
+		return new ListTableView<T>(model, rowView);
 	}
 	
 	/**

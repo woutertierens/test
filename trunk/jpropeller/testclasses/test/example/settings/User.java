@@ -40,7 +40,7 @@ public class User extends BeanDefault {
 	private Prop<String> name = editable("name", "default name");
 	private Prop<Group> group = editable(Group.class, "group", null);
 	private Prop<String> groupPermissions = 
-		editableFrom("groupPermissions", String.class, this).
+		editableFrom(String.class, "groupPermissions", this).
 			via(GROUP_NAME).
 			to(Group.PERMISSIONS_NAME);
 	
