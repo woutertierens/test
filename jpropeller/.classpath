@@ -8,6 +8,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/forms-1.2.1.jar" sourcepath="libsrc/forms-1.2.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/joda-time-1.6.jar" sourcepath="libsrc/joda-time-1.6-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jide-oss-2.7.1.jar" sourcepath="libsrc/jide-oss-src-2.7.1.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
