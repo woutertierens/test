@@ -51,9 +51,6 @@ import org.jpropeller.util.GeneralUtils;
  * thing about this is that a {@link PathProp} always mirrors the {@link Prop}
  * at a given path relative to a root {@link Bean}.
  * 
- * Note this does not expose a setter - if you want to expose the
- * set method of an {@link Prop}, use an {@link PathProp}.
- * 
  * @param <R>
  * 		The type of root bean we must start from
  * @param <T>
