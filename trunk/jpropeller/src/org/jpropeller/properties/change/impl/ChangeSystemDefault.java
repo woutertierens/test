@@ -155,24 +155,20 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 		
 		//We run tasks only just before we completely
 		//release the main lock. This means tasks
-		//do NOT run while the main lock is held,
+		//do NOT run until release() is called by external code,
 		//allowing processes that lock for large changes
 		//to be sure that tasks are not running during the 
-		//changes
-		if (mainLock.getHoldCount() == 1)
-			runPendingTasks();
-
-		mainLock.unlock();
-	}
-	
-	@Override
-	public void prepareDispatch() {
-		
-		//Get main lock
-		mainLock.lock();
-		
-		//Only one dispatcher - this thread
-		dispatchingLock.lock();
+		//changes. The lock IS still held during task execution
+		//though, so that any other threads will see the complete
+		//change after tasks have run.
+		//Note that we MUST release the lock, even if the pending tasks
+		//produce an error (we also catch exceptions in runPendingTasks).
+		try {
+			if (mainLock.getHoldCount() == 1)
+				runPendingTasks();
+		} finally {
+			mainLock.unlock();
+		}
 	}
 
 	private void runPendingTasks() {
@@ -191,11 +187,29 @@ public class ChangeSystemDefault implements ChangeSystem, ChangeDispatchSource {
 			}
 			
 			if (task!=null) {
-				task.respond(new AtomicBoolean(false));
+				//We cannot reasonably deal with task exceptions,
+				//so we will print and log them, but then just carry
+				//on to the next task
+				try {
+					task.respond(new AtomicBoolean(false));
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.log(Level.SEVERE, "Exception executing synchronous task", e);
+				}
 			}
 		}
 	}
 
+	@Override
+	public void prepareDispatch() {
+		
+		//Get main lock
+		mainLock.lock();
+		
+		//Only one dispatcher - this thread
+		dispatchingLock.lock();
+	}
+	
 	@Override
 	public void addTask(Task task) {
 		synchronized (pendingTasks) {
