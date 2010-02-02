@@ -64,17 +64,18 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * this number model except to pass it to this constructor.
 	 * @param converter 
 	 * 		Converter to move from {@link Number} to T and back
-	 */
-	public NumberSpinnerEditor(Reference<? extends Bean> model,
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	 */
+	private NumberSpinnerEditor(Reference<? extends Bean> model,
 			PropName<T> displayedName,
-			SpinnerNumberModel numberModel, NumberConverter<T> converter) {
+			SpinnerNumberModel numberModel, NumberConverter<T> converter, Prop<Boolean> locked) {
 		super();
 		this.model = model;
 		this.displayedName = displayedName;
 		this.numberModel = numberModel;
 		this.converter = converter;
 
-		help = new PropViewHelp<Bean, T>(this, displayedName);
+		help = new PropViewHelp<Bean, T>(this, displayedName, locked);
 
 		//Make a spinner that will behave properly on lost focus
 		spinner = new JSpinner(numberModel);
@@ -106,10 +107,10 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * @param converter 
 	 * 		Converter to move from {@link Number} to T and back
 	 */
-	public NumberSpinnerEditor(Reference<? extends Bean> model,
+	private NumberSpinnerEditor(Reference<? extends Bean> model,
 			PropName<T> displayedName,
 			NumberConverter<T> converter) {
-		this(model, displayedName, new SpinnerNumberModel(), converter);
+		this(model, displayedName, new SpinnerNumberModel(), converter, null);
 	}
 	
 	@Override
@@ -158,18 +159,12 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 		}
 	}
 
-	private boolean checkNull(T value) {
-		boolean n = (value == null);
-		spinner.setEnabled(!n);
-		return n;
-	}
-	
 	@Override
 	public boolean isEditing() {
 		T value = help.getPropValue();
 
 		//If value is null, not editing
-		if (checkNull(value)) {
+		if (value==null) {
 			return false;
 		}
 		
@@ -187,15 +182,18 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 			logger.finest("spinner value " + numberModel.getNumber());
 		}*/
 		
+		//Update enabled state
+		T value = help.getPropValue();
+		spinner.setEnabled(value != null && !help.isLocked());
+		
 		//If the spinner is not already showing prop value, update it
 		if (isEditing()) {
 			
-			T value = help.getPropValue();
 			
 			error(false);
 
 			//Can't display null values
-			if (checkNull(value)) {
+			if (value == null) {
 				return;
 			}
 			
@@ -258,15 +256,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
      * 		Maximum value for spinner
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Double> create(Reference<? extends Bean> model,
-			PropName<Double> displayedName, double min, double max, double step){
+			PropName<Double> displayedName, double min, double max, double step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Double>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Double(min), new Double(min), new Double(max), new Double(step)), 
-    			NumberConverterDefaults.getDoubleConverter());
+    			NumberConverterDefaults.getDoubleConverter(), locked);
     }
     
     /**
@@ -282,15 +282,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
      * 		Maximum value for spinner
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Float> create(Reference<? extends Bean> model,
-			PropName<Float> displayedName, float min, float max, float step){
+			PropName<Float> displayedName, float min, float max, float step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Float>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Float(min), new Float(min), new Float(max), new Float(step)), 
-    					NumberConverterDefaults.getFloatConverter());
+    					NumberConverterDefaults.getFloatConverter(), locked);
     }
     
     /**
@@ -306,16 +308,18 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
      * 		Maximum value for spinner
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Integer> create(Reference<? extends Bean> model,
-			PropName<Integer> displayedName, int min, int max, int step){
+			PropName<Integer> displayedName, int min, int max, int step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Integer>(
     			model, displayedName,
     			new SpinnerNumberModel(
     					new Integer(min), new Integer(min), new Integer(max), new Integer(step)), 
-    			NumberConverterDefaults.getIntegerConverter());
+    			NumberConverterDefaults.getIntegerConverter(), locked);
     }
     
     /**
@@ -331,15 +335,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
      * 		Maximum value for spinner
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Long> create(Reference<? extends Bean> model,
-			PropName<Long> displayedName, long min, long max, long step){
+			PropName<Long> displayedName, long min, long max, long step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Long>(model, displayedName,
     			new SpinnerNumberModel(
     					new Long(min),  new Long(min), new Long(max), new Long(step)), 
-    					NumberConverterDefaults.getLongConverter());
+    					NumberConverterDefaults.getLongConverter(), locked);
     }
     
 
@@ -352,15 +358,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The name of the displayed property 
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Double> create(Reference<? extends Bean> model,
-			PropName<Double> displayedName, double step){
+			PropName<Double> displayedName, double step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Double>(model, displayedName,
     			new SpinnerNumberModel(
     					new Double(1), null, null, new Double(step)), 
-    			NumberConverterDefaults.getDoubleConverter());
+    			NumberConverterDefaults.getDoubleConverter(), locked);
     }
     
     /**
@@ -372,15 +380,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The name of the displayed property 
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Float> create(Reference<? extends Bean> model,
-			PropName<Float> displayedName, float step){
+			PropName<Float> displayedName, float step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Float>(model, displayedName, 
     			new SpinnerNumberModel(
     					new Float(1), null, null, new Float(step)), 
-    					NumberConverterDefaults.getFloatConverter());
+    					NumberConverterDefaults.getFloatConverter(), locked);
     }
     
     /**
@@ -392,15 +402,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The name of the displayed property 
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Integer> create(Reference<? extends Bean> model,
-			PropName<Integer> displayedName, int step){
+			PropName<Integer> displayedName, int step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Integer>(model, displayedName,
     			new SpinnerNumberModel(
     					new Integer(1), null, null, new Integer(step)), 
-    			NumberConverterDefaults.getIntegerConverter());
+    			NumberConverterDefaults.getIntegerConverter(), locked);
     }
     
     /**
@@ -412,15 +424,17 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The name of the displayed property 
      * @param step
      * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Long> create(Reference<? extends Bean> model,
-			PropName<Long> displayedName, long step){
+			PropName<Long> displayedName, long step, Prop<Boolean> locked){
     	return new NumberSpinnerEditor<Long>(model, displayedName,
     			new SpinnerNumberModel(
     					new Long(1), null, null, new Long(step)), 
-    					NumberConverterDefaults.getLongConverter());
+    					NumberConverterDefaults.getLongConverter(), locked);
     }
     
     /**
@@ -431,12 +445,14 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * @param displayedName 
 	 * 		The name of the displayed property 
      * and step 0.1
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Double> createDouble(Reference<? extends Bean> model,
-			PropName<Double> displayedName){
-    	return create(model, displayedName, 0.1d);
+			PropName<Double> displayedName, Prop<Boolean> locked){
+    	return create(model, displayedName, 0.1d, locked);
     }
     
     /**
@@ -447,12 +463,14 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Float> createFloat(Reference<? extends Bean> model,
-			PropName<Float> displayedName){
-    	return create(model, displayedName, 0.1f);
+			PropName<Float> displayedName, Prop<Boolean> locked){
+    	return create(model, displayedName, 0.1f, locked);
     }
     
     /**
@@ -463,12 +481,14 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Integer> createInteger(Reference<? extends Bean> model,
-			PropName<Integer> displayedName){
-    	return create(model, displayedName, 1);
+			PropName<Integer> displayedName, Prop<Boolean> locked){
+    	return create(model, displayedName, 1, locked);
     }
     
     /**
@@ -479,12 +499,14 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * 		The {@link Reference} for this {@link View} 
 	 * @param displayedName 
 	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
      * @return
      * 		A new editor
      */
     public static NumberSpinnerEditor<Long> createLong(Reference<? extends Bean> model,
-			PropName<Long> displayedName){
-    	return create(model, displayedName, 1l);
+			PropName<Long> displayedName, Prop<Boolean> locked){
+    	return create(model, displayedName, 1l, locked);
     }
 
 	@Override

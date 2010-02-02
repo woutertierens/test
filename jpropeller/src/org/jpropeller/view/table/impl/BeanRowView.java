@@ -13,6 +13,7 @@ import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.exception.InvalidValueException;
 import org.jpropeller.properties.exception.ReadOnlyException;
+import org.jpropeller.system.Props;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.PropUtils;
 import org.jpropeller.view.table.TableRowView;
@@ -30,6 +31,7 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	private R bean;
 	private final boolean editable;
 	private final Map<Class<?>, BeanRowValueProcessor<R, ?>> filters = new HashMap<Class<?>, BeanRowValueProcessor<R, ?>>();
+	private final Prop<Boolean> locked;
 
 	/**
 	 * Create a {@link BeanRowView} showing all
@@ -38,7 +40,7 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	 * @param bean		The bean to use as a "template"
 	 */
 	public BeanRowView(R bean) {
-		this(bean, buildFilteredPropsList(bean), true);
+		this(bean, buildFilteredPropsList(bean), true, null);
 	}
 
 	/**
@@ -49,7 +51,7 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	 * @param editable	True to enable editing of editable props, false to disable all editing
 	 */
 	public BeanRowView(R bean, boolean editable) {
-		this(bean, buildFilteredPropsList(bean), editable);
+		this(bean, buildFilteredPropsList(bean), editable, null);
 	}
 	
 	//FIXME it would be nicer to use a list of propnames
@@ -62,7 +64,6 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	/**
 	 * Create a {@link BeanRowView}
 	 * @param bean		The bean to use as a "template"
-	 * 
  	 * @param props		The properties to display, in order
 	 * 					Note that the names of these props
 	 * 					are used to look up the actual props 
@@ -70,12 +71,16 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	 * 					these are "example" props, not the actual 
 	 * 					props to display
 	 * @param editable	True to enable editing of editable props, false to disable all editing
+	 * @param locked	If this {@link Prop} is non-null, and has value true, editing 
+	 * 					of rows will not be permitted. If this is used, also specify editable true,
+	 * 					or rows will never be editable.
 	 */
-	public BeanRowView(R bean, List<Prop<?>> props, boolean editable) {
+	private BeanRowView(R bean, List<Prop<?>> props, boolean editable, Prop<Boolean> locked) {
 		super();
 		this.bean = bean;
 		this.props = props;
 		this.editable = editable;
+		this.locked = locked;
 	}
 	
 	/**
@@ -103,6 +108,40 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 		return new BeanRowView<B>(bean, editable);
 	}
 	
+	/**
+	 * Create a {@link BeanRowView} showing all
+	 * non-generic {@link Prop}s of the specified {@link Bean}
+	 * 
+	 * @param <B>		The type of {@link Bean} 
+	 * @param bean		The bean to use as a "template"
+	 * @param locked	If this {@link Prop} is non-null, and has value true, editing 
+	 * 					of rows will not be permitted. 
+	 * @return			A new {@link BeanRowView} 
+	 */
+	public final static <B extends Bean> BeanRowView<B> create(B bean, Prop<Boolean> locked) {
+		return new BeanRowView<B>(bean, buildFilteredPropsList(bean), true, locked);
+	}
+	
+	/**
+	 * Create a {@link BeanRowView} showing all
+	 * non-generic {@link Prop}s of the specified {@link Bean}
+	 * 
+	 * @param <B>		The type of {@link Bean} 
+	 * @param bean		The bean to use as a "template"
+ 	 * @param props		The properties to display, in order
+	 * 					Note that the names of these props
+	 * 					are used to look up the actual props 
+	 * 					to display for each bean - in essence 
+	 * 					these are "example" props, not the actual 
+	 * 					props to display
+	 * @param locked	If this {@link Prop} is non-null, and has value true, editing 
+	 * 					of rows will not be permitted. 
+	 * @return			A new {@link BeanRowView} 
+	 */
+	public final static <B extends Bean> BeanRowView<B> create(B bean, List<Prop<?>> props, Prop<Boolean> locked) {
+		return new BeanRowView<B>(bean, props, true, locked);
+	}
+	
 	//FIXME it would be nicer to use a list of propnames
 	//instead of props, but lists of PropName<? extends Prop<?>,?> are
 	//much harder to handle than List<Prop<?>>. There is no technical
@@ -125,7 +164,7 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	 * @return			A new {@link BeanRowView} 
 	 */
 	public final static <B extends Bean> BeanRowView<B> create(B bean, List<Prop<?>> props, boolean editable) {
-		return new BeanRowView<B>(bean, props, editable);
+		return new BeanRowView<B>(bean, props, editable, null);
 	}
 	
 	/**
@@ -214,7 +253,14 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	@Override
 	public boolean isEditable(R row, int column) {
 		//Not editable if all editing disables
-		if (!editable) return false;
+		if (!editable) {
+			return false;
+		}
+		
+		//Not editable if locked
+		if (Props.isTrue(locked)) {
+			return false;
+		}
 		
 		Prop<?> beanProp = findBeanProp(row, column);
 		
@@ -234,6 +280,11 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 		//Can't edit where prop does not exist in current bean
 		if (beanProp == null) return;
 
+		//Not editable if locked
+		if (Props.isTrue(locked)) {
+			return;
+		}
+		
 		//We can only set an editable prop
 		if (beanProp instanceof Prop) {
 			//Cast to raw type, since we are about to check that

@@ -48,13 +48,13 @@ public class PrimitiveViewDemo {
 				ReferenceToChangeable<Address> aModel = ReferenceToChangeable.create(Address.class, b);
 				
 				//(Note also that we can share the model between two views)
-				NumberSpinnerEditor<Integer> hnView = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
 				StringTextFieldEditor streetView = StringTextFieldEditor.create(aModel, b.street().getName());
-				NumberSpinnerEditor<Integer> hnView2 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView3 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView4 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView5 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
-				NumberSpinnerEditor<Integer> hnView6 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1);
+				NumberSpinnerEditor<Integer> hnView2 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
+				NumberSpinnerEditor<Integer> hnView3 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
+				NumberSpinnerEditor<Integer> hnView4 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
+				NumberSpinnerEditor<Integer> hnView5 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
+				NumberSpinnerEditor<Integer> hnView6 = NumberSpinnerEditor.create(aModel, b.houseNumber().getName(), 1, 1000, 1, null);
 
 				//But now we set the model to have model "a" - note that the views display and edit "a"
 				aModel.value().set(a);

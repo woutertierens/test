@@ -33,7 +33,8 @@ public class ImmutableIconPropView implements JView, UpdatableSingleValueView<Be
 		//scroll = new JScrollPane(label);
 		//scroll.setPreferredSize(new Dimension(32, 32));			
 		
-		help = new PropViewHelp<Bean, ImmutableIcon>(this, displayedName);
+		//Ignore locking, since we do not ever edit
+		help = new PropViewHelp<Bean, ImmutableIcon>(this, displayedName, null);
 		help.connect();
 	}
 
@@ -52,6 +53,22 @@ public class ImmutableIconPropView implements JView, UpdatableSingleValueView<Be
 	 * 		A {@link ImmutableIconPropView} 
 	 */
 	public static ImmutableIconPropView create(Reference<? extends Bean> model, PropName<ImmutableIcon> displayedName) {
+		return new ImmutableIconPropView(model, displayedName);
+	}
+	
+	/**
+	 * Create an {@link ImmutableIconPropView}
+	 * @param model 
+	 * 		The model {@link Reference} for this {@link View}
+	 * @param displayedName
+	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
+	 * @return
+	 * 		A {@link ImmutableIconPropView} 
+	 */
+	public static ImmutableIconPropView create(Reference<? extends Bean> model, PropName<ImmutableIcon> displayedName, Prop<Boolean> locked) {
+		//Just create as normal - view doesn't support editing, so locked is always respected
 		return new ImmutableIconPropView(model, displayedName);
 	}
 	

@@ -82,6 +82,23 @@ public class Props {
 		getPropSystem().getChangeSystem().release();
 	}
 
+	//Utility methods
+	
+	/**
+	 * Check whether a {@link Prop} containing a boolean is true
+	 * @param prop		The {@link Prop}
+	 * @return			True if the {@link Prop} is non-null, and
+	 * 					contains the value true (i.e. null and
+	 * 					false contents are both considered false)
+	 */
+	public static boolean isTrue(Prop<Boolean> prop) {
+		boolean isLocked = false;
+		if (prop != null && prop.get() != null) {
+			isLocked = prop.get();
+		}
+		return isLocked;
+	}
+	
 	//Methods for scheduling tasks
 	
 	/**

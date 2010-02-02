@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -38,6 +39,8 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 	private Target<T> target;
 	
 	private UpdateManager updateManager;
+	
+	private final Prop<Boolean> locked;
 
 	/**
 	 * Create a {@link ListDeleteAction} with a target,
@@ -48,6 +51,8 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 	 * @param target	Items removed from the list are passed
 	 * 					to this target immediately after they are
 	 * 					removed
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
 	 * @param text		Description text for action
 	 * @param icon		Icon for action
 	 * @param desc		Short description for action (e.g. for tooltip)
@@ -58,12 +63,14 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 	public ListDeleteAction(
 			ListAndSelectionReference<T> reference,
 			Target<T> target,
+			Prop<Boolean> locked,
 			String text, Icon icon,
             String desc, Integer mnemonic) {
 		
 		super(text, icon);
 		
 		this.target = target;
+		this.locked = locked;
 		
 		putValue(SHORT_DESCRIPTION, desc);
 		
@@ -83,6 +90,9 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 		//enable and disable the action
 		reference.value().features().addListener(this);
 		reference.selection().features().addListener(this);
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
 	}
 	
 	/**
@@ -102,7 +112,7 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 			ListAndSelectionReference<T> reference,
 			String text, Icon icon,
             String desc, Integer mnemonic) {
-		this(reference, null, text, icon, desc, mnemonic);
+		this(reference, null, null, text, icon, desc, mnemonic);
 	}
 	
 	@Override
@@ -132,17 +142,36 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 	 * @param target	Items removed from the list are passed
 	 * 					to this target immediately after they are
 	 * 					removed
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
 	 * @return			A new {@link ListDeleteAction}
 	 * @param <T>	The type of element in the lists
 	 */
-	public static <T> ListDeleteAction<T> create(ListAndSelectionReference<T> reference, Target<T> target) {
+	public static <T> ListDeleteAction<T> create(ListAndSelectionReference<T> reference, Target<T> target, Prop<Boolean> locked) {
 		return new ListDeleteAction<T>(
 				reference,
 				target,
+				locked,
 				Messages.getString("ListDeleteAction.deleteText"), 
 				ICON, 
 				Messages.getString("ListDeleteAction.deleteDescription"), 
 				Messages.getInt("ListDeleteAction.deleteMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	/**
+	 * Create an action with default icon. Text, mnemonic and 
+	 * tooltip set by resources.
+	 * 
+	 * @param reference	Reference to the {@link CList} to act on, 
+	 * 					and the selection index of the item to delete.
+	 * @param target	Items removed from the list are passed
+	 * 					to this target immediately after they are
+	 * 					removed
+	 * @return			A new {@link ListDeleteAction}
+	 * @param <T>	The type of element in the lists
+	 */
+	public static <T> ListDeleteAction<T> create(ListAndSelectionReference<T> reference, Target<T> target) {
+		return create(reference, target, null);
 	}
 
 	@Override
@@ -151,6 +180,11 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 		//Perform actions atomically
 		Props.getPropSystem().getChangeSystem().acquire();
 		try {
+			
+			if (Props.isTrue(locked)) {
+				return;
+			}
+
 			int index = reference.selection().get();
 			CList<T> list = reference.value().get();
 
@@ -180,6 +214,11 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 
 		reference.value().features().removeListener(this);
 		reference.selection().features().removeListener(this);
+		
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
+
 	}
 
 	@Override
@@ -192,8 +231,8 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 			return;
 		}
 		
-		//Enabled when index is in list
-		setEnabled(index >= 0 && index < list.size());
+		//Enabled when index is in list, and not locked
+		setEnabled((!Props.isTrue(locked)) && (index >= 0) && (index < list.size()));
 	}
 	
 	@Override

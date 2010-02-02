@@ -43,16 +43,16 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	JPanel swatch;
 	JPanel panel;
 	
-	boolean isNull = true;
+	boolean isEnabled = true;
 	
 	private ColorEditor(Reference<? extends Bean> model,
-			PropName<Color> displayedName) {
+			PropName<Color> displayedName, Prop<Boolean> locked) {
 		super();
 		this.model = model;
 		this.displayedName = displayedName;
 		buildComponent();
 		
-		help = new PropViewHelp<Bean, Color>(this, displayedName);
+		help = new PropViewHelp<Bean, Color>(this, displayedName, locked);
 		help.connect();
 	}
 
@@ -67,7 +67,23 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	 */
 	public final static ColorEditor create(Reference<? extends Bean> model,
 			PropName<Color> displayedName) {
-		return new ColorEditor(model, displayedName);
+		return new ColorEditor(model, displayedName, null);
+	}
+	
+	/**
+	 * Create a {@link ColorEditor}
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
+	 * @return
+	 * 		A new {@link ColorEditor}
+	 */
+	public final static ColorEditor create(Reference<? extends Bean> model,
+			PropName<Color> displayedName, Prop<Boolean> locked) {
+		return new ColorEditor(model, displayedName, locked);
 	}
 
 	@Override
@@ -160,19 +176,21 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	@Override
 	public void update() {
 		Color value = help.getPropValue();
+		boolean nowNull = (value == null);
+		
+		if (nowNull) {
+			value = Color.BLACK;
+		}
+		
+		if (!swatch.getBackground().equals(value)) {
+			swatch.setBackground(value);
+		}
+		
+		boolean enabled = !nowNull && !help.isLocked();
 
-		if (value == null) {
-			if (!isNull) {
-				swatch.setBackground(Color.BLACK);
-				editButton.setEnabled(false);
-				isNull = true;
-			}
-		} else {
-			//If not already showing prop value, update it
-			if (isNull || (!swatch.getBackground().equals(value))) {
-				editButton.setEnabled(true);
-				swatch.setBackground(value);
-			}
+		if (isEnabled != enabled) {
+			editButton.setEnabled(enabled);
+			isEnabled = enabled;
 		}
 	}
 

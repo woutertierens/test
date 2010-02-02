@@ -39,24 +39,28 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	private Reference<? extends M> model;
 	private UpdateManager updateManager;
 	private Prop<T> viewedProp = null;
+	private final Prop<Boolean> locked;
 	
 	//Track whether we have been disposed
 	private boolean disposed = false;
 	
+	private ChangeListener lockedListener;
+	
 	/**
 	 * Make a {@link PropViewHelp}
 	 * 
-	 * @param view
-	 * 		The view to be helped
-	 * @param name
-	 * 		The name of the property displayed by the view
+	 * @param view		The view to be helped
+	 * @param name		The name of the property displayed by the view
+	 * @param locked	If this is non null, editing will not be possible when
+	 * 					it contains value true.
 	 */
-	public PropViewHelp(final UpdatableSingleValueView<M> view, PropName<T> name) {
+	public PropViewHelp(final UpdatableSingleValueView<M> view, PropName<T> name, Prop<Boolean> locked) {
 		
 		this.view = view;
 		this.name = name;
 		
 		this.model = view.getModel();
+		this.locked = locked;
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
 	}
@@ -77,8 +81,20 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	public void connect() {
 		updateManager.registerUpdatable(view);
 
-		//When model value has a change, we require an update
+		//When model value or locked prop has a change, we require an update
 		model.value().features().addListener(this);
+		
+		
+		if (locked != null) {
+			//A change to locked prop always involves an update
+			lockedListener = new ChangeListener() {
+				@Override
+				public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
+					updateManager.updateRequiredBy(view);
+				}
+			};
+			locked.features().addListener(lockedListener);
+		}
 		
 		//Initial update
 		updateManager.updateRequiredBy(view);
@@ -112,7 +128,48 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 	 * 		A new {@link PropViewHelp}
 	 */
 	public static <M extends Bean, T> PropViewHelp<M, T> create(UpdatableSingleValueView<M> view, PropName<T> name) {
-		return new PropViewHelp<M, T>(view, name);
+		return new PropViewHelp<M, T>(view, name, null);
+	}
+	
+	/**
+	 * Make a {@link PropViewHelp}
+	 * 
+	 * This will connect the {@link UpdatableView} to the update manager, and to its own model.
+	 * The {@link UpdatableView} must be otherwise fully constructed, and have its
+	 * model set.
+	 * 
+	 * This makes sure that:
+	 * The view is registered with the update manager.
+	 * When the model has a prop change, the update manager is informed that the view
+	 * requires an update.
+	 * An first request is made for an update to display the initial value
+	 *
+	 * Remember to {@link #dispose()} when the view is no longer in use
+	 * 
+	 * @param <M>
+	 * 		The type of model {@link Bean} for the helped view 
+	 * @param <T> 
+	 * 		The type of value in the displayed prop
+	 * 
+	 * @param view
+	 * 		The view to be helped
+	 * @param name
+	 * 		The name of the property displayed by the view
+	 * @param locked	If this is not null, then editing will be disabled when 
+	 * 					the {@link Prop} value is true
+	 * @return 
+	 * 		A new {@link PropViewHelp}
+	 */
+	public static <M extends Bean, T> PropViewHelp<M, T> create(UpdatableSingleValueView<M> view, PropName<T> name, Prop<Boolean> locked) {
+		return new PropViewHelp<M, T>(view, name, locked);
+	}
+	
+	/**
+	 * Check whether the view is locked
+	 * @return	True if view is locked (and so should not edit), false otherwise
+	 */
+	public boolean isLocked() {
+		return Props.isTrue(locked);
 	}
 	
 	@Override
@@ -173,6 +230,10 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 		disposed = true;
 		updateManager.deregisterUpdatable(view);
 		model.value().features().removeListener(this);
+		
+		if (locked != null) {
+			locked.features().removeListener(lockedListener);
+		}
 	}
 	
 	/**
@@ -216,6 +277,11 @@ public class PropViewHelp<M extends Bean, T> implements ChangeListener {
 			logger.severe("setPropValue called after PropViewHelp disposed");
 		}
 
+		//If locked, do nothing
+		if (Props.isTrue(locked)) {
+			return;
+		}
+		
 		//Get the model's value - the bean we are viewing
 		M currentValue = model.value().get();
 		

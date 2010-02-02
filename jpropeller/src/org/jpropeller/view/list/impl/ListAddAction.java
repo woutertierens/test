@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -39,6 +40,8 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 
 	private UpdateManager updateManager;
 
+	private final Prop<Boolean> locked;
+	
 	/**
 	 * Create a {@link ListAddAction}
 	 * @param reference
@@ -46,6 +49,8 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	 * the item to insert after.
 	 * @param source
 	 * 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
 	 * @param text
 	 * 		Description text for action
 	 * @param icon
@@ -60,6 +65,7 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	public ListAddAction(
 			ListAndSelectionReference<T> reference,
 			Source<T> source,
+			Prop<Boolean> locked,
 			String text, Icon icon,
             String desc, Integer mnemonic) {
 		
@@ -73,6 +79,7 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 		
 		this.reference = reference;
 		this.source = source;
+		this.locked = locked;
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
 		updateManager.registerUpdatable(this);
@@ -82,6 +89,10 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 		reference.value().features().addListener(this);
 		reference.selection().features().addListener(this);
 
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+		
 		//Start out updated
 		updateManager.updateRequiredBy(this);
 
@@ -100,19 +111,39 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	 * the item to delete.
 	 * @param source
 	 * 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return
+	 * 		A new {@link ListAddAction}
+	 * @param <T>
+	 * 		The type of element in the list 
+	 */
+	public static <T> ListAddAction<T> create(ListAndSelectionReference<T> reference, Source<T> source, Prop<Boolean> locked) {
+		return new ListAddAction<T>(
+				reference,
+				source,
+				locked,
+				Messages.getString("ListAddAction.addText"), 
+				icon, 
+				Messages.getString("ListAddAction.addDescription"), 
+				Messages.getInt("ListAddAction.addMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	/**
+	 * Create an action with
+	 * no icon. Text, mnemonic and tooltip set by resources.
+	 * @param reference
+	 * 		Reference to the {@link CList} to act on, and the selection index of
+	 * the item to delete.
+	 * @param source
+	 * 		The source of new elements to add to the list
 	 * @return
 	 * 		A new {@link ListAddAction}
 	 * @param <T>
 	 * 		The type of element in the list 
 	 */
 	public static <T> ListAddAction<T> create(ListAndSelectionReference<T> reference, Source<T> source) {
-		return new ListAddAction<T>(
-				reference,
-				source,
-				Messages.getString("ListAddAction.addText"), 
-				icon, 
-				Messages.getString("ListAddAction.addDescription"), 
-				Messages.getInt("ListAddAction.addMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+		return create(reference, source, null);
 	}
 
 	@Override
@@ -121,6 +152,11 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 		//Perform actions atomically
 		Props.getPropSystem().getChangeSystem().acquire();
 		try {
+			
+			if (Props.isTrue(locked)) {
+				return;
+			}
+
 			int index = reference.selection().get();
 			CList<T> list = reference.value().get();
 	
@@ -158,13 +194,19 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 
 		reference.value().features().removeListener(this);
 		reference.selection().features().removeListener(this);
+
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
+
 	}
 
 	@Override
 	public void update() {
-		//Enabled unless list is null
+		//Enabled unless list is null, or we are locked
 		CList<?> list = reference.value().get();
-		setEnabled(list != null);
+		
+		setEnabled((!Props.isTrue(locked)) && (list != null));
 	}
 
 	@Override

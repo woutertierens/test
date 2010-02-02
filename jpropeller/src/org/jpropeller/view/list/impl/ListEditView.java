@@ -13,6 +13,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
@@ -82,7 +83,7 @@ public class ListEditView<T> implements JView{
 	public static <S> ListEditView<S> create(CList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Class<?>... editedClasses) {
 		ListAndSelectionAndValueReference<S> model = 
 			new ListAndSelectionAndValueReferenceDefault<S>(clazz, list);
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, editedClasses);
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, editedClasses);
 	}
 	
 	/**
@@ -107,7 +108,34 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Class<?>... editedClasses) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, editedClasses);
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, editedClasses);
+	}
+	
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListAndSelectionAndValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @param editSelected
+	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param locked	Property showing whether editing is locked, or null if the
+	 * 					editing is always unlocked
+	 * @param editedClasses
+	 * 		The classes for which a specific editor will be looked up,
+	 * 		to be used when an element of that class is selected
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked, Class<?>... editedClasses) {
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, editedClasses);
 	}
 	
 	/**
@@ -122,11 +150,13 @@ public class ListEditView<T> implements JView{
 	 * 		The source for new elements to add to the list
 	 * @param editSelected
 	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param locked	Property showing whether editing is locked, or null if the
+	 * 					editing is always unlocked
 	 * @param editedClasses
 	 * 		The classes for which a specific editor will be looked up,
 	 * 		to be used when an element of that class is selected
 	 */
-	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Class<?>... editedClasses) {
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, Class<?>... editedClasses) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -148,7 +178,7 @@ public class ListEditView<T> implements JView{
 		views.add(tableView);
 		
 		//Panel with list editing buttons
-		buttonPanel = buildButtonPanel();
+		buttonPanel = buildButtonPanel(locked);
 	
 		//Left and right sections of main panel
 		JComponent leftPanel = buildLeftPanel(editSelected);
@@ -232,8 +262,8 @@ public class ListEditView<T> implements JView{
 		return sif;
 	}
 	
-	private JComponent buildButtonPanel() {
-		JView view = ListButtonsViewFactory.makeView(model, source);
+	private JComponent buildButtonPanel(Prop<Boolean> locked) {
+		JView view = ListButtonsViewFactory.makeView(model, source, locked);
 		views.add(view);
 		return view.getComponent();
 	}

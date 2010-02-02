@@ -5,6 +5,7 @@ import javax.swing.JComponent;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.view.CompletionException;
@@ -12,11 +13,17 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.JViewSource;
 import org.jpropeller.view.UpdatableSingleValueView;
 import org.jpropeller.view.View;
+import org.jpropeller.view.info.Lockable;
 
 /**
  * This will use an existing JView in the same way as a Prop view - 
  * that is, it will arrange for the View always to display the contents
  * of a named prop of a bean.
+ * 
+ * Note that the locked parameter is not respected - JViews will still
+ * edit values even if it is true. This is an inevitable result of using
+ * a general {@link JView}. Note that respecting {@link Lockable} is recommended
+ * for views, not mandatory, so this does not break the contract.
  * 
  * @param <T>	The type of value in the viewed prop
  */
@@ -121,6 +128,17 @@ public class PropViewAdaptor<T> implements JView, UpdatableSingleValueView<Bean>
 			@Override
 			public boolean providesFor(PropName<?> displayedName) {
 				return !displayedName.isTGeneric() && clazz.isAssignableFrom(displayedName.getPropClass());
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public <M> JView viewFor(Reference<? extends Bean> model,
+					PropName<M> displayedName, Prop<Boolean> locked) {
+				if (!providesFor(displayedName)) {
+					return null;
+				} else {
+					return create(model, (PropName<T>)displayedName, source);
+				}
 			}
 		};
 	}
