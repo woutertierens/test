@@ -65,10 +65,13 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 
 	private UpdateManager updateManager;
 	
-	private BeanEditor(Reference<M> model, PropViewFactory factory) {
+	private final Prop<Boolean> locked;
+	
+	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked) {
 		super();
 		this.model = model;
 		this.factory = factory;
+		this.locked = locked;
 		
 		panel = new JPanel(new BorderLayout());
 		
@@ -82,17 +85,6 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		update();
 		
 	}
-	
-	/**
-	 * Make a new editor with default prop view factory
-	 * 
-	 * @param <M> 		The type of bean in the model 
-	 * @param value		A {@link Prop} containing the bean to edit
-	 * @return	 		A new {@link BeanEditor}
-	 */
-	public static <M extends Bean> BeanEditor<M> create(Prop<M> value) {
-		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault());
-	}
 
 	/**
 	 * Make a new editor
@@ -103,7 +95,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return 			A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Prop<M> value, PropViewFactory factory) {
-		return new BeanEditor<M>(ReferenceDefault.create(value), factory);
+		return new BeanEditor<M>(ReferenceDefault.create(value), factory, null);
 	}
 	
 	/**
@@ -114,7 +106,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model) {
-		return new BeanEditor<M>(model, new PropViewFactoryEditable());
+		return new BeanEditor<M>(model, new PropViewFactoryEditable(), null);
 	}
 
 	/**
@@ -126,9 +118,60 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return 			A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, PropViewFactory factory) {
-		return new BeanEditor<M>(model, factory);
+		return new BeanEditor<M>(model, factory, null);
 	}
 
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param value		A {@link Prop} containing the bean to edit
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Prop<M> value) {
+		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault(), null);
+	}
+	
+	/**
+	 * Make a new editor
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param model 	The model containing the bean
+	 * @param factory 	The {@link PropViewFactory} to use to produce {@link JView}s
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	
+	 * @return 			A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked) {
+		return new BeanEditor<M>(model, factory, locked);
+	}
+
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param value		A {@link Prop} containing the bean to edit
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Prop<M> value, Prop<Boolean> locked) {
+		return new BeanEditor<M>(ReferenceDefault.create(value), new PropViewFactoryDefault(), locked);
+	}
+	
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param model 	The model containing the bean
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, Prop<Boolean> locked) {
+		return new BeanEditor<M>(model, new PropViewFactoryEditable(), locked);
+	}
+	
 	@Override
 	public void dispose() {
 		updateManager.deregisterUpdatable(this);
@@ -263,7 +306,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 				
 				//Note that we create the view using our own model, so it will always
 				//(try to) display our current model
-				JView newView = factory.viewFor(model, newName);
+				JView newView = factory.viewFor(model, newName, locked);
 				if (newView!=null) {
 					newViews.put(newName, newView);
 				}

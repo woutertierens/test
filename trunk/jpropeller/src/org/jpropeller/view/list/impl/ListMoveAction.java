@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -33,8 +34,9 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 	private final static Icon iconUp = Views.getIconFactory().getIcon(IconSize.SMALL, "actions", "go-up");
 	private final static Icon iconDown = Views.getIconFactory().getIcon(IconSize.SMALL, "actions", "go-down");
 
-	int movement;
-	ListAndSelectionReference<T> reference;
+	private final int movement;
+	private final ListAndSelectionReference<T> reference;
+	private final Prop<Boolean> locked;
 	
 	private UpdateManager updateManager;
 
@@ -43,6 +45,8 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 	 * @param reference
 	 * 		Reference to the {@link CList} to act on, and the selection index of
 	 * the item to move.
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
 	 * @param movement
 	 * 		The number of indices the current selection will be moved when the action is used
 	 * @param text
@@ -58,6 +62,7 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 	 */
 	public ListMoveAction(
 			ListAndSelectionReference<T> reference,
+			Prop<Boolean> locked,
 			int movement,
 			String text, Icon icon,
             String desc, Integer mnemonic) {
@@ -74,6 +79,7 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 		
 		this.reference = reference;
 		this.movement = movement;
+		this.locked = locked;
 
 		updateManager = Props.getPropSystem().getUpdateManager();
 		updateManager.registerUpdatable(this);
@@ -85,11 +91,62 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 		//enable and disable the action
 		reference.value().features().addListener(this);
 		reference.selection().features().addListener(this);
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
 	}
 	
 	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		updateManager.updateRequiredBy(this);
+	}
+	
+	/**
+	 * Create an action to move one index up (decrement index), with
+	 * no icon. Text, mnemonic and tooltip set by resources.
+	 * @param reference
+	 * 		Reference to the {@link CList} to act on, and the selection index of
+	 * the item to move.
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return
+	 * 		A new {@link ListMoveAction} to move items up
+	 * @param <T>
+	 * 		The type of element in the {@link CList} 
+	 */
+	public static <T> ListMoveAction<T> createUpAction(ListAndSelectionReference<T> reference, Prop<Boolean> locked) {
+		return new ListMoveAction<T>(
+				reference,
+				locked,
+				-1, 
+				Messages.getString("ListMoveAction.moveUpText"), 
+				iconUp, 
+				Messages.getString("ListMoveAction.moveUpDescription"), 
+				Messages.getInt("ListMoveAction.moveUpMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/**
+	 * Create an action to move one index down (increment index), with
+	 * no icon. Text, mnemonic and tooltip set by resources.
+	 * @param reference
+	 * 		Reference to the {@link CList} to act on, and the selection index of
+	 * the item to move.
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return
+	 * 		A new {@link ListMoveAction} to move items down
+	 * @param <T>
+	 * 		The type of element in the {@link CList} 
+	 */
+	public static <T> ListMoveAction<T> createDownAction(ListAndSelectionReference<T> reference, Prop<Boolean> locked) {
+		return new ListMoveAction<T>(
+				reference,
+				locked,
+				1, 
+				Messages.getString("ListMoveAction.moveDownText"), 
+				iconDown, 
+				Messages.getString("ListMoveAction.moveDownDescription"), 
+				Messages.getInt("ListMoveAction.moveDownMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	/**
@@ -104,13 +161,7 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 	 * 		The type of element in the {@link CList} 
 	 */
 	public static <T> ListMoveAction<T> createUpAction(ListAndSelectionReference<T> reference) {
-		return new ListMoveAction<T>(
-				reference,
-				-1, 
-				Messages.getString("ListMoveAction.moveUpText"), 
-				iconUp, 
-				Messages.getString("ListMoveAction.moveUpDescription"), 
-				Messages.getInt("ListMoveAction.moveUpMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+		return createUpAction(reference, null);
 	}
 
 	/**
@@ -125,14 +176,9 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 	 * 		The type of element in the {@link CList} 
 	 */
 	public static <T> ListMoveAction<T> createDownAction(ListAndSelectionReference<T> reference) {
-		return new ListMoveAction<T>(
-				reference,
-				1, 
-				Messages.getString("ListMoveAction.moveDownText"), 
-				iconDown, 
-				Messages.getString("ListMoveAction.moveDownDescription"), 
-				Messages.getInt("ListMoveAction.moveDownMnemonic")); //$NON-NLS-1$ //$NON-NLS-2$
+		return createDownAction(reference, null);
 	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -140,6 +186,10 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 		//Perform actions atomically
 		Props.getPropSystem().getChangeSystem().acquire();
 		try {
+			
+			if (Props.isTrue(locked)) {
+				return;
+			}
 			
 			int index = reference.selection().get();
 			CList<T> list = reference.value().get();
@@ -194,8 +244,8 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 
 		int target = index + movement;
 		
-		//Enabled when movement is possible
-		setEnabled(index >= 0 && index < list.size() && target >= 0 && target < list.size());
+		//Enabled when movement is possible, AND locked is false
+		setEnabled((!Props.isTrue(locked)) && (index >= 0) && (index < list.size()) && (target >= 0) && (target < list.size()));
 	}
 	
 	@Override
@@ -204,6 +254,11 @@ public class ListMoveAction<T> extends AbstractAction implements ChangeListener,
 
 		reference.value().features().removeListener(this);
 		reference.selection().features().removeListener(this);
+
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+
 	}
 	
 	@Override

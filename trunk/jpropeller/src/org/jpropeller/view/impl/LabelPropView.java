@@ -36,7 +36,8 @@ public class LabelPropView<T> implements JView, UpdatableSingleValueView<Bean> {
 		this.displayedName = displayedName;
 		label = new JLabel();
 
-		help = new PropViewHelp<Bean, T>(this, displayedName);
+		//Ignore locking, since we do not ever edit
+		help = new PropViewHelp<Bean, T>(this, displayedName, null);
 		help.connect();
 	}
 

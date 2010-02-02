@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionReference;
 import org.jpropeller.util.Source;
 import org.jpropeller.util.Target;
@@ -47,11 +48,42 @@ public class ListButtonsViewFactory {
 	 * 
 	 * @param model 		The model to be viewed
 	 * @param source 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return 				The view
+	 */
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Prop<Boolean> locked) {
+		return makeView(model, source, null, true, false, locked);
+	}
+	
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list
 	 * @param target 		The target to which to put elements removed from the list 
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target) {
 		return makeView(model, source, target, true, false);
+	}
+	
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list
+	 * @param target 		The target to which to put elements removed from the list
+	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return 				The view
+	 */
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, Prop<Boolean> locked) {
+		return makeView(model, source, target, true, false, locked);
 	}
 	
 	/**
@@ -67,14 +99,32 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout) {
+		return makeView(model, source, target, textLabels, squareLayout, null);
+	}
+	
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list
+	 * @param target 		The target to which to put elements removed from the list 
+	 * @param textLabels	True to show text on buttons
+	 * @param squareLayout	True to layout in a square, false to use a horizontal line
+	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return 				The view
+	 */
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout, Prop<Boolean> locked) {
 
 		//Keep list of all views
 		List<View> views = new LinkedList<View>();
 
-		ListMoveAction<T> moveUpAction = ListMoveAction.createUpAction(model);
-		ListMoveAction<T> moveDownAction = ListMoveAction.createDownAction(model);
-		ListDeleteAction<T> deleteAction = ListDeleteAction.create(model, target);
-		ListAddAction<T> addAction = ListAddAction.create(model, source);
+		ListMoveAction<T> moveUpAction = ListMoveAction.createUpAction(model, locked);
+		ListMoveAction<T> moveDownAction = ListMoveAction.createDownAction(model, locked);
+		ListDeleteAction<T> deleteAction = ListDeleteAction.create(model, target, locked);
+		ListAddAction<T> addAction = ListAddAction.create(model, source, locked);
 		
 		views.add(moveUpAction);
 		views.add(moveDownAction);

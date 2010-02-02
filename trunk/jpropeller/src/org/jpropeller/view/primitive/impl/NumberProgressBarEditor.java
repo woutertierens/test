@@ -57,7 +57,8 @@ public class NumberProgressBarEditor<T extends Number & Comparable<T>> implement
 		this.model = model;
 		this.converter = converter;
 
-		help = new PropViewHelp<Bean, T>(this, displayedName);
+		//Ignore locking, since we do not ever edit
+		help = new PropViewHelp<Bean, T>(this, displayedName, null);
 
 		//Make a progress bar
 		bar = new JProgressBar(min, max);

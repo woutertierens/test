@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.view.JView;
@@ -22,8 +23,6 @@ import org.jpropeller.view.primitive.impl.StringTextFieldEditor;
  */
 public class PropViewFactoryEditable implements PropViewFactory {
 
-	private static final ListViewFactory listFactory = new ListViewFactory();
-	
 	private static final Map<Class<?>, PropViewFactory> defaultViews;
 	
 	/**
@@ -34,13 +33,21 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
-			return NumberSpinnerEditor.createDouble(model, (PropName<Double>) displayedName);
+			return NumberSpinnerEditor.createDouble(model, (PropName<Double>) displayedName, null);
 		}
 
 		@Override
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Double.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return NumberSpinnerEditor.createDouble(model, (PropName<Double>) displayedName, locked);
+		}
+		
 	};
 
 	/**
@@ -51,13 +58,21 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
-			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName);
+			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName, null);
 		}
 
 		@Override
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Integer.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName, locked);
+		}
+
 	};
 
 	/**
@@ -68,12 +83,18 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
-			return NumberSpinnerEditor.createFloat(model, (PropName<Float>) displayedName);
+			return NumberSpinnerEditor.createFloat(model, (PropName<Float>) displayedName, null);
 		}
 
 		@Override
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Float.class;
+		}
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return NumberSpinnerEditor.createFloat(model, (PropName<Float>) displayedName, locked);
 		}
 	};
 
@@ -85,12 +106,19 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
-			return NumberSpinnerEditor.createLong(model, (PropName<Long>) displayedName);
+			return NumberSpinnerEditor.createLong(model, (PropName<Long>) displayedName, null);
 		}
 
 		@Override
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Long.class;
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return NumberSpinnerEditor.createLong(model, (PropName<Long>) displayedName, locked);
 		}
 	};
 
@@ -109,6 +137,13 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == String.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return StringTextFieldEditor.create(model, (PropName<String>) displayedName, locked);
+		}
 	};
 
 	/**
@@ -126,6 +161,14 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Color.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return ColorEditor.create(model, (PropName<Color>) displayedName, locked);
+		}
+
 	};
 
 	/**
@@ -143,6 +186,14 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Boolean.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return BooleanCheckboxEditor.create(model, (PropName<Boolean>) displayedName, locked);
+		}
+
 	};
 
 	/**
@@ -160,6 +211,14 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == ImmutableIcon.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return ImmutableIconPropView.create(model, (PropName<ImmutableIcon>) displayedName, locked);
+		}
+
 	};
 	
 	static {
@@ -211,45 +270,42 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		this.views = views;
 	}
 	
-	//We check that displayedName is a SINGLE access type, and so has
-	//a prop type that extends Prop before casting
+	//We need to suppress warnings on casting propnames. Note that this is safe
+	//since we can check both parametric types involved in the cast, against
+	//the prop info and propname class
+	@Override
+	public <M> JView viewFor(final Reference<? extends Bean> model,
+			final PropName<M> displayedName, Prop<Boolean> locked) {
+		
+		//Prop<M> prop = model.value().get().features().get(displayedName);
+		Class<?> c = displayedName.getPropClass();
+		
+		if(views.containsKey(c)) {
+			return views.get(c).viewFor(model, displayedName, locked);
+		}
+		
+		if(defaultViews.containsKey(c)) {
+			return defaultViews.get(c).viewFor(model, displayedName, locked);
+		}
+		
+		return fallback ? 
+				LabelPropView.create(model, displayedName) : 
+					null;
+	}
+	
 	//We need to suppress warnings on casting propnames. Note that this is safe
 	//since we can check both parametric types involved in the cast, against
 	//the prop info and propname class
 	@Override
 	public <M> JView viewFor(final Reference<? extends Bean> model,
 			final PropName<M> displayedName) {
-		
-		if(listFactory.providesFor(displayedName)) {
-			return listFactory.viewFor(model, displayedName);
-			
-		} else {		
-			//Prop<M> prop = model.value().get().features().get(displayedName);
-			Class<?> c = displayedName.getPropClass();
-			
-			if(views.containsKey(c)) {
-				return views.get(c).viewFor(model, displayedName);
-			}
-			
-			if(defaultViews.containsKey(c)) {
-				return defaultViews.get(c).viewFor(model, displayedName);
-			}
-			
-			return fallback ? 
-					LabelPropView.create(model, displayedName) : 
-						null;
-		}
+		return viewFor(model, displayedName, null);
 	}
-
 
 	@Override
 	public boolean providesFor(PropName<?> displayedName) {
-		return 	listFactory.providesFor(displayedName) 
-			|| 	defaultViews.containsKey(displayedName) 
+		return 	defaultViews.containsKey(displayedName) 
 			|| 	!displayedName.isTGeneric();
 	}
-
-
-
 	
 }

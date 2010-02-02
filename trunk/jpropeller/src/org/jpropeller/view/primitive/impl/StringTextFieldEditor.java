@@ -45,7 +45,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	private final boolean multiline;
 
 	private StringTextFieldEditor(Reference<? extends Bean> model,
-			PropName<String> displayedName, boolean multiline) {
+			PropName<String> displayedName, boolean multiline, Prop<Boolean> locked) {
 
 		super();
 		this.model = model;
@@ -53,7 +53,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		this.multiline = multiline;
 		buildField();
 		
-		help = new PropViewHelp<Bean, String>(this, displayedName);
+		help = new PropViewHelp<Bean, String>(this, displayedName, locked);
 		help.connect();
 	}
 
@@ -85,7 +85,42 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	 */
 	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
 			PropName<String> displayedName, boolean multiline) {
-		return new StringTextFieldEditor(model, displayedName, multiline);
+		return new StringTextFieldEditor(model, displayedName, multiline, null);
+	}
+	
+	/**
+	 * Create a {@link StringTextFieldEditor}
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+	 * @param multiline
+	 * 		True if the view should support multiline editing - if so,
+	 * 		it will not commit on pressing enter, only on losing focus.
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
+	 * @return
+	 * 		A new {@link StringTextFieldEditor}
+	 */
+	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
+			PropName<String> displayedName, boolean multiline, Prop<Boolean> locked) {
+		return new StringTextFieldEditor(model, displayedName, multiline, locked);
+	}
+	
+	/**
+	 * Create a single line {@link StringTextFieldEditor}
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
+	 * @return
+	 * 		A new {@link StringTextFieldEditor}
+	 */
+	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
+			PropName<String> displayedName, Prop<Boolean> locked) {
+		return new StringTextFieldEditor(model, displayedName, false, locked);
 	}
 
 	@Override
@@ -106,16 +141,6 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	public JComponent getComponent() {
 		return component;
 	}
-	
-	private boolean checkNull(String value) {
-		boolean n = (value == null);
-		if (n) {
-			text.setText("");
-		}
-		text.setEnabled(!n);
-		return n;
-	}
-
 	
 	private void buildField() {
 		if (multiline) {
@@ -167,6 +192,13 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	public void commit() {
 		//If we are editing, set the new prop value
 		if (isEditing()) {
+			
+			//If we are locked, just revert
+			if (help.isLocked()) {
+				update();
+				return;
+			}
+			
 			try {
 				help.setPropValue(text.getText());
 				error(false);
@@ -185,7 +217,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		String value = help.getPropValue();
 		
 		//Not editing if value is null
-		if (checkNull(value)) return false;
+		if (value==null) return false;
 		
 		//We are editing if text field value is not the same as prop value
 		return (!text.getText().equals(value));
@@ -193,9 +225,13 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 
 	@Override
 	public void update() {
-		//If the text field is not focussed, then always update the display
+		
+		String value = help.getPropValue();
+		text.setEnabled(value!=null && !help.isLocked());
+		
+		//If the text field is not focussed, or value is locked, then always update the display
 		//to the new prop value, if necessary.
-		if (!text.isFocusOwner()) {
+		if (!text.isFocusOwner() || help.isLocked()) {
 			display();
 			
 		//If the field is focussed, we only need to update if the new value
@@ -216,7 +252,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 			String value = help.getPropValue();
 			
 			//Can't display null values
-			if (checkNull(value)) value = "";
+			if (value == null) value = "";
 			
 			text.setText(value);
 			

@@ -32,13 +32,13 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 	private boolean settingEnabled = false;
 	
 	private BooleanCheckboxEditor(Reference<? extends Bean> model,
-			PropName<Boolean> displayedName) {
+			PropName<Boolean> displayedName, Prop<Boolean> locked) {
 		super();
 		this.model = model;
 		this.displayedName = displayedName;
 		
 		checkBox = new JCheckBox("");
-		help = new PropViewHelp<Bean, Boolean>(this, displayedName);
+		help = PropViewHelp.create(this, displayedName, locked);
 		
 		checkBox.addChangeListener(new ChangeListener() {
 			@Override
@@ -73,7 +73,21 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 	 */
 	public static BooleanCheckboxEditor create(Reference<? extends Bean> model,
 			PropName<Boolean> displayedName) {
-		return new BooleanCheckboxEditor(model, displayedName);
+		return new BooleanCheckboxEditor(model, displayedName, null);
+	}
+	
+	/**
+	 * Create a {@link BooleanCheckboxEditor}
+	 * 
+	 * @param model			The {@link Reference} for this {@link View} 
+	 * @param displayedName	The name of the displayed property
+	 * @param locked		If this is non-null, the view will not support
+	 * 						editing while its value is true.		 
+	 * @return				A new{@link BooleanCheckboxEditor}
+	 */
+	public static BooleanCheckboxEditor create(Reference<? extends Bean> model,
+			PropName<Boolean> displayedName, Prop<Boolean> locked) {
+		return new BooleanCheckboxEditor(model, displayedName, locked);
 	}
 
 	@Override
@@ -95,12 +109,18 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 		update();
 	}
 
-	private boolean checkNull(Boolean value) {
-		boolean n = (value == null);
+	/**
+	 * Update enabled state of control. Will be enabled
+	 * if not null, and not locked
+	 * @param value		The value to display
+	 * @return			True if enabled, false otherwise
+	 */
+	private boolean updateEnabled(Boolean value) {
+		boolean enabled = (value != null) && !help.isLocked();
 		settingEnabled  = true;
-		checkBox.setEnabled(!n);
+		checkBox.setEnabled(enabled);
 		settingEnabled = false;
-		return n;
+		return enabled;
 	}
 	
 	@Override
@@ -121,9 +141,9 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 	public boolean isEditing() {
 		
 		Boolean value = help.getPropValue();
-		
+
 		//If value is null, not editing
-		if (checkNull(value)) return false;
+		if (value == null) return false;
 		
 		return checkBox.isSelected() != value;
 	}
@@ -133,9 +153,12 @@ public class BooleanCheckboxEditor implements JView, UpdatableSingleValueView<Be
 		
 		Boolean value = help.getPropValue();
 		
+		//Update enabled state
+		updateEnabled(value);
+
 		//If value is null, can't display
-		if (checkNull(value)) return;
-		
+		if (value == null) return;
+
 		//First time we see a non-null value, set our name from its prop
 		if (checkBox.getText().length()==0) {
 			Bean bean = model.value().get();

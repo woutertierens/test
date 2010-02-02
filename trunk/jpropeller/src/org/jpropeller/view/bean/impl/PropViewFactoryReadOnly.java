@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.view.JView;
@@ -32,6 +33,12 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 		}
 
 		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return LabelPropView.create(model, displayedName);
+		}
+
+		@Override
 		public boolean providesFor(PropName<?> displayedName) {
 			//Can display anything
 			return true;
@@ -53,6 +60,14 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == Boolean.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return BooleanCheckboxEditor.create(model, (PropName<Boolean>) displayedName, locked);
+		}
+
 	};
 
 	/**
@@ -70,6 +85,14 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 		public boolean providesFor(PropName<?> displayedName) {
 			return !displayedName.isTGeneric() && displayedName.getPropClass() == ImmutableIcon.class;
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return ImmutableIconPropView.create(model, (PropName<ImmutableIcon>) displayedName);
+		}
+
 	};
 	
 	static {
@@ -133,22 +156,28 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 	//the prop info and propname class
 	@Override
 	public <M> JView viewFor(final Reference<? extends Bean> model,
-			final PropName<M> displayedName) {
+			final PropName<M> displayedName, Prop<Boolean> locked) {
 		
 		//Prop<M> prop = model.value().get().features().get(displayedName);
 		Class<?> c = displayedName.getPropClass();
 		
 		if(views.containsKey(c)) {
-			return views.get(c).viewFor(model, displayedName);
+			return views.get(c).viewFor(model, displayedName, locked);
 		}
 		
 		if(defaultViews.containsKey(c)) {
-			return defaultViews.get(c).viewFor(model, displayedName);
+			return defaultViews.get(c).viewFor(model, displayedName, locked);
 		}
 		
 		return fallback ? 
 				LabelPropView.create(model, displayedName) : 
 					null;
+	}
+	
+	@Override
+	public <M> JView viewFor(Reference<? extends Bean> model,
+			PropName<M> displayedName) {
+		return viewFor(model, displayedName, null);
 	}
 
 
