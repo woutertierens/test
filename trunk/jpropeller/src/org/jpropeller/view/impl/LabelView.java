@@ -3,6 +3,7 @@ package org.jpropeller.view.impl;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
@@ -14,6 +15,7 @@ import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.info.Illustrated;
 import org.jpropeller.view.update.UpdateManager;
 
 /**
@@ -70,7 +72,14 @@ public class LabelView implements JView, ChangeListener {
 		
 		String s = "";
 		if (value != null) {
+			if(value instanceof Illustrated) {
+				label.setIcon(((Illustrated)value).illustration().get());
+			} 
 			s = value.toString();
+			if(value instanceof Icon) {
+				label.setIcon((Icon)value);
+				s = "";
+			}
 		}
 		
 		if (!s.equals(label.getText())) {
