@@ -35,6 +35,7 @@ public class GeneralUtils {
         	}
         }
 	}
+
 	
 	/**
 	 * Enable console logging.
@@ -44,6 +45,17 @@ public class GeneralUtils {
 	 * 		The classes for which to enable finest logging
 	 */
 	public static void enableConsoleLogging(Class<?>... classes) {
+		enableConsoleLogging(Level.WARNING, classes);
+	}
+	
+	/**
+	 * Enable console logging.
+	 * Enable {@link Level#FINEST} logging for specified classes and
+	 * specified logging for all other classes
+	 * @param generalLevel	The {@link Level} for other classes.
+	 * @param classes		The classes for which to enable finest logging
+	 */
+	public static void enableConsoleLogging(Level generalLevel, Class<?>... classes) {
 		System.out.println("Enabled console logging...");
 		
 		//Remove any existing handlers
@@ -58,7 +70,7 @@ public class GeneralUtils {
 		//handler.setFormatter(new SimpleFormatter());
 		handler.setLevel(Level.ALL);
 		Logger.getLogger("").addHandler(handler);
-		Logger.getLogger("").setLevel(Level.WARNING);
+		Logger.getLogger("").setLevel(generalLevel);
 		for (Class<?> c : classes) {
 			Logger.getLogger(c.getCanonicalName()).setLevel(Level.FINEST);
 		}

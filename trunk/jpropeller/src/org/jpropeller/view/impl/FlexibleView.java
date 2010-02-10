@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -61,53 +60,6 @@ public class FlexibleView implements JView, ChangeListener {
 	private ViewSystem viewSystem = null;
 	private final JView blank;
 	private boolean displayBeanEditor = false;
-	private static class BlankView implements JView  {
-		
-		private final JComponent root;
-
-		private BlankView(final JComponent defaultView) {
-			this.root = defaultView;
-		}
-
-		@Override
-		public Format format() {
-			return Format.LARGE;
-		}
-
-		@Override
-		public JComponent getComponent() {
-			return root;
-		}
-
-		@Override
-		public boolean selfNaming() {
-			return false;
-		}
-
-		@Override
-		public void cancel() {
-			
-		}
-
-		@Override
-		public void commit() throws CompletionException {
-		}
-
-		@Override
-		public boolean isEditing() {
-			return false;
-		}
-
-		@Override
-		public void dispose() {
-			
-		}
-
-		@Override
-		public void update() {
-		}
-		
-	}
 	
 	/**
 	 * Make a {@link FlexibleView}
@@ -128,7 +80,7 @@ public class FlexibleView implements JView, ChangeListener {
 	 * @param string 		String to display when no other view is available.
 	 */
 	public FlexibleView(Reference<?> ref, boolean displayBeanEditor, String string) {
-		this(ref, null, displayBeanEditor, new BlankView(makeBlankLabel(string)));
+		this(ref, null, displayBeanEditor, new FixedComponentView(string));
 	}
 	
 	/**
@@ -140,7 +92,7 @@ public class FlexibleView implements JView, ChangeListener {
 	 * @param string 		String to display when no other view is available.
 	 */
 	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, boolean displayBeanEditor, String string) {
-		this(ref, viewSystem, displayBeanEditor, new BlankView(makeBlankLabel(string)));
+		this(ref, viewSystem, displayBeanEditor, new FixedComponentView(string));
 	}
 	
 	/**
@@ -157,7 +109,7 @@ public class FlexibleView implements JView, ChangeListener {
 		
 		this.displayBeanEditor = displayBeanEditor;
 		
-		blank = defaultView == null ? new BlankView(makeBlankLabel("")) : defaultView;
+		blank = defaultView == null ? new FixedComponentView("") : defaultView;
 		
 		registerListeners(ref);
 		
@@ -165,19 +117,6 @@ public class FlexibleView implements JView, ChangeListener {
 		update();	
 	}
 
-	
-
-	private static JLabel makeBlankLabel(final String blankString) {
-		JLabel lbl = new JLabel(blankString);
-//		lbl.setOpaque(true);
-//		lbl.setBackground(Color.orange);
-		lbl.setFont(lbl.getFont().deriveFont(24));
-		lbl.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-		lbl.setAlignmentY(JLabel.CENTER_ALIGNMENT);
-		return lbl;
-	}
-
-	
 	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		//We only require an update on a shallow change to ref - that is,
@@ -198,6 +137,10 @@ public class FlexibleView implements JView, ChangeListener {
 	
 	@Override
 	public void update() {
+		
+		//FIXME
+		//We could easily set a view here that showed a "busy" icon in case
+		//it takes some time to create the new view
 		
 		//Views may change props, so we need to do this later, outside
 		//change response.
