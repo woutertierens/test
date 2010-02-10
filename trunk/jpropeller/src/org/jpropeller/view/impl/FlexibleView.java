@@ -139,7 +139,7 @@ public class FlexibleView implements JView, ChangeListener {
 	 * @param displayBeanEditor	True to fallback to a bean editor for beans rather than the defaultView. 
 	 * @param string 		String to display when no other view is available.
 	 */
-	public FlexibleView(Reference<?> ref, ViewSystemDefault viewSystem, boolean displayBeanEditor, String string) {
+	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, boolean displayBeanEditor, String string) {
 		this(ref, viewSystem, displayBeanEditor, new BlankView(makeBlankLabel(string)));
 	}
 	
