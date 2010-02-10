@@ -15,6 +15,7 @@ import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.info.Described;
 import org.jpropeller.view.info.Illustrated;
 import org.jpropeller.view.update.UpdateManager;
 
@@ -75,7 +76,11 @@ public class LabelView implements JView, ChangeListener {
 			if(value instanceof Illustrated) {
 				label.setIcon(((Illustrated)value).illustration().get());
 			} 
-			s = value.toString();
+			if(value instanceof Described) {
+				s = ((Described)value).description().get();
+			} else {
+				s = value.toString();
+			}
 			if(value instanceof Icon) {
 				label.setIcon((Icon)value);
 				s = "";

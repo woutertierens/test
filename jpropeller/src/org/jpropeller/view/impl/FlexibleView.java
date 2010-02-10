@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.properties.Prop;
@@ -57,19 +59,88 @@ public class FlexibleView implements JView, ChangeListener {
 	private UpdateManager updateManager;
 	
 	private ViewSystem viewSystem = null;
+	private final JView blank;
+	private boolean displayBeanEditor = false;
+	private static class BlankView implements JView  {
+		
+		private final JComponent root;
+
+		private BlankView(final JComponent defaultView) {
+			this.root = defaultView;
+		}
+
+		@Override
+		public Format format() {
+			return Format.LARGE;
+		}
+
+		@Override
+		public JComponent getComponent() {
+			return root;
+		}
+
+		@Override
+		public boolean selfNaming() {
+			return false;
+		}
+
+		@Override
+		public void cancel() {
+			
+		}
+
+		@Override
+		public void commit() throws CompletionException {
+		}
+
+		@Override
+		public boolean isEditing() {
+			return false;
+		}
+
+		@Override
+		public void dispose() {
+			
+		}
+
+		@Override
+		public void update() {
+		}
+		
+	}
 	
 	/**
 	 * Make a {@link FlexibleView}
 	 * 
 	 * @param ref			The reference to view
-	 * @param classes		All classes this view will support.
-	 * 						Note, you can include {@link Bean} here
-	 * 						if you wish to fall back to a generic
-	 * 						{@link BeanEditor} for classes that
-	 * 						don't have a more specific view.
+	 * @param displayBeanEditor	True to fallback to a bean editor for beans rather than the defaultView. 
+	 * @param defaultView 	View to display when no other view is available, can be null.
 	 */
-	public FlexibleView(Reference<?> ref, Class<?>... classes) {
-		this(ref, null, classes);
+	public FlexibleView(Reference<?> ref, boolean displayBeanEditor, final JView defaultView) {
+		this(ref, null, displayBeanEditor, defaultView);
+	}
+	
+	/**
+	 * Make a {@link FlexibleView}
+	 * 
+	 * @param ref			The reference to view 
+	 * @param displayBeanEditor	True to fallback to a bean editor for beans rather than the defaultView. 
+	 * @param string 		String to display when no other view is available.
+	 */
+	public FlexibleView(Reference<?> ref, boolean displayBeanEditor, String string) {
+		this(ref, null, displayBeanEditor, new BlankView(makeBlankLabel(string)));
+	}
+	
+	/**
+	 * Make a {@link FlexibleView}
+	 * 
+	 * @param ref			The reference to view
+	 * @param viewSystem	The viewsystem to use. 
+	 * @param displayBeanEditor	True to fallback to a bean editor for beans rather than the defaultView. 
+	 * @param string 		String to display when no other view is available.
+	 */
+	public FlexibleView(Reference<?> ref, ViewSystemDefault viewSystem, boolean displayBeanEditor, String string) {
+		this(ref, viewSystem, displayBeanEditor, new BlankView(makeBlankLabel(string)));
 	}
 	
 	/**
@@ -78,18 +149,15 @@ public class FlexibleView implements JView, ChangeListener {
 	 * @param ref			The reference to view
 	 * @param viewSystem 	The {@link ViewSystem} to use to look up views for classes,
 	 * 						this will be checked before {@link Views#getViewSystem()}
-	 * @param classes		All classes this view will support.
-	 * 						Note, you can include {@link Bean} here
-	 * 						if you wish to fall back to a generic
-	 * 						{@link BeanEditor} for classes that
-	 * 						don't have a more specific view.
+	 * @param displayBeanEditor	True to fallback to a bean editor for beans rather than the defaultView. 
+	 * @param defaultView 	View to display when no other view is available, can be null.
 	 */
-	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, Class<?>... classes) {
+	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, final boolean displayBeanEditor, final JView defaultView) {
 		init(ref, viewSystem);
 		
-		for (Class<?> clazz : classes) {
-			makeView(clazz);
-		}
+		this.displayBeanEditor = displayBeanEditor;
+		
+		blank = defaultView == null ? new BlankView(makeBlankLabel("")) : defaultView;
 		
 		registerListeners(ref);
 		
@@ -98,33 +166,17 @@ public class FlexibleView implements JView, ChangeListener {
 	}
 
 	
-	
-	/**
-	 * Make a {@link FlexibleView}
-	 * 
-	 * @param ref			The reference to view
-	 * @param viewSystem 	The {@link ViewSystem} to use to look up views for classes,
-	 * 						this will be checked before {@link Views#getViewSystem()}
-	 * @param classes		All classes this view will support.
-	 * 						Note, you can include {@link Bean} here
-	 * 						if you wish to fall back to a generic
-	 * 						{@link BeanEditor} for classes that
-	 * 						don't have a more specific view.
-	 */
-	public FlexibleView(Reference<?> ref, ViewSystem viewSystem, Iterable<Class<?>> classes) {
-		init(ref, viewSystem);
-				
-		//Prepare views
-		for (Class<?> clazz : classes) {
-			makeView(clazz);
-		}
-		
-		registerListeners(ref);
-		
-		//Initial update
-		update();
-		
+
+	private static JLabel makeBlankLabel(final String blankString) {
+		JLabel lbl = new JLabel(blankString);
+//		lbl.setOpaque(true);
+//		lbl.setBackground(Color.orange);
+		lbl.setFont(lbl.getFont().deriveFont(24));
+		lbl.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		lbl.setAlignmentY(JLabel.CENTER_ALIGNMENT);
+		return lbl;
 	}
+
 	
 	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
@@ -146,16 +198,24 @@ public class FlexibleView implements JView, ChangeListener {
 	
 	@Override
 	public void update() {
-		//We only update when we may have a new ref value - when this is the case,
-		//we need to check whether we need a new editor.
-		JView newView = findView();
-
-		//New value may be same (or compatible) class
-		if (currentView == newView) {
-			return;
-		}
 		
-		changeToView(newView);
+		//Views may change props, so we need to do this later, outside
+		//change response.
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				//We only update when we may have a new ref value - when this is the case,
+				//we need to check whether we need a new editor.
+				JView newView = findView();
+
+				//New value may be same (or compatible) class
+				if (currentView == newView) {
+					return;
+				}
+				
+				changeToView(newView);
+			}
+		});		
 	}
 
 	private void changeToView(JView newView) {
@@ -248,6 +308,7 @@ public class FlexibleView implements JView, ChangeListener {
 			//We need a new reference that will filter to the right class, so
 			//that we don't give the view a value of a class it can't display.
 			ReferenceWithClassFilter filteredRef = ReferenceWithClassFilter.createUnsafe(clazz, ref);
+			
 			JView newView = sourceFor.get(filteredRef);
 			
 			//Add the view to the map
@@ -261,14 +322,20 @@ public class FlexibleView implements JView, ChangeListener {
 	private JView findView() {
 		Object value = ref.value().get();
 		
+		
 		//Just use labelView for nulls
 		if (value == null) {
-			return labelView;
+			return blank;
 		}
 		
 		//Otherwise look up from class
 		Class<?> clazz = value.getClass();
-
+		
+		//Lazily register the view for this class.
+		if(!views.containsKey(clazz)) {
+			makeView(clazz);
+		}
+		
 		//By preference, use a specific view
 		if (views.containsKey(clazz)) {
 			return views.get(clazz);
@@ -276,14 +343,16 @@ public class FlexibleView implements JView, ChangeListener {
 		
 		//We failed to get a specific view, so if we have a bean, 
 		//use a bean editor if we have one
-		if (value instanceof Bean) {
-			if (beanEditor != null) {
-				return beanEditor;
+		if(displayBeanEditor) {
+			if (value instanceof Bean) {
+				if (beanEditor != null) {
+					return beanEditor;
+				}
 			}
-		}
+		} 
 		
 		//We failed to get anything else, use label view
-		return labelView;
+		return blank;
 	}
 	
 	@Override
