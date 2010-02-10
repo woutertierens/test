@@ -74,16 +74,13 @@ public class ListEditView<T> implements JView{
 	 * 		The source for new elements to add to the list
 	 * @param editSelected
 	 * 		If true, an extra panel is shown to edit the selected item
-	 * @param editedClasses
-	 * 		The classes for which a specific editor will be looked up,
-	 * 		to be used when an element of that class is selected
 	 * @return 
 	 * 		A new {@link ListEditView}
 	 */
-	public static <S> ListEditView<S> create(CList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Class<?>... editedClasses) {
+	public static <S> ListEditView<S> create(CList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected) {
 		ListAndSelectionAndValueReference<S> model = 
 			new ListAndSelectionAndValueReferenceDefault<S>(clazz, list);
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, editedClasses);
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null);
 	}
 	
 	/**
@@ -101,14 +98,11 @@ public class ListEditView<T> implements JView{
 	 * 		The source for new elements to add to the list
 	 * @param editSelected
 	 * 		If true, an extra panel is shown to edit the selected item
-	 * @param editedClasses
-	 * 		The classes for which a specific editor will be looked up,
-	 * 		to be used when an element of that class is selected
 	 * @return 
 	 * 		A new {@link ListEditView}
 	 */
-	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Class<?>... editedClasses) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, editedClasses);
+	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected) {
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null);
 	}
 	
 	/**
@@ -128,14 +122,11 @@ public class ListEditView<T> implements JView{
 	 * 		If true, an extra panel is shown to edit the selected item
 	 * @param locked	Property showing whether editing is locked, or null if the
 	 * 					editing is always unlocked
-	 * @param editedClasses
-	 * 		The classes for which a specific editor will be looked up,
-	 * 		to be used when an element of that class is selected
 	 * @return 
 	 * 		A new {@link ListEditView}
 	 */
-	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked, Class<?>... editedClasses) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, editedClasses);
+	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked) {
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked);
 	}
 	
 	/**
@@ -156,7 +147,7 @@ public class ListEditView<T> implements JView{
 	 * 		The classes for which a specific editor will be looked up,
 	 * 		to be used when an element of that class is selected
 	 */
-	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, Class<?>... editedClasses) {
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -185,7 +176,7 @@ public class ListEditView<T> implements JView{
 
 		if (editSelected) {
 			//Panel to edit current selection
-			JComponent rightPanel = buildSelectedViewPanel(editedClasses);
+			JComponent rightPanel = buildSelectedViewPanel();
 	
 			//Build the entire panel
 			FormLayout layout = new FormLayout(
@@ -239,15 +230,11 @@ public class ListEditView<T> implements JView{
 		}
 	}
 
-	private JComponent buildSelectedViewPanel(Class<?> ... editedClasses) {
+	private JComponent buildSelectedViewPanel() {
 		
 		//Always edit at least beans as a specific class
-		if (editedClasses.length == 0) {
-			selectedView = new FlexibleView(selectedReference, Bean.class);
-		} else {
-			selectedView = new FlexibleView(selectedReference, editedClasses);
-		}
-
+		selectedView = new FlexibleView(selectedReference, true, "");
+		
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(selectedView.getComponent());
 		panel.setBorder(Borders.DIALOG_BORDER);
