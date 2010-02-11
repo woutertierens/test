@@ -26,6 +26,7 @@ import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.change.Immutable;
 import org.jpropeller.properties.changeable.impl.ChangeablePropDefault;
 import org.jpropeller.properties.immutable.impl.PropImmutable;
+import org.jpropeller.properties.impl.ClassFilterProp;
 import org.jpropeller.properties.impl.SuperClassProp;
 import org.jpropeller.properties.impl.ViewProp;
 import org.jpropeller.properties.list.impl.ListPropDefault;
@@ -122,6 +123,33 @@ public class Props {
 	}
 	
 	//Methods for creating various Props
+	
+	/**
+	 * Make a filtered prop. 
+	 * 
+	 * This has one of two behaviours, depending on the contents of "filteredProp"
+	 * at the given point in time:
+	 * <br/>
+	 * If filteredProp contains an instance of requiredClass, then this {@link Prop}
+	 * will have the same value as filteredProp, and set filteredProp's value when
+	 * {@link Prop#set(Object)} is called.
+	 * <br/>
+	 * If filteredProp does NOT contain an instance of requiredClass, then this
+	 * {@link Prop} will contain null, but calling {@link Prop#set(Object)} will still
+	 * set a new value into filteredProp.
+	 * <br/>
+	 * This means that the returned {@link Prop} is a valid implementation of {@link Prop},
+	 * but with a value that can be a subclass of the value class of the filteredProp.
+	 * 
+	 * @param requiredClass		The value class of the new {@link Prop} 
+	 * @param name 				The name of the new {@link Prop}
+	 * @param filteredProp 		The {@link Prop} whose value is filtered through this {@link Prop}.
+	 * @param <T> 				The value type of the new {@link Prop}
+	 * @return 					A new {@link Prop} as described
+	 */
+	public static <T> Prop<T> classFiltered(Class<T> requiredClass, String name, Prop<? super T> filteredProp) {
+		return new ClassFilterProp<T>(requiredClass, PropName.create(requiredClass, name), filteredProp);
+	}
 	
 	/**
 	 * Make a read-only {@link Prop} containing a {@link CList}
