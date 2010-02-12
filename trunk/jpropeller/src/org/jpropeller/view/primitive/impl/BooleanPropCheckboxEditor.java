@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 
-import org.jpropeller.bean.Bean;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
@@ -19,8 +18,7 @@ import org.jpropeller.view.View;
 import org.jpropeller.view.update.UpdateManager;
 
 /**
- * An editing {@link View} for an {@link Bean}, displaying and editing
- * the value of an {@link Prop} with value of type {@link Boolean}
+ * An editing {@link View} for a {@link Prop} with value of type {@link Boolean}
  */
 public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 

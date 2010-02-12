@@ -665,7 +665,7 @@ public class PathPropBuilder<R extends Bean, D extends Bean, T> {
 	 * @return
 	 * 		The path itself
 	 */
-	public PathProp<R, T> to(Transformer<? super D, ? extends Prop<T>> lastTransform) {
+	public Prop<T> to(Transformer<? super D, ? extends Prop<T>> lastTransform) {
 		return new PathProp<R, T>(name, pathRoot, builder.to(lastTransform), processor);
 	}
 

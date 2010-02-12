@@ -470,8 +470,8 @@ public abstract class BeanDefault implements Bean {
 		}
 
 		@Override
-		public PathProp<R, T> to(Transformer<? super E, ? extends Prop<T>> lastTransform) {
-			PathProp<R,T> pathProp = super.to(lastTransform);
+		public Prop<T> to(Transformer<? super E, ? extends Prop<T>> lastTransform) {
+			Prop<T> pathProp = super.to(lastTransform);
 			addProp(pathProp);
 			return pathProp;
 		}		
