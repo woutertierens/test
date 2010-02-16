@@ -60,21 +60,20 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 
 	private final static Logger logger = GeneralUtils.logger(PathProp.class);
 	
-	Bean bean;
-	ChangeableFeatures features;
-	PropName<T> name;
+	private final ChangeableFeatures features;
+	private final PropName<T> name;
 	
-	R pathRoot;
+	private final R pathRoot;
 	
-	BeanPath<? super R, T> path;
+	private final BeanPath<? super R, T> path;
 	
-	Prop<T> cachedProp = null;
-	boolean cacheValid = false;
-	boolean errored = false;
+	private Prop<T> cachedProp = null;
+	private boolean cacheValid = false;
+	private boolean errored = false;
 
-	Set<Prop<?>> cachedPathProps = new IdentityHashSet<Prop<?>>();
+	private final Set<Prop<?>> cachedPathProps = new IdentityHashSet<Prop<?>>();
 	
-	ValueProcessor<T> processor;
+	private final ValueProcessor<T> processor;
 	
 	/**
 	 * Create a prop which always has the same value as, and reports changes to,
