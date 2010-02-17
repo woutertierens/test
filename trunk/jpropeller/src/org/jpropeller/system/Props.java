@@ -1,6 +1,7 @@
 package org.jpropeller.system;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -1628,6 +1629,27 @@ public class Props {
 	public final static Prop<ImmutableIcon> editable(String name, ImmutableIcon value){
 		return PropImmutable.editable(name, value);
 	}
+	
+	/**
+	 * Make a new editable {@link BufferedImage} {@link Prop}, accepting all values
+	 * @param name		The name of the {@link Prop}
+	 * @param value		The value of the {@link Prop}
+	 * @return			The new {@link Prop}
+	 */
+	public final static Prop<BufferedImage> editable(String name, BufferedImage value){
+		return PropImmutable.editable(name, value);
+	}
+
+	/**
+	 * Make a new read-only {@link BufferedImage} {@link Prop}
+	 * @param name		The name of the {@link Prop}
+	 * @param value		The value of the {@link Prop}
+	 * @return			The new {@link Prop}
+	 */
+	public final static Prop<BufferedImage> create(String name, BufferedImage value){
+		return PropImmutable.create(name, value);
+	}
+
 	/**
 	 * Make a {@link Prop} containing the result of a {@link Calculation}
 	 * @param name				The name of the {@link Prop}
