@@ -76,6 +76,9 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 				commit();
 			}
 		});
+		
+		//Start out up to date
+		update();
 	}
 
 	@Override

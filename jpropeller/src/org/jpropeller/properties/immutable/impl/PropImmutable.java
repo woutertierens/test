@@ -23,6 +23,7 @@
 package org.jpropeller.properties.immutable.impl;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -320,6 +321,26 @@ public class PropImmutable<T> implements Prop<T> {
 	 */
 	public static <S> PropImmutable<S> create(Class<S> clazz, String name, S value) {
 		return new PropImmutable<S>(PropName.create(clazz, name), value, ReadOnlyProcessor.<S>get());
+	}
+	
+	/**
+	 * Make a new read-only BufferedImage {@link Prop}
+	 * @param name		The name of the {@link Prop}
+	 * @param value		The value of the {@link Prop}
+	 * @return			The new {@link Prop}
+	 */
+	public final static PropImmutable<BufferedImage> create(String name, BufferedImage value){
+		return new PropImmutable<BufferedImage>(PropName.create(BufferedImage.class, name), value, ReadOnlyProcessor.<BufferedImage>get());
+	}
+	
+	/**
+	 * Make a new editable BufferedImage {@link Prop}
+	 * @param name		The name of the {@link Prop}
+	 * @param value		The value of the {@link Prop}
+	 * @return			The new {@link Prop}
+	 */
+	public final static PropImmutable<BufferedImage> editable(String name, BufferedImage value){
+		return new PropImmutable<BufferedImage>(PropName.create(BufferedImage.class, name), value, AcceptProcessor.<BufferedImage>get());
 	}
 	
 	/**
