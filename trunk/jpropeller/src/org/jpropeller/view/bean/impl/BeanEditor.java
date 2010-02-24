@@ -106,7 +106,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model) {
-		return new BeanEditor<M>(model, new PropViewFactoryEditable(), null);
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null);
 	}
 
 	/**
