@@ -2,6 +2,7 @@ package org.jpropeller.view.primitive.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -127,11 +128,13 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 		swatch.setBackground(null);
 		swatch.setOpaque(true);
 		swatch.setBorder(new MatteBorder(1,1,1,1,Color.BLACK));
+		swatch.setMinimumSize(new Dimension(10, 20));
+		swatch.setPreferredSize(new Dimension(10, 20));
 
 		JPanel surround = new JPanel();
 		surround.setLayout(new BorderLayout());
 		surround.add(swatch);
-		surround.setBorder(new EmptyBorder(3,2,3,0));
+		surround.setBorder(new EmptyBorder(3,2,3,2));
 		
 		surround.addMouseListener(new MouseAdapter() {
 			@Override
