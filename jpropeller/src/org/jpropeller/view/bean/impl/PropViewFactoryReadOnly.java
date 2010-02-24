@@ -13,6 +13,7 @@ import org.jpropeller.view.JView;
 import org.jpropeller.view.impl.ImmutableIconPropView;
 import org.jpropeller.view.impl.LabelPropView;
 import org.jpropeller.view.primitive.impl.BooleanCheckboxEditor;
+import org.jpropeller.view.primitive.impl.ColorEditor;
 
 /**
  * An implementation of {@link PropViewFactory} providing
@@ -95,6 +96,31 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 
 	};
 	
+	/**
+	 * Default editor.
+	 */
+	public static final PropViewFactory colorFactory = new PropViewFactory(){
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName) {
+			return ColorEditor.create(model, (PropName<Color>) displayedName, null, false);
+		}
+
+		@Override
+		public boolean providesFor(PropName<?> displayedName) {
+			return !displayedName.isTGeneric() && displayedName.getPropClass() == Color.class;
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			return ColorEditor.create(model, (PropName<Color>) displayedName, locked, false);
+		}
+
+	};
+	
 	static {
 		defaultViews = new HashMap<Class<?>, PropViewFactory>();
 		
@@ -111,7 +137,7 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 		defaultViews.put(ImmutableIcon.class, iconFactory);
 		
 		//TODO Need better view - just a color swatch
-		defaultViews.put(Color.class, labelFactory);		
+		defaultViews.put(Color.class, colorFactory);		
 		
 	}
 

@@ -45,11 +45,14 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	
 	boolean isEnabled = true;
 	
+	private final boolean editable;
+	
 	private ColorEditor(Reference<? extends Bean> model,
-			PropName<Color> displayedName, Prop<Boolean> locked) {
+			PropName<Color> displayedName, Prop<Boolean> locked, boolean editable) {
 		super();
 		this.model = model;
 		this.displayedName = displayedName;
+		this.editable = editable;
 		buildComponent();
 		
 		help = new PropViewHelp<Bean, Color>(this, displayedName, locked);
@@ -67,7 +70,7 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	 */
 	public final static ColorEditor create(Reference<? extends Bean> model,
 			PropName<Color> displayedName) {
-		return new ColorEditor(model, displayedName, null);
+		return new ColorEditor(model, displayedName, null, true);
 	}
 	
 	/**
@@ -83,9 +86,23 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 	 */
 	public final static ColorEditor create(Reference<? extends Bean> model,
 			PropName<Color> displayedName, Prop<Boolean> locked) {
-		return new ColorEditor(model, displayedName, locked);
+		return new ColorEditor(model, displayedName, locked, true);
 	}
 
+	/**
+	 * Create a {@link ColorEditor}
+	 * @param model				The {@link Reference} for this {@link View} 
+	 * @param displayedName 	The name of the displayed property 
+	 * @param locked			If this is non-null, the view will not support
+	 * 							editing while its value is true.
+	 * @param editable			True to enable editing
+	 * @return					A new {@link ColorEditor}
+	 */
+	public final static ColorEditor create(Reference<? extends Bean> model,
+			PropName<Color> displayedName, Prop<Boolean> locked, boolean editable) {
+		return new ColorEditor(model, displayedName, locked, editable);
+	}
+	
 	@Override
 	public void dispose() {
 		help.dispose();
@@ -122,6 +139,11 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 				edit();
 			}
 		});
+		
+		if (!editable) {
+			panel = surround;
+			return;
+		}
 		
 		editButton = new JButton("Edit...");
 		editButton.addActionListener(new ActionListener() {
@@ -188,7 +210,7 @@ public class ColorEditor implements JView, UpdatableSingleValueView<Bean> {
 		
 		boolean enabled = !nowNull && !help.isLocked();
 
-		if (isEnabled != enabled) {
+		if (isEnabled != enabled && editButton!=null) {
 			editButton.setEnabled(enabled);
 			isEnabled = enabled;
 		}
