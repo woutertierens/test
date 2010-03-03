@@ -271,4 +271,32 @@ public class ListDeltaDefault implements ListDelta {
 			" to new size " + getNewSize();		
 	}
 	
+	/**
+	 * Summarise multiple list deltas into one {@link ListDelta} that
+	 * will cover all the changes.
+	 * @param deltas		The {@link ListDelta}s to summarise
+	 * @return	A {@link ListDelta} covering all given list deltas
+	 */
+	public static ListDelta summarise(Iterable<ListDelta> deltas) {
+		boolean sizeChanged = false;
+		int newSize = -1;
+		for (ListDelta delta : deltas) {
+			//Any change other than an alteration will change size
+			if (delta.getType() != CollectionChangeType.ALTERATION) {
+				sizeChanged = true;
+			}
+			//Store the size the most recent change gives us
+			newSize = delta.getNewSize();
+		}
+		
+		//If we have any non-alteration changes, say we had a complete change
+		if (sizeChanged) {
+			return new ListDeltaDefault(CollectionChangeType.COMPLETE, -1, -1, -1, newSize);
+		//If we have only alterations, just say every index has changed
+		} else {
+			return new ListDeltaDefault(CollectionChangeType.ALTERATION, 0, Math.max(-1, newSize-1), newSize, newSize);
+		}
+		
+	}
+	
 }
