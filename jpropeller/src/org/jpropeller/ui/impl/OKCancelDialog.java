@@ -94,7 +94,7 @@ public class OKCancelDialog extends JDialog {
 		
 		getRootPane().setDefaultButton(select);
 
-		//Add cancel button, which simply nulls the selected class,
+		//Add cancel button, which simply records that user didn't click ok,
 		//and hides the dialog
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener(new ActionListener() {
