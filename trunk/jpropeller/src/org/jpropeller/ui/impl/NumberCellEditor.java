@@ -1,7 +1,6 @@
 package org.jpropeller.ui.impl;
 
 import java.awt.Component;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
@@ -260,7 +259,7 @@ public class NumberCellEditor extends DefaultCellEditor {
 	 * indicating that the user wants to continue editing.
 	 */
 	protected boolean userSaysRevert() {
-		Toolkit.getDefaultToolkit().beep();
+		//Toolkit.getDefaultToolkit().beep();
 		ftf.selectAll();
 		
 		String prompt = "The value must be " + requiredContentsDescription;
