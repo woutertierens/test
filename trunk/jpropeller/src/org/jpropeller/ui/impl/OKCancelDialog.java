@@ -28,6 +28,8 @@ public class OKCancelDialog extends JDialog {
 	private Component component;
 	private Frame owner;
 	private boolean lastClickWasOK = false;
+	private final String okString;
+	private final String cancelString;
 	
 	/**
 	 * Create an {@link OKCancelDialog}
@@ -47,6 +49,8 @@ public class OKCancelDialog extends JDialog {
 		
 		this.component = component;
 		this.owner = owner;
+		this.okString = ok;
+		this.cancelString = cancel;
 		
 		//Create UI
 		getContentPane().add(buildUI());
@@ -84,7 +88,7 @@ public class OKCancelDialog extends JDialog {
 		//Create button, when clicked this will set
 		//the selected class as appropriate, and
 		//hide the dialog if a valid selection has been made,
-		JButton select = new JButton("Select");
+		JButton select = new JButton(okString);
 		select.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ok();
@@ -96,13 +100,15 @@ public class OKCancelDialog extends JDialog {
 
 		//Add cancel button, which simply records that user didn't click ok,
 		//and hides the dialog
-		JButton cancel = new JButton("Cancel");
-		cancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cancel();
-			}
-		});
-		panel.add(cancel);
+		if (cancelString != null) {
+			JButton cancel = new JButton(cancelString);
+			cancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					cancel();
+				}
+			});
+			panel.add(cancel);
+		}
 		
 		return panel;
 	}
