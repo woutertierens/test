@@ -1,0 +1,21 @@
+	/**
+	 * Create a {@link Ref} for
+	 * CRUDE_TYPE values, in the universe
+	 * given by {@link Multiverse#getCurrentUniverse()}.
+	 * @param value		Initial value 
+	 * @return			A new RefDefault
+	 */
+	public static Ref<CRUDE_TYPE> create(CRUDE_TYPE value) {
+		return RefDefault.create(CRUDE_TYPE.class, value);
+	}
+
+	/**
+	 * Create a {@link Ref} for
+	 * CRUDE_TYPE values.
+	 * @param universe		The {@link Universe} we will belong to
+	 * @param value			Initial value 
+	 * @return				A new RefDefault
+	 */
+	public static Ref<CRUDE_TYPE> create(Universe universe, CRUDE_TYPE value) {
+		return RefDefault.create(universe, CRUDE_TYPE.class, value);
+	}
