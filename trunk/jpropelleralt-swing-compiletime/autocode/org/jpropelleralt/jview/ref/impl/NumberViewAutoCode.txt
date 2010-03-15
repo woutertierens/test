@@ -1,0 +1,43 @@
+	/**
+	 * Create a new {@link NumberView} for {@link NUMBER_TYPE} instances
+	 * @param value			{@link Ref} containing the viewed value
+	 * @param locked		While this is true, view will not permit editing (control disabled) 
+	 * @param step			Step size used for the up/down buttons on the spinner
+	 * @param updateManager	{@link UpdateManager} to use
+	 * @return				A new {@link NumberView}
+	 */
+	public static NumberView<NUMBER_TYPE> createNUMBER_TYPE(final Ref<NUMBER_TYPE> value, Ref<Boolean> locked, NUMBER_TYPE step, UpdateManager updateManager) {
+		return new NumberView<NUMBER_TYPE>(NUMBER_TYPE.class, value, locked, Sequences.stepSequence(step), updateManager);
+	}
+
+	/**
+	 * Create a new {@link NumberView} for {@link NUMBER_TYPE} instances
+	 * @param value			{@link Ref} containing the viewed value
+	 * @param locked		While this is true, view will not permit editing (control disabled) 
+	 * @param step			Step size used for the up/down buttons on the spinner
+	 * @return				A new {@link NumberView}
+	 */
+	public static NumberView<NUMBER_TYPE> createNUMBER_TYPE(final Ref<NUMBER_TYPE> value, Ref<Boolean> locked, NUMBER_TYPE step) {
+		return new NumberView<NUMBER_TYPE>(NUMBER_TYPE.class, value, locked, Sequences.stepSequence(step), Views.updateManager());
+	}
+
+	/**
+	 * Create a new {@link NumberView} for {@link NUMBER_TYPE} instances
+	 * @param value			{@link Ref} containing the viewed value
+	 * @param step			Step size used for the up/down buttons on the spinner
+	 * @return				A new {@link NumberView}
+	 */
+	public static NumberView<NUMBER_TYPE> createNUMBER_TYPE(final Ref<NUMBER_TYPE> value, NUMBER_TYPE step) {
+		return new NumberView<NUMBER_TYPE>(NUMBER_TYPE.class, value, null, Sequences.stepSequence(step), Views.updateManager());
+	}
+
+	/**
+	 * Create a new {@link NumberView} for {@link NUMBER_TYPE} instances
+	 * @param value			{@link Ref} containing the viewed value
+	 * @param locked		While this is true, view will not permit editing (control disabled) 
+	 * @param step			Step size used for the up/down buttons on the spinner
+	 * @return				A new {@link NumberView}
+	 */
+	public static NumberView<NUMBER_TYPE> createNUMBER_TYPE(final Ref<NUMBER_TYPE> value) {
+		return new NumberView<NUMBER_TYPE>(NUMBER_TYPE.class, value, null, Sequences.stepSequence(BLARG), Views.updateManager());
+	}
