@@ -29,6 +29,7 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 	private final T[] values;
 	private final EnumSpinnerModel spinnerModel;
 	private JSpinner spinner;
+	private final Prop<Boolean> locked;
 	private final Class<T> type;
 	
 	private class EnumSpinnerModel extends AbstractSpinnerModel {
@@ -66,6 +67,7 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 
 		@Override
 		public void setValue(Object value) {
+			if (value == null) return;
 			if(type.isAssignableFrom(value.getClass())) {
 				this.value = type.cast(value);
 				this.current = this.value.ordinal();
@@ -82,6 +84,16 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 	 * @param model		The prop to edit.
 	 */
 	public EnumPropSpinnerEditor(Class<T> type, T[] values, final Prop<T> model) {
+		this(type, values, model, null);
+	}
+	/**
+	 * Create a new editor.
+	 * @param type		The type of the enum.
+	 * @param values	The possible values of the enum (can't find via reflection).
+	 * @param model		The prop to edit.
+	 * @param locked	Prop containing true if editor should NOT edit, or null to ignore
+	 */
+	public EnumPropSpinnerEditor(Class<T> type, T[] values, final Prop<T> model, final Prop<Boolean> locked) {
 		this.type = type;
 		this.model = model;
 		this.values = values;
@@ -95,6 +107,12 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 			}
 		});
 		model.features().addListener(this);
+		
+		this.locked = locked;
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+		
 		Props.getPropSystem().getUpdateManager().registerUpdatable(this);
 	}
 	
@@ -165,6 +183,9 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 	@Override
 	public void dispose() {
 		model.features().removeListener(this);
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
 		Props.getPropSystem().getUpdateManager().deregisterUpdatable(this);
 	}
 
@@ -173,12 +194,12 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 		if(spinnerModel.getValue() != model.get()) {
 			spinnerModel.setValue(model.get());
 		}
+		spinner.setEnabled(!Props.isTrue(locked));
 	}
 
 	@Override
 	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
 		Props.getPropSystem().getUpdateManager().updateRequiredBy(this);
 	}
-	
 	
 }
