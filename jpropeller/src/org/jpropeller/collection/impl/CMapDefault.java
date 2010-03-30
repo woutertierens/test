@@ -53,11 +53,17 @@ import org.jpropeller.system.Props;
  */
 public class CMapDefault<K, V> implements CMap<K, V> {
 
-	//Reference counter for elements in list
+	//Reference counter for values in map
 	private final ContentsTracking<V> tracking;
+	
+	//Reference counter for keys in map
+	private final ContentsTracking<K> keyTracking;
 
 	//Standard code block for a bean
 	private final ChangeableFeatures features;
+	
+	//True to track keys as well as values
+	private final boolean trackKeys;
 	
 	@Override
 	public ChangeableFeatures features() {
@@ -118,6 +124,36 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	 * 				be used.
 	 */
 	public CMapDefault(Map<K, V> core) {
+		this(core, false);
+	}
+	
+	/**
+	 * Create a new {@link CMapDefault} based on a given core
+	 * map. The core {@link Map} provides the actual storage and
+	 * implementation of {@link Map} methods - this shell just
+	 * intercepts method calls to keep track of the {@link Map}
+	 * contents to implement {@link CMap}, for example 
+	 * by firing the proper events on element changes, etc.
+	 * 
+	 * NOTE: you must NOT modify the core {@link Map} after using it
+	 * to create an {@link CMapDefault}, otherwise you will stop the
+	 * {@link CMapDefault} functioning as a compliant {@link CMap}.
+	 * It is safest not to retain a reference to the core {@link Map} at all,
+	 * e.g.
+	 * <code>
+	 * 		ObservableMap<String> map = 
+	 * 			new ObservableMapDefault(new TreeMap<String, String>());
+	 * </code>
+	 * 
+	 * @param core	This {@link CMapDefault} will delegate to the specified 
+	 * 				{@link Map}. If this is null, a new {@link HashMap} will
+	 * 				be used.
+	 * @param trackKeys		True to track keys as well as values. Only use this
+	 * 						if you are SURE you understand map behaviour - for example
+	 * 						if you are using keys that are compared by equality, and
+	 * 						are mutable {@link Changeable}s.
+	 */
+	public CMapDefault(Map<K, V> core, boolean trackKeys) {
 		super();
 		
 		//If core is null, use an empty HashMap
@@ -134,8 +170,11 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		}, this);
 
 		
-		tracking = new ContentsTracking<V>(this);		
+		tracking = new ContentsTracking<V>(this);
+		keyTracking = new ContentsTracking<K>(this);
 
+		this.trackKeys = trackKeys;
+		
 		//Set up initial tracking of contents of provided list
 		retrackAll();
 	}
@@ -161,21 +200,38 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	}
 
 	/**
+	 * Clear all key and value tracking
+	 */
+	private void clearAllTracking() {
+		tracking.clearAllTracking();
+		
+		if (trackKeys) {
+			keyTracking.clearAllTracking();
+		}
+	}
+	
+	/**
 	 * Start tracking all elements in the list again. 
 	 * clearAllTracking() is called, then all elements
 	 * are passed to startTrackingElement(e);
 	 */
 	private void retrackAll() {
 		//Stop tracking all elements
-		tracking.clearAllTracking();
+		clearAllTracking();
 		
 		//Track each value in the map, making sure that we start tracking
 		//it once for EACH MAPPING that points to that value
 		//Hence we don't iterate the value set, which contains values
 		//mapped-to by multiple keys only once - we iterate the key set,
 		//then follow each key to the value
+		//Track keys for each time they are used as a key, by definition
+		//this can only be once, since only a terrible key implementation
+		//will be unequal to itself.
 		for (K k : core.keySet()) {
 			tracking.startTrackingElement(core.get(k));
+			if (trackKeys) {
+				keyTracking.startTrackingElement(k);
+			}
 		}
 	}
 	
@@ -212,7 +268,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//To start with, clear all references, and stop listening to all contents.
 			//The action is assumed to be a major enough operation that we don't 
 			//try to track it in detail
-			tracking.clearAllTracking();
+			clearAllTracking();
 			
 			try {
 				return action.call();
@@ -277,7 +333,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//Do we have an existing value? This affects the "old size" of the
 			//map change we will fire
 			boolean existingValue = core.containsKey(key);
-			
+
 			//Try to put in core - if we get a runtime exception the 
 			//value is not put, so nothing to do
 			V oldValue = core.put(key, value);
@@ -287,7 +343,14 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			tracking.stopTrackingElement(oldValue);
 	
 			tracking.startTrackingElement(value);
-	
+
+			//If this is a new key, start tracking it
+			if (trackKeys) {
+				if (!existingValue) {
+					keyTracking.startTrackingElement(key);
+				}
+			}
+			
 			//Start a map change
 			//showing the put
 			MapDelta change;
@@ -356,7 +419,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 
 			//The key IS present, so is of type K
 			K k = (K)key;
-			
+
 			//Try to remove from core - if we get a runtime exception the 
 			//value is not removed, so nothing to do
 			V oldValue = core.remove(k);
@@ -364,7 +427,12 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//Note that null values are ignored for tracking, so no need
 			//to check whether mapping was actually present
 			tracking.stopTrackingElement(oldValue);
-	
+
+			//Stop tracking key
+			if (trackKeys) {
+				keyTracking.stopTrackingElement(k);
+			}
+			
 			//Start a map change
 			//showing the removal
 			MapDelta change = MapDeltaDefault.newRemoveChange(this, k);
@@ -381,6 +449,8 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		}
 	}
 
+	//FIXME continue key alterations here
+	
 	//#####################################################################
 	//
 	//	The following methods require wrappers to prevent
