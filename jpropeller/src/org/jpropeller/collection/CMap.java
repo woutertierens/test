@@ -9,10 +9,19 @@ import org.jpropeller.properties.change.MapChange;
 /**
  * An {@link CMap} is a {@link Map} that implements {@link Changeable}
  * to allow tracking of changes to the {@link Map} or its contents.
- * Note that by default implementations may choose to guarantee that 
- * only the VALUES are tracked in a deep way - keys are expected
- * to be immutable, since mutable values do not generally work as good
- * map keys.
+ * Note that both keys and values are tracked when they are {@link Changeable},
+ * giving deep changes when they change. It is unusual but NOT invalid to use
+ * a {@link Changeable} key - please only do this if you are sure you know what you
+ * are doing. Such keys must be valid as {@link Map} keys - see
+ * the relevant documentation for details, but in summary they may only use immutable data
+ * for comparison to other objects using {@link Object#equals(Object)} and for
+ * generating their {@link Object#hashCode()}. However they may still have mutable data
+ * that is NOT used for equals or hashcode implementations, and changes to this data
+ * will be detected by {@link CMap}s using the {@link Changeable}s as keys. This is
+ * quite a rare case, but can occur. Consider for example a Car that is tracked by its
+ * unique, immutable registrationID, and is only equal to another car with the same
+ * registrationID, but which has owner, color, etc. properties that may change.
+ * 
  * When any {@link Map} method is used to change the {@link Map} contents, 
  * the {@link CMap} will propagate a {@link Change}. 
  * This {@link Change} is specifically a {@link MapChange}
@@ -28,13 +37,13 @@ import org.jpropeller.properties.change.MapChange;
  * to be used, for example if multiple mappings are 
  * inserted/deleted/changed, e.g. by a clear, etc.
  * 
- * Whenever a DEEP change occurs in the {@link Map}, a {@link MapChange} must be started, 
+ * Whenever a DEEP change to a key or value occurs in the {@link Map}, a {@link MapChange} must be started, 
  * with {@link MapChange#sameInstances()} returning true,
  * with a valid {@link MapDelta} - this should always be either an ALTERATION change
  * covering the map elements that have changed in a deep way,
  * or a COMPLETE change if a more specific range cannot be identified.
  * 
- * Note that DEEP changes are only noticed for mappings to values implementing {@link Changeable}
+ * Note that DEEP changes are only noticed for keys and/or values implementing {@link Changeable}
  * 
  * @param <K> 
  * 		The type of keys.

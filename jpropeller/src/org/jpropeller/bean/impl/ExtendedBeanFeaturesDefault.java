@@ -184,6 +184,10 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		return add(MapPropDefault.<J, S>editable(keyClass, valueClass, name));
 	}
 
+//	public <J, S> MapProp<J, S> editableMap(Class<J> keyClass, Class<S> valueClass, String name, boolean trackKeys) {
+//		return add(MapPropDefault.<J, S>editable(keyClass, valueClass, name, trackKeys));
+//	}
+	
 	public <J, S> MapProp<J, S> createMap(Class<J> keyClass, Class<S> valueClass, String name, CMap<J, S> data) {
 		return add(MapPropDefault.create(keyClass, valueClass, name, data));
 	}

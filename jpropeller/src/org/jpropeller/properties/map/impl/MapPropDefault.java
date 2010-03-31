@@ -95,6 +95,29 @@ public class MapPropDefault<K, T> extends ChangeablePropDefault<CMap<K,T>> imple
 	}
 	
 	/**
+	 * Create a new {@link MapPropDefault}, which will
+	 * always accept new values.
+	 * @param keyClass
+	 * 		The class of key in the map
+	 * @param valueClass
+	 * 		The class of value in the map
+	 * @param name 
+	 * 		The string value of the property name
+	 * @param <K> 
+	 * 		The type of key in the map/indexed property
+	 * @param <T> 
+	 * 		The type of data in the map/indexed property
+	 * @param trackKeys
+	 * 		True to track keys as well as values, if they are {@link Changeable} - 
+	 * see comments in {@link CMap} and {@link CMapDefault} 
+	 * @return
+	 * 		The new {@link MapPropDefault}
+	 */
+//	public static <K, T> MapPropDefault<K, T> editable(Class<K> keyClass, Class<T> valueClass, String name, boolean trackKeys) {
+//		return editable(keyClass, valueClass, name, new CMapDefault<K, T>(true));
+//	}
+	
+	/**
 	 * Create a new {@link MapPropDefault}, which is
 	 * read only (cannot set a new {@link CMap} value).
 	 * @param keyClass
