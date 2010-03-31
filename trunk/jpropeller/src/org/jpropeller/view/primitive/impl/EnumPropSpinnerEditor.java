@@ -114,6 +114,7 @@ public class EnumPropSpinnerEditor<T extends Enum<T>> implements JView, org.jpro
 		}
 		
 		Props.getPropSystem().getUpdateManager().registerUpdatable(this);
+		update();
 	}
 	
 	private void applyFocusFix(final JSpinner spinner) {
