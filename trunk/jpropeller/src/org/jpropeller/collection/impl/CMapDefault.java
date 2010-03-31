@@ -45,7 +45,7 @@ import org.jpropeller.system.Props;
 /**
  * An {@link CMapDefault} wraps an underlying {@link Map} implementation, 
  * delegating actual storage of elements to this core map, and adding 
- * tracking of the elements so that events are generated as required 
+ * tracking of the keys and values so that events are generated as required 
  * for {@link CMap} compliance.
  * 
  * @param <K> 		The type of key in the map.
@@ -53,6 +53,8 @@ import org.jpropeller.system.Props;
  */
 public class CMapDefault<K, V> implements CMap<K, V> {
 
+	//private final static Set<String> observedChangeables = new HashSet<String>();
+	
 	//Reference counter for values in map
 	private final ContentsTracking<V> tracking;
 	
@@ -79,7 +81,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	public CMapDefault() {
 		this(new HashMap<K, V>());
 	}
-
+	
 	/**
 	 * Create a new {@link CMapDefault} based on a new {@link HashMap}
 	 * @param capacity
@@ -124,36 +126,6 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 	 * 				be used.
 	 */
 	public CMapDefault(Map<K, V> core) {
-		this(core, false);
-	}
-	
-	/**
-	 * Create a new {@link CMapDefault} based on a given core
-	 * map. The core {@link Map} provides the actual storage and
-	 * implementation of {@link Map} methods - this shell just
-	 * intercepts method calls to keep track of the {@link Map}
-	 * contents to implement {@link CMap}, for example 
-	 * by firing the proper events on element changes, etc.
-	 * 
-	 * NOTE: you must NOT modify the core {@link Map} after using it
-	 * to create an {@link CMapDefault}, otherwise you will stop the
-	 * {@link CMapDefault} functioning as a compliant {@link CMap}.
-	 * It is safest not to retain a reference to the core {@link Map} at all,
-	 * e.g.
-	 * <code>
-	 * 		ObservableMap<String> map = 
-	 * 			new ObservableMapDefault(new TreeMap<String, String>());
-	 * </code>
-	 * 
-	 * @param core	This {@link CMapDefault} will delegate to the specified 
-	 * 				{@link Map}. If this is null, a new {@link HashMap} will
-	 * 				be used.
-	 * @param trackKeys		True to track keys as well as values. Only use this
-	 * 						if you are SURE you understand map behaviour - for example
-	 * 						if you are using keys that are compared by equality, and
-	 * 						are mutable {@link Changeable}s.
-	 */
-	public CMapDefault(Map<K, V> core, boolean trackKeys) {
 		super();
 		
 		//If core is null, use an empty HashMap
@@ -173,7 +145,8 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		tracking = new ContentsTracking<V>(this);
 		keyTracking = new ContentsTracking<K>(this);
 
-		this.trackKeys = trackKeys;
+		//FIXME make optional again
+		this.trackKeys = true;
 		
 		//Set up initial tracking of contents of provided list
 		retrackAll();
@@ -230,9 +203,23 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		for (K k : core.keySet()) {
 			tracking.startTrackingElement(core.get(k));
 			if (trackKeys) {
+				checkKey(k);
 				keyTracking.startTrackingElement(k);
 			}
 		}
+	}
+
+
+	private void checkKey(K k) {
+/*		if (k instanceof Changeable) {
+			synchronized (observedChangeables) {
+				String className = k.getClass().toString();
+				if (observedChangeables.add(className)) {
+					System.out.println("NEW KEY CLASS: " + className);
+				}
+			}
+			
+		}*/
 	}
 	
 	/**
@@ -347,6 +334,7 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//If this is a new key, start tracking it
 			if (trackKeys) {
 				if (!existingValue) {
+					checkKey(key);
 					keyTracking.startTrackingElement(key);
 				}
 			}

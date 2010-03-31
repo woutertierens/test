@@ -270,6 +270,26 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
 	 */
 	public <J, S> MapProp<J, S> editableMap(Class<J> keyClass, Class<S> valueClass, String name);
 
+//	/**
+//	 * Make a new {@link MapProp} with no mappings and add to this bean
+//	 * @param <J> 
+//	 * 		The type of key for the map/property
+//	 * @param <S>
+//	 * 		The type of the map contents. 
+//	 * @param keyClass
+//	 * 		The type of the map keys.
+//	 * @param valueClass
+//	 * 		The type of the map values.
+//	 * @param name
+//	 * 		The name of the prop
+//	 * @param trackKeys
+//	 * 		True to track keys as well as values, if they are {@link Changeable} - 
+//	 * see comments in {@link CMap} and {@link CMapDefault}
+//	 * @return
+//	 * 		The new prop
+//	 */
+//	public <J, S> MapProp<J, S> editableMap(Class<J> keyClass, Class<S> valueClass, String name, boolean trackKeys);
+	
 	/**
 	 * Make a new {@link SetProp} and add to this bean
 	 * @param <S>

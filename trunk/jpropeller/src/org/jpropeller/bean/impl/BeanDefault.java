@@ -178,6 +178,11 @@ public abstract class BeanDefault implements Bean {
 			Class<S> valueClass, String name) {
 		return features.editableMap(keyClass, valueClass, name);
 	}
+	
+//	protected <J, S> MapProp<J, S> editableMap(Class<J> keyClass,
+//			Class<S> valueClass, String name, boolean trackKeys) {
+//		return features.editableMap(keyClass, valueClass, name, trackKeys);
+//	}
 
 	protected Prop<DateTime> create(String name, DateTime value) {
 		return features.create(name, value);
