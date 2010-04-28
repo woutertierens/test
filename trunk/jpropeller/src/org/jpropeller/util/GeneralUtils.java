@@ -295,5 +295,17 @@ public class GeneralUtils {
     	}
     	return s;
     }
+
+
+    /**
+     * Sleep up to a given time, or less if {@link InterruptedException} is caught
+     * @param millis		Time to sleep, in milliseconds
+     */
+	public static void sleepUpTo(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+		}
+	}
     
 }
