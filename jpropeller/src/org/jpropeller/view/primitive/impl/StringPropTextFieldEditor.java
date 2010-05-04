@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
@@ -13,27 +15,27 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import org.jpropeller.bean.Bean;
-import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.change.Change;
+import org.jpropeller.properties.change.ChangeListener;
+import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.exception.InvalidValueException;
 import org.jpropeller.properties.exception.ReadOnlyException;
-import org.jpropeller.reference.Reference;
+import org.jpropeller.system.Props;
 import org.jpropeller.view.JView;
-import org.jpropeller.view.UpdatableSingleValueView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.Views;
-import org.jpropeller.view.impl.PropViewHelp;
+import org.jpropeller.view.update.UpdateManager;
 
 /**
  * An editing {@link View} for an {@link Bean}, displaying and editing
  * the value of an {@link Prop} with value of type {@link String}
  */
-public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Bean> {
+public class StringPropTextFieldEditor implements JView, ChangeListener {
 
-	PropViewHelp<Bean, String> help;
+	Prop<String> model;
 
-	Reference<? extends Bean> model;
-	PropName<String> displayedName;
+	Prop<Boolean> locked;
 	
 	JTextComponent text;
 	JComponent component;
@@ -44,93 +46,84 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	
 	private final boolean multiline;
 
-	private StringTextFieldEditor(Reference<? extends Bean> model,
-			PropName<String> displayedName, boolean multiline, Prop<Boolean> locked) {
+	private UpdateManager updateManager;
+
+	private StringPropTextFieldEditor(Prop<String> model,
+			boolean multiline, Prop<Boolean> locked) {
 
 		super();
 		this.model = model;
-		this.displayedName = displayedName;
+		this.locked = locked;
 		this.multiline = multiline;
 		buildField();
 		
-		help = new PropViewHelp<Bean, String>(this, displayedName, locked);
-		help.connect();
+		updateManager = Props.getPropSystem().getUpdateManager();
+		updateManager.registerUpdatable(this);
+		
+		model.features().addListener(this);
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+
+		//Start out up to date
+		update();
 	}
 
 	/**
-	 * Create a {@link StringTextFieldEditor}
-	 * @param model
-	 * 		The {@link Reference} for this {@link View} 
-	 * @param displayedName 
-	 * 		The name of the displayed property 
-	 * @return
-	 * 		A new {@link StringTextFieldEditor}
+	 * Create a {@link StringPropTextFieldEditor}
+	 * @param model		The {@link Prop} to display 
+	 * @return			A new {@link StringPropTextFieldEditor}
 	 */
-	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
-			PropName<String> displayedName) {
-		return create(model, displayedName, false);
+	public final static StringPropTextFieldEditor create(Prop<String> model) {
+		return create(model, false);
 	}
 
 	/**
-	 * Create a {@link StringTextFieldEditor}
-	 * @param model
-	 * 		The {@link Reference} for this {@link View} 
-	 * @param displayedName 
-	 * 		The name of the displayed property 
-	 * @param multiline
-	 * 		True if the view should support multiline editing - if so,
-	 * 		it will not commit on pressing enter, only on losing focus.
-	 * @return
-	 * 		A new {@link StringTextFieldEditor}
+	 * Create a {@link StringPropTextFieldEditor}
+	 * @param model		The {@link Prop} to display 
+	 * @param multiline	True if the view should support multiline editing - if so,
+	 * 					it will not commit on pressing enter, only on losing focus.
+	 * @return			A new {@link StringPropTextFieldEditor}
 	 */
-	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
-			PropName<String> displayedName, boolean multiline) {
-		return new StringTextFieldEditor(model, displayedName, multiline, null);
+	public final static StringPropTextFieldEditor create(Prop<String> model, boolean multiline) {
+		return new StringPropTextFieldEditor(model, multiline, null);
 	}
 	
 	/**
-	 * Create a {@link StringTextFieldEditor}
-	 * @param model
-	 * 		The {@link Reference} for this {@link View} 
-	 * @param displayedName 
-	 * 		The name of the displayed property 
-	 * @param multiline
-	 * 		True if the view should support multiline editing - if so,
-	 * 		it will not commit on pressing enter, only on losing focus.
+	 * Create a {@link StringPropTextFieldEditor}
+	 * @param model		The {@link Prop} to display 
+	 * @param multiline	True if the view should support multiline editing - if so,
+	 * 					it will not commit on pressing enter, only on losing focus.
 	 * @param locked	If this is non-null, the view will not support
 	 * 					editing while its value is true.
 	 * @return
-	 * 		A new {@link StringTextFieldEditor}
+	 * 		A new {@link StringPropTextFieldEditor}
 	 */
-	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
-			PropName<String> displayedName, boolean multiline, Prop<Boolean> locked) {
-		return new StringTextFieldEditor(model, displayedName, multiline, locked);
+	public final static StringPropTextFieldEditor create(Prop<String> model,
+			boolean multiline, Prop<Boolean> locked) {
+		return new StringPropTextFieldEditor(model, multiline, locked);
 	}
 	
 	/**
-	 * Create a single line {@link StringTextFieldEditor}
-	 * @param model
-	 * 		The {@link Reference} for this {@link View} 
-	 * @param displayedName 
-	 * 		The name of the displayed property 
+	 * Create a single line {@link StringPropTextFieldEditor}
+	 * @param model		The {@link Prop} to display 
 	 * @param locked	If this is non-null, the view will not support
 	 * 					editing while its value is true.
 	 * @return
-	 * 		A new {@link StringTextFieldEditor}
+	 * 		A new {@link StringPropTextFieldEditor}
 	 */
-	public final static StringTextFieldEditor create(Reference<? extends Bean> model,
-			PropName<String> displayedName, Prop<Boolean> locked) {
-		return new StringTextFieldEditor(model, displayedName, false, locked);
+	public final static StringPropTextFieldEditor create(Prop<String> model,
+			Prop<Boolean> locked) {
+		return new StringPropTextFieldEditor(model, false, locked);
 	}
 
 	@Override
 	public void dispose() {
-		help.dispose();
-	}
-
-	@Override
-	public Reference<? extends Bean> getModel() {
-		return model;
+		model.features().removeListener(this);
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
+		updateManager.deregisterUpdatable(this);
 	}
 
 	/**
@@ -148,6 +141,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 			jTextArea.setLineWrap(true);
 			jTextArea.setWrapStyleWord(true);
 			text = jTextArea;
+			
 			component = new JScrollPane(text);
 		} else {
 			JTextField field = new JTextField();
@@ -197,13 +191,13 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		if (isEditing()) {
 			
 			//If we are locked, just revert
-			if (help.isLocked()) {
+			if (Props.isTrue(locked)) {
 				update();
 				return;
 			}
 			
 			try {
-				help.setPropValue(text.getText());
+				model.set(text.getText());
 				error(false);
 				
 			//Notify user of any error
@@ -217,7 +211,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 
 	@Override
 	public boolean isEditing() {
-		String value = help.getPropValue();
+		String value = model.get();
 		
 		//Not editing if value is null
 		if (value==null) return false;
@@ -229,18 +223,18 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	@Override
 	public void update() {
 		
-		String value = help.getPropValue();
-		text.setEnabled(value!=null && !help.isLocked());
+		String value = model.get();
+		text.setEnabled(value!=null && !Props.isTrue(locked));
 		
 		//If the text field is not focussed, or value is locked, then always update the display
 		//to the new prop value, if necessary.
-		if (!text.isFocusOwner() || help.isLocked()) {
+		if (!text.isFocusOwner() || Props.isTrue(locked)) {
 			display();
 			
 		//If the field is focussed, we only need to update if the new value
 		//is different to the valueAtStartOfEditing
 		} else {
-			if (valueAtStartOfEditing != null && !valueAtStartOfEditing.equals(help.getPropValue())) {
+			if (valueAtStartOfEditing != null && !valueAtStartOfEditing.equals(model.get())) {
 				display();
 				//Restart editing
 				valueAtStartOfEditing = text.getText();
@@ -252,7 +246,7 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 		//If the text field is not already showing prop value, 
 		//and we are not focussed, update it
 		if (isEditing()) {
-			String value = help.getPropValue();
+			String value = model.get();
 			
 			//Can't display null values
 			if (value == null) value = "";
@@ -273,6 +267,11 @@ public class StringTextFieldEditor implements JView, UpdatableSingleValueView<Be
 	@Override
 	public Format format() {
 		return multiline ? Format.MEDIUM : Format.SINGLE_LINE;
+	}
+
+	@Override
+	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
+		Props.getPropSystem().getUpdateManager().updateRequiredBy(this);
 	}
 	
 }
