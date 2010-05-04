@@ -26,6 +26,7 @@ import org.jpropeller.util.NumberConverter;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.Views;
+import org.jpropeller.view.update.UpdateManager;
 
 /**
  *
@@ -46,6 +47,8 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	 */
 	private Color defaultBackground;
 
+	private UpdateManager updateManager;
+
 	/**
 	 * Create a {@link NumberPropSpinnerEditor}
 	 * @param model
@@ -63,7 +66,9 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 		this.numberModel = numberModel;
 		this.converter = converter;
 
-		Props.getPropSystem().getUpdateManager().registerUpdatable(this);
+		updateManager = Props.getPropSystem().getUpdateManager();
+		updateManager.registerUpdatable(this);
+		
 		model.features().addListener(this);
 		
 		//Make a spinner that will behave properly on lost focus
@@ -84,7 +89,7 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	@Override
 	public void dispose() {
 		model.features().removeListener(this);
-		Props.getPropSystem().getUpdateManager().deregisterUpdatable(this);
+		updateManager.deregisterUpdatable(this);
 	}
 
 	private void error(boolean errored) {
