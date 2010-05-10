@@ -1,6 +1,12 @@
 package org.jpropeller.util;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -305,6 +311,36 @@ public class GeneralUtils {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
+		}
+	}
+
+
+	/**
+	 *	Copies src file to dst file.
+	 *  If the dst file does not exist, it is created
+	 *  @param src	Source file
+	 *  @param dst	Destination file 
+	 *  @throws	IOException		If src cannot be read, or dst cannot be created/written
+	 */
+	public static void copyFile(File src, File dst) throws IOException { 
+		InputStream in = null; 
+		OutputStream out = null;
+		
+		try {
+			in = new FileInputStream(src);
+			out = new FileOutputStream(dst);
+			byte[] buf = new byte[1024]; 
+			int len; 
+			while ((len = in.read(buf)) > 0) { 
+				out.write(buf, 0, len); 
+			} 
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.close();
+			}
 		}
 	}
     
