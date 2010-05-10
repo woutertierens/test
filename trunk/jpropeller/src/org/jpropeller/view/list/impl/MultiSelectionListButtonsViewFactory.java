@@ -17,6 +17,7 @@ import org.jpropeller.util.Target;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 import org.jpropeller.view.impl.CompositeView;
+import org.jpropeller.view.list.impl.ListButtonsViewFactory.ButtonsViewLayout;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -42,7 +43,7 @@ public class MultiSelectionListButtonsViewFactory {
 			Prop<? extends CList<T>> list,
 			Prop<? extends CCollection<Integer>> selection,
 			Source<T> source) {
-		return makeView(list, selection, source, null, true, false);
+		return makeView(list, selection, source, null, true, ButtonsViewLayout.HORIZONTAL);
 	}
 	
 	/**
@@ -60,7 +61,7 @@ public class MultiSelectionListButtonsViewFactory {
 			Prop<? extends CList<T>> list,
 			Prop<? extends CCollection<Integer>> selection,
 			Source<T> source, Target<T> target) {
-		return makeView(list, selection, source, target, true, false);
+		return makeView(list, selection, source, target, true, ButtonsViewLayout.HORIZONTAL);
 	}
 	
 	/**
@@ -73,13 +74,13 @@ public class MultiSelectionListButtonsViewFactory {
 	 * @param source 		The source of new elements to add to the list
 	 * @param target 		The target to which to put elements removed from the list 
 	 * @param textLabels	True to show text on buttons
-	 * @param squareLayout	True to layout in a square, false to use a horizontal line
+	 * @param layout		{@link ButtonsViewLayout} for this view
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(
 			Prop<? extends CList<T>> list,
 			Prop<? extends CCollection<Integer>> selection,
-			Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout) {
+			Source<T> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout) {
 
 		//Keep list of all views
 		List<View> views = new LinkedList<View>();
@@ -89,10 +90,10 @@ public class MultiSelectionListButtonsViewFactory {
 		MultiSelectionListDeleteAction<T> deleteAction = MultiSelectionListDeleteAction.create(list, selection, target);
 		MultiSelectionListAddAction<T> addAction = MultiSelectionListAddAction.create(list, selection, source);
 		
+		views.add(addAction);
+		views.add(deleteAction);
 		views.add(moveUpAction);
 		views.add(moveDownAction);
-		views.add(deleteAction);
-		views.add(addAction);
 		
 		JButton moveUp = new JButton(moveUpAction);
 		JButton moveDown = new JButton(moveDownAction);
@@ -108,26 +109,28 @@ public class MultiSelectionListButtonsViewFactory {
 		
 		JPanel panel;
 		
-		if (!textLabels) {
+		if (layout == ButtonsViewLayout.HORIZONTAL) {
 			panel = new JPanel(new GridLayout(1, 4, 3, 3));
-			panel.add(moveUp);
-			panel.add(moveDown);
-			panel.add(add);
-			panel.add(delete);
 		} else {
-			FormLayout layout = new FormLayout("fill:0dlu:grow, pref, $lcgap, pref, $lcgap, pref, $lcgap, pref, fill:0dlu:grow");
-			layout.setColumnGroups(new int[][]{{2,4,6,8}});
-			DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-			builder.nextColumn();
-			builder.append(moveUp);
-			builder.append(moveDown);
-			builder.append(add);
-			builder.append(delete);
-			panel = builder.getPanel();
+			panel = new JPanel(new GridLayout(4, 1, 3, 3));
 		}
+		
+		panel.add(add);
+		panel.add(delete);
+		panel.add(moveUp);
+		panel.add(moveDown);
 		
 		panel.setOpaque(false);
 		
+		if (layout == ButtonsViewLayout.HORIZONTAL && textLabels) {
+			FormLayout formLayout = new FormLayout("fill:0dlu:grow, pref, fill:0dlu:grow");
+			DefaultFormBuilder builder = new DefaultFormBuilder(formLayout);
+			builder.nextColumn();
+			builder.append(panel);
+			panel = builder.getPanel();
+			panel.setOpaque(false);
+		}		
+
 		return new CompositeView<JComponent>(views, panel, false);
 		
 	}

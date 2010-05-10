@@ -29,6 +29,20 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ListButtonsViewFactory {
 
 	/**
+	 * Layouts for buttons
+	 */
+	public enum ButtonsViewLayout {
+		/**
+		 * Buttons horizontal
+		 */
+		HORIZONTAL,
+		/**
+		 * Buttons vertical
+		 */
+		VERTICAL
+	}
+	
+	/**
 	 * Make a {@link JView} for {@link CList}s
 	 * 
 	 * @param <T>			The type of list contents
@@ -38,7 +52,7 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source) {
-		return makeView(model, source, null, true, false);
+		return makeView(model, source, null, true, ButtonsViewLayout.HORIZONTAL);
 	}
 	
 	/**
@@ -53,7 +67,7 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Prop<Boolean> locked) {
-		return makeView(model, source, null, true, false, locked);
+		return makeView(model, source, null, true, ButtonsViewLayout.HORIZONTAL, locked);
 	}
 	
 	/**
@@ -67,7 +81,7 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target) {
-		return makeView(model, source, target, true, false);
+		return makeView(model, source, target, true, ButtonsViewLayout.HORIZONTAL);
 	}
 	
 	/**
@@ -83,7 +97,7 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, Prop<Boolean> locked) {
-		return makeView(model, source, target, true, false, locked);
+		return makeView(model, source, target, true, ButtonsViewLayout.HORIZONTAL, locked);
 	}
 	
 	/**
@@ -95,11 +109,11 @@ public class ListButtonsViewFactory {
 	 * @param source 		The source of new elements to add to the list
 	 * @param target 		The target to which to put elements removed from the list 
 	 * @param textLabels	True to show text on buttons
-	 * @param squareLayout	True to layout in a square, false to use a horizontal line
+	 * @param layout		{@link ButtonsViewLayout} for this view
 	 * @return 				The view
 	 */
-	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout) {
-		return makeView(model, source, target, textLabels, squareLayout, null);
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout) {
+		return makeView(model, source, target, textLabels, layout, null);
 	}
 	
 	/**
@@ -111,12 +125,45 @@ public class ListButtonsViewFactory {
 	 * @param source 		The source of new elements to add to the list
 	 * @param target 		The target to which to put elements removed from the list 
 	 * @param textLabels	True to show text on buttons
-	 * @param squareLayout	True to layout in a square, false to use a horizontal line
+	 * @return 				The view
+	 */
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels) {
+		return makeView(model, source, target, textLabels, ButtonsViewLayout.HORIZONTAL, null);
+	}
+	
+//	/**
+//	 * Make a {@link JView} for {@link CList}s
+//	 * 
+//	 * @param <T>			The type of list contents
+//	 * 
+//	 * @param model 		The model to be viewed
+//	 * @param source 		The source of new elements to add to the list
+//	 * @param target 		The target to which to put elements removed from the list 
+//	 * @param textLabels	True to show text on buttons
+//	 * @param squareLayout	True to layout in a square, false to use a horizontal line
+//	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+//	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+//	 * @return 				The view
+//	 */
+//	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout, Prop<Boolean> locked) {
+//		return makeView(model, source, target, textLabels, squareLayout, locked);
+//	}
+	
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list
+	 * @param target 		The target to which to put elements removed from the list 
+	 * @param textLabels	True to show text on buttons
+	 * @param layout		{@link ButtonsViewLayout} for this view
 	 * @param locked		{@link Prop} that controls editing - when true, buttons are
 	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
 	 * @return 				The view
 	 */
-	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout, Prop<Boolean> locked) {
+	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout, Prop<Boolean> locked) {
 
 		//Keep list of all views
 		List<View> views = new LinkedList<View>();
@@ -145,25 +192,25 @@ public class ListButtonsViewFactory {
 		
 		JPanel panel;
 		
-		if (!textLabels) {
+		if (layout == ButtonsViewLayout.HORIZONTAL) {
 			panel = new JPanel(new GridLayout(1, 4, 3, 3));
-			panel.add(moveUp);
-			panel.add(moveDown);
-			panel.add(add);
-			panel.add(delete);
 		} else {
-			FormLayout layout = new FormLayout("fill:0dlu:grow, pref, $lcgap, pref, $lcgap, pref, $lcgap, pref, fill:0dlu:grow");
-			layout.setColumnGroups(new int[][]{{2,4,6,8}});
-			DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-			builder.nextColumn();
-			builder.append(moveUp);
-			builder.append(moveDown);
-			builder.append(add);
-			builder.append(delete);
-			panel = builder.getPanel();
+			panel = new JPanel(new GridLayout(4, 1, 3, 3));
 		}
-		
+		panel.add(add);
+		panel.add(delete);
+		panel.add(moveUp);
+		panel.add(moveDown);
 		panel.setOpaque(false);
+
+		if (layout == ButtonsViewLayout.HORIZONTAL && textLabels) {
+			FormLayout formLayout = new FormLayout("fill:0dlu:grow, pref, fill:0dlu:grow");
+			DefaultFormBuilder builder = new DefaultFormBuilder(formLayout);
+			builder.nextColumn();
+			builder.append(panel);
+			panel = builder.getPanel();
+			panel.setOpaque(false);
+		}		
 		
 		return new CompositeView<JComponent>(views, panel, false);
 		
