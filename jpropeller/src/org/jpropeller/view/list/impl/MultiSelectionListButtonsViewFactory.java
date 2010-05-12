@@ -88,9 +88,14 @@ public class MultiSelectionListButtonsViewFactory {
 		MultiSelectionListMoveAction<T> moveUpAction = MultiSelectionListMoveAction.createUpAction(list, selection);
 		MultiSelectionListMoveAction<T> moveDownAction = MultiSelectionListMoveAction.createDownAction(list, selection);
 		MultiSelectionListDeleteAction<T> deleteAction = MultiSelectionListDeleteAction.create(list, selection, target);
-		MultiSelectionListAddAction<T> addAction = MultiSelectionListAddAction.create(list, selection, source);
+
+		JButton add = null;
+		if (source != null) {
+			MultiSelectionListAddAction<T> addAction = MultiSelectionListAddAction.create(list, selection, source);
+			views.add(addAction);
+			add = new JButton(addAction);
+		}
 		
-		views.add(addAction);
 		views.add(deleteAction);
 		views.add(moveUpAction);
 		views.add(moveDownAction);
@@ -98,13 +103,14 @@ public class MultiSelectionListButtonsViewFactory {
 		JButton moveUp = new JButton(moveUpAction);
 		JButton moveDown = new JButton(moveDownAction);
 		JButton delete = new JButton(deleteAction);
-		JButton add = new JButton(addAction);
 		
 		if (!textLabels) {
 			shrinkButton(moveUp);
 			shrinkButton(moveDown);
 			shrinkButton(delete);
-			shrinkButton(add);
+			if (source != null) {
+				shrinkButton(add);
+			}
 		}
 		
 		JPanel panel;
@@ -115,7 +121,9 @@ public class MultiSelectionListButtonsViewFactory {
 			panel = new JPanel(new GridLayout(4, 1, 3, 3));
 		}
 		
-		panel.add(add);
+		if (source != null) {
+			panel.add(add);
+		}
 		panel.add(delete);
 		panel.add(moveUp);
 		panel.add(moveDown);
