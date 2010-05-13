@@ -131,31 +131,14 @@ public class ListButtonsViewFactory {
 		return makeView(model, source, target, textLabels, ButtonsViewLayout.HORIZONTAL, null);
 	}
 	
-//	/**
-//	 * Make a {@link JView} for {@link CList}s
-//	 * 
-//	 * @param <T>			The type of list contents
-//	 * 
-//	 * @param model 		The model to be viewed
-//	 * @param source 		The source of new elements to add to the list
-//	 * @param target 		The target to which to put elements removed from the list 
-//	 * @param textLabels	True to show text on buttons
-//	 * @param squareLayout	True to layout in a square, false to use a horizontal line
-//	 * @param locked		{@link Prop} that controls editing - when true, buttons are
-//	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
-//	 * @return 				The view
-//	 */
-//	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, boolean squareLayout, Prop<Boolean> locked) {
-//		return makeView(model, source, target, textLabels, squareLayout, locked);
-//	}
-	
 	/**
 	 * Make a {@link JView} for {@link CList}s
 	 * 
 	 * @param <T>			The type of list contents
 	 * 
 	 * @param model 		The model to be viewed
-	 * @param source 		The source of new elements to add to the list
+	 * @param source 		The source of new elements to add to the list, or null to have
+	 * 						no add button
 	 * @param target 		The target to which to put elements removed from the list 
 	 * @param textLabels	True to show text on buttons
 	 * @param layout		{@link ButtonsViewLayout} for this view
@@ -171,23 +154,29 @@ public class ListButtonsViewFactory {
 		ListMoveAction<T> moveUpAction = ListMoveAction.createUpAction(model, locked);
 		ListMoveAction<T> moveDownAction = ListMoveAction.createDownAction(model, locked);
 		ListDeleteAction<T> deleteAction = ListDeleteAction.create(model, target, locked);
-		ListAddAction<T> addAction = ListAddAction.create(model, source, locked);
 		
 		views.add(moveUpAction);
 		views.add(moveDownAction);
 		views.add(deleteAction);
-		views.add(addAction);
-		
+
 		JButton moveUp = new JButton(moveUpAction);
 		JButton moveDown = new JButton(moveDownAction);
 		JButton delete = new JButton(deleteAction);
-		JButton add = new JButton(addAction);
+
+		JButton add = null;
+		if (source != null) {
+			ListAddAction<T> addAction = ListAddAction.create(model, source, locked);
+			views.add(addAction);
+			add = new JButton(addAction);
+		}
 		
 		if (!textLabels) {
 			shrinkButton(moveUp);
 			shrinkButton(moveDown);
 			shrinkButton(delete);
-			shrinkButton(add);
+			if (add != null) {
+				shrinkButton(add);
+			}
 		}
 		
 		JPanel panel;
@@ -197,7 +186,9 @@ public class ListButtonsViewFactory {
 		} else {
 			panel = new JPanel(new GridLayout(4, 1, 3, 3));
 		}
-		panel.add(add);
+		if (add != null) {
+			panel.add(add);
+		}
 		panel.add(delete);
 		panel.add(moveUp);
 		panel.add(moveDown);
