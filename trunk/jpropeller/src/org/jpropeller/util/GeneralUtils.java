@@ -344,4 +344,22 @@ public class GeneralUtils {
 		}
 	}
     
+	/**
+	 * Return a value limited to be not less than a min 
+	 * and not more than a max 
+	 * @param value		The value
+	 * @param min		The minimum acceptable value
+	 * @param max		The maximum acceptable value
+	 * @return			The value, limited to lie in range
+	 */
+	public static int limit(int value, int min, int max) {
+		if (value < min) {
+			value = min;
+		}
+		if (value > max) {
+			value = max;
+		}
+		return value;
+	}
+	
 }
