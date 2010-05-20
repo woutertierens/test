@@ -10,6 +10,7 @@ import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.maplist.impl.MapListTableModelColumnOrder;
 import org.jpropeller.view.table.impl.TableRowViewDirect;
 
@@ -84,7 +85,7 @@ public class MapListColumnOrderDemo {
 		
 		System.out.println("Rows x columns: " + tableModel.getRowCount() + ", " + tableModel.getColumnCount());
 		
-		JTable table = new JTable(tableModel);
+		JTable table = new JTableImproved(tableModel);
 		
 		JScrollPane scroll = new JScrollPane(table);
 		

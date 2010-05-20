@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.table.columns.ColumnInfo;
 import org.jpropeller.view.table.columns.ColumnLayout;
 import org.jpropeller.view.table.columns.impl.ColumnInfoDefault;
@@ -42,7 +43,7 @@ public class ColumnLayoutDemo {
 		final DefaultTableModel model = new DefaultTableModel(3, 3);
 		
 		final DefaultTableColumnModel cm = new DefaultTableColumnModel();
-		final JTable table = new JTable(model, cm);
+		final JTable table = new JTableImproved(model, cm);
 		JScrollPane scroll = new JScrollPane(table);
 
 		new ColumnUpdater(model, cm, new ColumnLayoutSizing());

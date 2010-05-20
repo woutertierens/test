@@ -10,6 +10,7 @@ import org.jpropeller.collection.CList;
 import org.jpropeller.collection.CMap;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.maplist.impl.MapListTableModelRowOrder;
 import org.jpropeller.view.table.impl.TableRowViewDirect;
 
@@ -82,7 +83,7 @@ public class MapListRowOrderDemo {
 					m.map(), m.keys(), 
 					new TableRowViewDirect<String>(String.class, "String"));
 		
-		JTable table = new JTable(tableModel);
+		JTable table = new JTableImproved(tableModel);
 		
 		JScrollPane scroll = new JScrollPane(table);
 		
