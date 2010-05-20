@@ -4,6 +4,8 @@ import java.awt.Color;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -96,5 +98,36 @@ public class JTableImproved extends JTable {
 
 		//Set sensible row height
 		setRowHeight(26);
+		
+		//Thank you again Sun. Thank you for valuing 10 year old applications written
+		//by idiots who rely on detailed broken implementations above poor honest
+		//coders just trying to get the CURRENT version to actually WORK. Gee, I wonder
+		//why you got bought out?
+		//Please see Sun/Oracle/Whoever's bug parade of shame, entry number 4709394 of billions,
+		//where the evaluation mentions this little hidden gem of a property. Followed by
+		//a bitter discussion of why it should be on by default.
+		putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+		
+		//FIXME if Sun ever fix bug 4330950 (edits lost when going from editing to
+		//clicking a column header), and they do it with a similar optional "fix", then
+		//after finishing swearing, enable that fix here as well, and get rid of the 
+		//overrides on columnMoved and columnMarginChanged
 	}
+	
+	//Workaround for bug 4330950, stops editing before starting to move column
+    public void columnMoved(TableColumnModelEvent e) {
+        if (isEditing()) {
+            cellEditor.stopCellEditing();
+        }
+        super.columnMoved(e);
+    }
+
+	//Workaround for bug 4330950, stops editing before starting to change column
+    public void columnMarginChanged(ChangeEvent e) {
+        if (isEditing()) {
+            cellEditor.stopCellEditing();
+        }
+        super.columnMarginChanged(e);
+    }
+
 }

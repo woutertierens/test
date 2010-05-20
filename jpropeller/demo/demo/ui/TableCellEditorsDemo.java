@@ -6,6 +6,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.ui.impl.NumberCellEditor;
 import org.jpropeller.ui.impl.SelectingTextCellEditor;
 
@@ -35,7 +36,7 @@ public class TableCellEditorsDemo {
 		tm.setValueAt("Test", 0, 4);
 		tm.setColumnIdentifiers(new String[]{"Double", "Long", "Float", "Integer", "String"});
 		
-		JTable table = new JTable(tm);
+		JTable table = new JTableImproved(tm);
 		
 		table.setDefaultEditor(Double.class, 	NumberCellEditor.doubleEditor());
 		table.setDefaultEditor(Float.class, 	NumberCellEditor.floatEditor());
