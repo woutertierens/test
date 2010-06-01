@@ -57,6 +57,33 @@ public class ComponentDialog extends JDialog {
 	
 	/**
 	 * Make a modal {@link ComponentDialog} showing a message,
+	 * and a progress bar
+	 * @param owner		The owner of this dialog
+	 * @param title		The title of this dialog
+	 * @param message	The message to display
+	 * @param progressBar	The {@link JProgressBar} to display
+	 * @return			A new dialog
+	 */
+	public static ComponentDialog createProgressDialog(Frame owner, String title, String message, JProgressBar progressBar) {
+		JLabel label = new JLabel(message);
+		
+		FormLayout layout = new FormLayout(
+				"fill:500px:grow",
+				"pref, 3dlu, fill:pref:grow"
+				);
+		DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+		builder.setDefaultDialogBorder();
+		
+		builder.append(progressBar);
+		builder.nextRow();
+		builder.append(label);
+		JPanel panel = builder.getPanel();
+		
+		return new ComponentDialog(panel, owner, title, true, false);
+	}
+	
+	/**
+	 * Make a modal {@link ComponentDialog} showing a message,
 	 * and a busy indicator (indeterminate progress bar),
 	 * with title "Busy..."
 	 * @param owner		The owner of this dialog
@@ -83,6 +110,19 @@ public class ComponentDialog extends JDialog {
 		JPanel panel = builder.getPanel();
 		
 		return new ComponentDialog(panel, owner, title, true, false);
+	}
+	
+	/**
+	 * Make a modal {@link ComponentDialog} showing a message,
+	 * and a busy indicator (indeterminate progress bar),
+	 * with title "Busy..."
+	 * @param owner		The owner of this dialog
+	 * @param title		The title of this dialog
+	 * @param component	The {@link Component} to display
+	 * @return			A new dialog
+	 */
+	public static ComponentDialog createComponentDialog(Frame owner, String title, Component component) {
+		return new ComponentDialog(component, owner, title, true, false);
 	}
 	
 	/**

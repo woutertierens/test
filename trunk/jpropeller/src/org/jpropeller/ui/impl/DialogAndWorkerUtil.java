@@ -1,5 +1,6 @@
 package org.jpropeller.ui.impl;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -118,4 +119,20 @@ public class DialogAndWorkerUtil {
 		dialogWhileWorking(busyDialog, worker);
 	}
 	
+	/**
+	 * MUST BE CALLED FROM EDT, Swing Thread
+	 * <br />
+	 * Execute a {@link SwingWorker}, while a modal dialog displays a given component,
+	 * then hide the dialog when the worker is complete
+	 * @param owner		The owner for the dialog
+	 * @param title		The title for the dialog
+	 * @param component	The {@link Component} to display in the dialog
+	 * @param worker	The worker to execute, while the dialog
+	 * 					is displayed.
+	 */
+	public static void componentDialogWhileWorking(Frame owner, String title, Component component, final SwingWorker<?, ?> worker) {
+		final ComponentDialog dialog = ComponentDialog.createComponentDialog(owner, title, component);
+		dialog.setLocationRelativeTo(owner);
+		dialogWhileWorking(dialog, worker);
+	}
 }
