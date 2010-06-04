@@ -169,7 +169,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, Prop<Boolean> locked) {
-		return new BeanEditor<M>(model, new PropViewFactoryEditable(), locked);
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), locked);
 	}
 	
 	@Override
