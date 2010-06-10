@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
@@ -35,6 +36,7 @@ public class LabelPropView<T> implements JView, UpdatableSingleValueView<Bean> {
 		this.model = model;
 		this.displayedName = displayedName;
 		label = new JLabel();
+		label.setBorder(new EmptyBorder(5, 6, 5, 0));
 
 		//Ignore locking, since we do not ever edit
 		help = new PropViewHelp<Bean, T>(this, displayedName, null);
