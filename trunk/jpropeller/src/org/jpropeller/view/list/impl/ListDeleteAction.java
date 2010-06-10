@@ -174,6 +174,14 @@ public class ListDeleteAction<T> extends AbstractAction implements ChangeListene
 		return create(reference, target, null);
 	}
 
+	/**
+	 * Get the default "delete" icon
+	 * @return	{@link Icon}
+	 */
+	public static Icon defaultIcon() {
+		return ICON;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
