@@ -41,6 +41,7 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	private final SpinnerNumberModel numberModel;
 	private final NumberConverter<T> converter;
 	private final Prop<T> model;
+	private final Prop<Boolean> locked;
 	
 	/**
 	 * Original default bg colour for spinner
@@ -61,6 +62,22 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	 */
 	public NumberPropSpinnerEditor(final Prop<T> model, 
 			SpinnerNumberModel numberModel, NumberConverter<T> converter) {
+		this(model, numberModel, converter, null);
+	}
+
+	/**
+	 * Create a {@link NumberPropSpinnerEditor}
+	 * @param model			The model for this {@link View} 
+	 * @param numberModel	The number model for the spinner. 
+	 * 						Please do not use this number model except to pass it 
+	 * 						to this constructor.
+	 * @param converter Converter to move from {@link Number} to T and back
+	 * @param locked	While this {@link Prop} is true, editor 
+	 * 					will not make changes to model
+	 */
+	public NumberPropSpinnerEditor(final Prop<T> model, 
+			SpinnerNumberModel numberModel, NumberConverter<T> converter, Prop<Boolean> locked) {
+
 		super();
 		this.model = model;
 		this.numberModel = numberModel;
@@ -71,6 +88,11 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 		
 		model.features().addListener(this);
 		
+		this.locked = locked;
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+
 		//Make a spinner that will behave properly on lost focus
 		spinner = new JSpinner(numberModel);
 		defaultBackground = spinner.getBackground();
@@ -81,7 +103,7 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 				commit();
 			}
 		});
-		
+				
 		//Start out up to date
 		update();
 	}
@@ -89,6 +111,9 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	@Override
 	public void dispose() {
 		model.features().removeListener(this);
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
 		updateManager.deregisterUpdatable(this);
 	}
 
@@ -170,6 +195,9 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 			
 			spinner.setValue(converter.toNumber(value));
 		}
+		
+		spinner.setEnabled(!Props.isTrue(locked));
+
 	}
 	
 	private void applyFocusFix(final JSpinner spinner) {
