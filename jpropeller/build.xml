@@ -21,9 +21,6 @@
         <delete dir="${build.dir}"/>
     </target>
 
-	<!-- FIXME define classpath -->
-	
-	
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
         <javac source="1.6" target="1.6" debug="No" srcdir="${src.dir}" destdir="${classes.dir}">
