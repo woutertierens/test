@@ -1,136 +1,56 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="jpropeller">
-    <property environment="env"/>
-    <property name="jpropeller-demo.location" value="../jpropeller-demo"/>
-    <property name="jpropeller-persistence.location" value="../jpropeller-persistence"/>
-    <property name="pcr-propeller-java.location" value="../pcr-propeller-java"/>
-    <property name="jpropeller-tango-icons.location" value="../jpropeller-tango-icons"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
-    <property name="source" value="1.6"/>
-    <path id="JUnit 4.libraryclasspath">
-        <pathelement location="../../eclipse/plugins/org.junit4_4.3.1/junit.jar"/>
+<project 
+	name="jpropeller" 
+	basedir="." default="main">
+
+	<property name="project.name"		value="jpropeller"/>
+	
+    <property name="src.dir"		value="src"/>
+    <property name="build.dir"		value="ant-build"/>
+    <property name="jarextras.dir"	value="jarextras"/>
+    <property name="classes.dir"	value="${build.dir}/classes"/>
+    <property name="jar.dir"		value="${build.dir}/jar"/>
+    <property name="lib.dir"		value="lib"/>
+    <property name="jar.name"		value="${project.name}"/>
+	
+    <path id="classpath">
+		<pathelement location="lib/forms-1.2.1.jar"/>
+		<pathelement location="lib/joda-time-1.6.jar"/>
     </path>
-    <path id="jpropeller-tango-icons.classpath">
-        <pathelement location="${jpropeller-tango-icons.location}/bin"/>
-        <pathelement location="${jpropeller-tango-icons.location}/lib/tango-icon-theme-0.8.1.jar"/>
-    </path>
-    <path id="jpropeller.classpath">
-        <pathelement location="bin"/>
-        <path refid="JUnit 4.libraryclasspath"/>
-        <pathelement location="lib/forms-1.2.1.jar"/>
-        <pathelement location="lib/joda-time-1.6.jar"/>
-        <path refid="jpropeller-tango-icons.classpath"/>
-    </path>
-    <target name="init">
-        <mkdir dir="bin"/>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="testclasses" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="testtemp" excludes="**/*.launch, **/*.java"/>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="demo" excludes="**/*.launch, **/*.java"/>
-        </copy>
-    </target>
+	
     <target name="clean">
-        <delete dir="bin"/>
+        <delete dir="${build.dir}"/>
     </target>
-    <target depends="clean" name="cleanall">
-        <ant antfile="${jpropeller-tango-icons.location}/build.xml" inheritAll="false" target="clean"/>
-    </target>
-    <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects">
-        <ant antfile="${jpropeller-tango-icons.location}/build.xml" inheritAll="false" target="build-project">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
-    </target>
-    <target depends="init" name="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="src"/>
-            <classpath refid="jpropeller.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="testclasses"/>
-            <classpath refid="jpropeller.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="testtemp"/>
-            <classpath refid="jpropeller.classpath"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="demo"/>
-            <classpath refid="jpropeller.classpath"/>
+
+	<!-- FIXME define classpath -->
+	
+	
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac source="1.6" target="1.6" debug="No" srcdir="${src.dir}" destdir="${classes.dir}">
+			<classpath refid="classpath"/>
         </javac>
     </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
-        <ant antfile="${jpropeller-demo.location}/build.xml" inheritAll="false" target="clean"/>
-        <ant antfile="${jpropeller-demo.location}/build.xml" inheritAll="false" target="build">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
-        <ant antfile="${jpropeller-persistence.location}/build.xml" inheritAll="false" target="clean"/>
-        <ant antfile="${jpropeller-persistence.location}/build.xml" inheritAll="false" target="build">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
-        <ant antfile="${pcr-propeller-java.location}/build.xml" inheritAll="false" target="clean"/>
-        <ant antfile="${pcr-propeller-java.location}/build.xml" inheritAll="false" target="build">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${jar.name}.jar" basedir="${classes.dir}">
+
+        	<fileset dir="${classes.dir}"/>
+        	
+        	<!-- Get resources from source -->
+        	<fileset dir="${src.dir}" includes="**/*.png **/*.gif **/*.bmp **/*.properties"/>
+
+        	<!-- Any project-specific extra jar contents - if there is no directory, just ignore -->
+        	<fileset erroronmissingdir="No" dir="${jarextras.dir}"/>
+        	
+            <!--<manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>-->
+        </jar>
     </target>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
-    </target>
-    <target name="BackgroundCalculationBean">
-        <java classname="demo.properties.calculated.BackgroundCalculationBean" failonerror="true" fork="yes">
-            <classpath refid="jpropeller.classpath"/>
-        </java>
-    </target>
-    <target name="AdditionBean">
-        <java classname="demo.properties.calculated.AdditionBean" failonerror="true" fork="yes">
-            <classpath refid="jpropeller.classpath"/>
-        </java>
-    </target>
-    <target name="TabsDemo">
-        <java classname="demo.view.TabsDemo" failonerror="true" fork="yes">
-            <classpath refid="jpropeller.classpath"/>
-        </java>
-    </target>
-    <target name="BeanViewDemo">
-        <java classname="demo.view.BeanViewDemo" failonerror="true" fork="yes">
-            <classpath refid="jpropeller.classpath"/>
-        </java>
-    </target>
-    <target name="SimpleParentBean">
-        <java classname="demo.simple.SimpleParentBean" failonerror="true" fork="yes">
-            <classpath refid="jpropeller.classpath"/>
-        </java>
-    </target>
+
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="jar"/>
+
 </project>
