@@ -24,6 +24,63 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 	private static final Map<Class<?>, PropViewFactory> defaultViews;
 
 	/**
+	 * Default editor.
+	 */
+	public static final PropViewFactory intFactory = new PropViewFactory(){
+//		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName) {
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return LabelPropView.createOneBasedDisplayInteger(model, (PropName<Integer>) displayedName);
+//			} else {
+			return LabelPropView.create(model, displayedName);
+		}
+
+		@Override
+		public boolean providesFor(PropName<?> displayedName) {
+			return !displayedName.isTGeneric() && displayedName.getPropClass() == Integer.class;
+		}
+		
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			//Same view - labels never edit 
+			return viewFor(model, displayedName);
+		}
+
+	};
+
+	/**
+	 * Default editor.
+	 */
+	public static final PropViewFactory longFactory = new PropViewFactory(){
+//		@SuppressWarnings("unchecked")
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName) {
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return LabelPropView.createOneBasedDisplayLong(model, (PropName<Long>) displayedName);
+//			} else {
+			return LabelPropView.create(model, displayedName);
+		}
+
+		@Override
+		public boolean providesFor(PropName<?> displayedName) {
+			return !displayedName.isTGeneric() && displayedName.getPropClass() == Long.class;
+		}
+		
+		@Override
+		public <M> JView viewFor(Reference<? extends Bean> model,
+				PropName<M> displayedName, Prop<Boolean> locked) {
+			//Same view - labels never edit 
+			return viewFor(model, displayedName);
+		}
+
+	};
+
+	
+	/**
 	 * Label editor factor.
 	 */
 	public static final PropViewFactory labelFactory = new PropViewFactory(){
@@ -125,9 +182,9 @@ public class PropViewFactoryReadOnly implements PropViewFactory {
 		defaultViews = new HashMap<Class<?>, PropViewFactory>();
 		
 		defaultViews.put(Double.class, labelFactory);
-		defaultViews.put(Long.class, labelFactory);
+		defaultViews.put(Long.class, longFactory);
 		defaultViews.put(Float.class, labelFactory);
-		defaultViews.put(Integer.class, labelFactory);
+		defaultViews.put(Integer.class, intFactory);
 		
 		defaultViews.put(String.class, labelFactory);
 		
