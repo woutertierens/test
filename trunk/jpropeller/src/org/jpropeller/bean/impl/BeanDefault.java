@@ -124,6 +124,10 @@ public abstract class BeanDefault implements Bean {
 		return features.create(clazz, name, value);
 	}
 
+	protected <S extends Changeable> Prop<S> createChangeableProp(Class<S> clazz, String name,
+			S value) {
+		return features.create(clazz, name, value);
+	}
 	protected Prop<Byte> create(String name, Byte value,
 			ValueProcessor<Byte> processor) {
 		return features.create(name, value, processor);
