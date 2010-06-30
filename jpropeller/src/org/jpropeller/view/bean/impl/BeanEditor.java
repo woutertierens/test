@@ -1,6 +1,7 @@
 package org.jpropeller.view.bean.impl;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,11 +75,18 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	
 	private final Prop<Boolean> locked;
 	
+	private final List<String> displayNames;
+
 	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked) {
+		this(model, factory, locked, null);
+	}
+	
+	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked, List<String> displayNames) {
 		super();
 		this.model = model;
 		this.factory = factory;
 		this.locked = locked;
+		this.displayNames = displayNames;
 		
 		panel = new JPanel(new BorderLayout());
 		
@@ -104,6 +112,24 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	public static <M extends Bean> BeanEditor<M> create(Prop<M> value, PropViewFactory factory) {
 		return new BeanEditor<M>(ReferenceDefault.create(value), factory, null);
 	}
+	
+	/**
+	 * Make a new editor with default prop view factory, displaying only selected prop names
+	 * from beans
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param model 	The model containing the bean
+	 * @param displayNames	The string values of names of props to display, in order.
+	 * 						If this is null, all normally visible props will be displayed
+	 * 						in the order they are defined in the bean.
+	 * 						Note that this constructor makes a copy of the list, so that
+	 * 						changes to it will not be reflected in this editor.
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, List<String> displayNames) {
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null, new ArrayList<String>(displayNames));
+	}
+
 	
 	/**
 	 * Make a new editor with default prop view factory
@@ -287,13 +313,37 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		//Find the non-generic names of the new model
 		List<PropName<?>> newViewNameList = new LinkedList<PropName<?>>();
 		List<PropEditability> newViewEditabilityList = new LinkedList<PropEditability>();
+		
 		if (newModel != null) {
-			for (Prop<?> prop : newModel.features()) {
-				PropName<?> name = prop.getName();
-				if (!name.isTGeneric() && !prop.features().hasMetadata(NO_DISPLAY)) {
-					newViewNameList.add(name);
-					newViewEditabilityList.add(prop.getEditability());					
+			
+			//Build new lists directly from bean
+			if (displayNames == null) {
+				for (Prop<?> prop : newModel.features()) {
+					PropName<?> name = prop.getName();
+					if (!name.isTGeneric() && !prop.features().hasMetadata(NO_DISPLAY)) {
+						newViewNameList.add(name);
+						newViewEditabilityList.add(prop.getEditability());					
+					}
 				}
+				
+			//Build new lists from displayNames list
+			} else {
+				Map<String, Prop<?>> stringToProp = new HashMap<String, Prop<?>>();
+				for (Prop<?> prop : newModel.features()) {
+					PropName<?> name = prop.getName();
+					if (!name.isTGeneric()) {
+						stringToProp.put(name.getString(), prop);
+					}
+				}
+				for (String stringName : displayNames) {
+					Prop<?> prop = stringToProp.get(stringName);
+					if (prop != null) {
+						PropName<?> name = prop.getName();
+						newViewNameList.add(name);
+						newViewEditabilityList.add(prop.getEditability());
+					}
+				}
+				
 			}
 		}
 

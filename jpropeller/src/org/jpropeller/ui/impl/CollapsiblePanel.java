@@ -7,21 +7,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 
 import org.jpropeller.ui.IconFactory.IconSize;
-import org.jpropeller.ui.external.SimpleInternalFrame;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.Views;
-
-import com.jgoodies.forms.factories.Borders;
 
 /**
  * Displays a contents {@link JPanel} so that it can be
@@ -107,22 +102,20 @@ public class CollapsiblePanel {
 		GeneralUtils.enableNimbus();
 		
 		JFrame frame = new JFrame("Test");
+
+		JPanel mainPanel = new JPanel();
+		//mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
-		SimpleInternalFrame sif = new SimpleInternalFrame("Test application");
+		for (int i = 0; i < 10; i++) {
+			CollapsiblePanel collapsible = new CollapsiblePanel("Test panel " + i);
+			collapsible.contents().add(new JLabel("Test Panel " + i + " Contents"));
+			mainPanel.add(collapsible.main());
+		}		
 		
-		CollapsiblePanel holder = new CollapsiblePanel("Test panel 1");
-		holder.contents().setLayout(new BoxLayout(holder.contents(), BoxLayout.PAGE_AXIS));
-		holder.contents().add(new JLabel("Hello"));
-		holder.contents().add(new JLabel("Hello"));
-		holder.contents().add(new JLabel("Hello"));
-		holder.contents().add(new JLabel("Hello"));
-		
-		holder.main().setBorder(Borders.DIALOG_BORDER);
-		
-		sif.add(new JScrollPane(holder.main()));
-		frame.getContentPane().add(sif);
+		frame.getContentPane().add(mainPanel);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
 		frame.setVisible(true);
 	}
 
