@@ -58,7 +58,10 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
-			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName, null);
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return NumberSpinnerEditor.createOneBasedDisplayInteger(model, (PropName<Integer>) displayedName, 1, null);
+//			} else {
+			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName, null);				
 		}
 
 		@Override
@@ -70,6 +73,9 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName, Prop<Boolean> locked) {
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return NumberSpinnerEditor.createOneBasedDisplayInteger(model, (PropName<Integer>) displayedName, 1, locked);
+//			} else {
 			return NumberSpinnerEditor.createInteger(model, (PropName<Integer>) displayedName, locked);
 		}
 
@@ -106,6 +112,9 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName) {
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return NumberSpinnerEditor.createOneBasedDisplayLong(model, (PropName<Long>) displayedName, 1, null);
+//			} else {
 			return NumberSpinnerEditor.createLong(model, (PropName<Long>) displayedName, null);
 		}
 
@@ -118,6 +127,9 @@ public class PropViewFactoryEditable implements PropViewFactory {
 		@Override
 		public <M> JView viewFor(Reference<? extends Bean> model,
 				PropName<M> displayedName, Prop<Boolean> locked) {
+//			if (model.features().get(displayedName).features().hasMetadata(BeanEditor.ZERO_BASED_TO_ONE_BASED_DISPLAY)) {
+//				return NumberSpinnerEditor.createOneBasedDisplayLong(model, (PropName<Long>) displayedName, 1, locked);
+//			} else {
 			return NumberSpinnerEditor.createLong(model, (PropName<Long>) displayedName, locked);
 		}
 	};

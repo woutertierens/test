@@ -44,7 +44,14 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * Metadata key to indicate props should not be displayed in this editor
 	 */
 	public final static String NO_DISPLAY = "org.jpropeller.view.bean.impl.NO_DISPLAY";
-	
+
+	/**
+	 * Metadata key to indicate Integer or Long prop should be displayed as a 1-based index,
+	 * based on a 0-based index value. That is, when displaying and/or editing the prop, 
+	 * the user should see and enter a number 1 greater than the actual value stored in the prop.
+	 */
+	//public final static String ZERO_BASED_TO_ONE_BASED_DISPLAY = "org.jpropeller.view.bean.impl.ZERO_BASED_TO_ONE_BASED_DISPLAY";
+
 	private Reference<M> model;
 	
 	private PropViewFactory factory;

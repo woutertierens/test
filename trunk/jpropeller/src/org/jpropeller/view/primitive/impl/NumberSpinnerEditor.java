@@ -19,6 +19,10 @@ import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.exception.InvalidValueException;
 import org.jpropeller.properties.exception.ReadOnlyException;
 import org.jpropeller.reference.Reference;
+import org.jpropeller.transformer.BiTransformer;
+import org.jpropeller.transformer.impl.IdentityBiTransformer;
+import org.jpropeller.transformer.impl.ZeroToOneBaseTransformer;
+import org.jpropeller.transformer.impl.ZeroToOneBaseTransformerLong;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.NumberConverter;
 import org.jpropeller.util.NumberConverterDefaults;
@@ -39,14 +43,15 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 
 	Logger logger = GeneralUtils.logger(NumberSpinnerEditor.class);
 	
-	PropViewHelp<Bean, T> help;
+	private final PropViewHelp<Bean, T> help;
 
-	Reference<? extends Bean> model;
-	PropName<T> displayedName;
+	private final Reference<? extends Bean> model;
 
-	JSpinner spinner;
-	SpinnerNumberModel numberModel;
-	NumberConverter<T> converter;
+	private final JSpinner spinner;
+	private final SpinnerNumberModel numberModel;
+	private final NumberConverter<T> converter;
+	
+	private final BiTransformer<T, T> displayTransformer;
 
 	/**
 	 * Original default bg colour for spinner
@@ -65,15 +70,50 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	 * @param converter 
 	 * 		Converter to move from {@link Number} to T and back
 	 * @param locked	If this is non-null, the view will not support
-	 * 					editing while its value is true.	 */
+	 * 					editing while its value is true.	 
+	 */
 	private NumberSpinnerEditor(Reference<? extends Bean> model,
 			PropName<T> displayedName,
-			SpinnerNumberModel numberModel, NumberConverter<T> converter, Prop<Boolean> locked) {
+			SpinnerNumberModel numberModel, NumberConverter<T> converter, 
+			Prop<Boolean> locked) {
+		this(model, displayedName, numberModel, converter, locked, null);
+	}
+	
+	/**
+	 * Create a {@link NumberSpinnerEditor}
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+	 * @param numberModel
+	 * 		The number model for the spinner. Please do not use
+	 * this number model except to pass it to this constructor.
+	 * @param converter 
+	 * 		Converter to move from {@link Number} to T and back
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	 
+	 * @param displayTransformer	The transformer used for display. The FORWARDS
+	 * 								transform, {@link BiTransformer#transform(Object)} is
+	 * 								used to convert an actual value to a displayed value,
+	 * 								and the REVERSE transform, {@link BiTransformer#transformBack(Object)}
+	 * 								is used to convert a displayed value back to an actual value.
+	 * 								This is probably most useful for converting between good, honest
+	 * 								0-based index values and the horror of 1-based indices for the user.
+	 */
+	private NumberSpinnerEditor(Reference<? extends Bean> model,
+			PropName<T> displayedName,
+			SpinnerNumberModel numberModel, NumberConverter<T> converter, 
+			Prop<Boolean> locked,
+			BiTransformer<T, T> displayTransformer) {
 		super();
 		this.model = model;
-		this.displayedName = displayedName;
 		this.numberModel = numberModel;
 		this.converter = converter;
+		if (displayTransformer != null) {
+			this.displayTransformer = displayTransformer;
+		} else {
+			this.displayTransformer = new IdentityBiTransformer<T>();
+		}
 
 		help = new PropViewHelp<Bean, T>(this, displayedName, locked);
 
@@ -141,12 +181,18 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 		}
 	}
 	
+	//Take the actual number in the spinner, and convert it to T. Then we
+	//transform this T value BACK from display to model.
+	private T currentSpinnerValueAsModelValue() {
+		return displayTransformer.transformBack(converter.toT(numberModel.getNumber()));
+	}
+	
 	@Override
 	public void commit() {
 		//If we are editing, set the new prop value
 		if (isEditing()) {
 			try {
-				help.setPropValue(converter.toT(numberModel.getNumber()));
+				help.setPropValue(currentSpinnerValueAsModelValue());
 				error(false);
 			} catch (ReadOnlyException e) {
 				error(true);
@@ -159,6 +205,8 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 		}
 	}
 
+	
+	
 	@Override
 	public boolean isEditing() {
 		T value = help.getPropValue();
@@ -169,7 +217,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 		}
 		
 		//We are editing if a commit now would do something
-		return (!converter.toT(numberModel.getNumber()).equals(value));
+		return (!currentSpinnerValueAsModelValue().equals(value));
 	}
 
 	//We need to use the raw Comparable provided by NumberModel
@@ -189,7 +237,6 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 		//If the spinner is not already showing prop value, update it
 		if (isEditing()) {
 			
-			
 			error(false);
 
 			//Can't display null values
@@ -197,16 +244,20 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 				return;
 			}
 			
+			//Convert the value to what we will actually display in the
+			//spinner
+			T displayValue = displayTransformer.transform(value);
+			
 			//Expand the range of the number model as necessary to contain the
 			//new value
-			if (numberModel.getMinimum() != null && numberModel.getMinimum().compareTo(value) > 0){
-				numberModel.setMinimum(value);
+			if (numberModel.getMinimum() != null && numberModel.getMinimum().compareTo(displayValue) > 0){
+				numberModel.setMinimum(displayValue);
 			}
-			if (numberModel.getMaximum() != null && numberModel.getMaximum().compareTo(value) < 0){
-				numberModel.setMaximum(value);
+			if (numberModel.getMaximum() != null && numberModel.getMaximum().compareTo(displayValue) < 0){
+				numberModel.setMaximum(displayValue);
 			}
 			
-			spinner.setValue(converter.toNumber(value));
+			spinner.setValue(converter.toNumber(displayValue));
 		}
 	}
 	
@@ -416,6 +467,28 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
     }
     
     /**
+     * Create an editor for {@link Integer} values, with no min/max limit,
+     * displaying numbers as 1 greater than their actual model value, so that
+     * a 0-based index will be displayed as a 1-based index.
+     * 
+	 * @param model				The {@link Reference} for this {@link View} 
+	 * @param displayedName 	The name of the displayed property 
+     * @param step				Step size for spinner
+	 * @param locked			If this is non-null, the view will not support
+	 * 							editing while its value is true.
+     * @return
+     * 		A new editor
+     */
+    public static NumberSpinnerEditor<Integer> createOneBasedDisplayInteger(Reference<? extends Bean> model,
+			PropName<Integer> displayedName, int step, Prop<Boolean> locked){
+    	return new NumberSpinnerEditor<Integer>(model, displayedName,
+    			new SpinnerNumberModel(
+    					new Integer(1), null, null, new Integer(step)), 
+    			NumberConverterDefaults.getIntegerConverter(), locked,
+    			new ZeroToOneBaseTransformer());
+    }
+    
+    /**
      * Create an editor for {@link Integer} values, with no min/max limit
      * 
 	 * @param model
@@ -435,6 +508,29 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
     			new SpinnerNumberModel(
     					new Long(1), null, null, new Long(step)), 
     					NumberConverterDefaults.getLongConverter(), locked);
+    }
+    
+    /**
+     * Create an editor for {@link Integer} values, with no min/max limit
+     * 
+	 * @param model
+	 * 		The {@link Reference} for this {@link View} 
+	 * @param displayedName 
+	 * 		The name of the displayed property 
+     * @param step
+     * 		Step size for spinner
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.
+     * @return
+     * 		A new editor
+     */
+    public static NumberSpinnerEditor<Long> createOneBasedDisplayLong(Reference<? extends Bean> model,
+			PropName<Long> displayedName, long step, Prop<Boolean> locked){
+    	return new NumberSpinnerEditor<Long>(model, displayedName,
+    			new SpinnerNumberModel(
+    					new Long(1), null, null, new Long(step)), 
+    					NumberConverterDefaults.getLongConverter(), locked,
+    					new ZeroToOneBaseTransformerLong());
     }
     
     /**
