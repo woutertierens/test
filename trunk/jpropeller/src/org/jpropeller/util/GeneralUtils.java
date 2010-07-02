@@ -77,6 +77,7 @@ public class GeneralUtils {
 		handler.setLevel(Level.ALL);
 		Logger.getLogger("").addHandler(handler);
 		Logger.getLogger("").setLevel(generalLevel);
+		
 		for (Class<?> c : classes) {
 			Logger.getLogger(c.getCanonicalName()).setLevel(Level.FINEST);
 		}
