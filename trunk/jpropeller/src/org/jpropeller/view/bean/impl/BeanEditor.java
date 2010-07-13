@@ -130,6 +130,25 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null, new ArrayList<String>(displayNames));
 	}
 
+	/**
+	 * Make a new editor with default prop view factory, displaying only selected prop names
+	 * from beans
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param model 	The model containing the bean
+	 * @param displayNames	The string values of names of props to display, in order.
+	 * 						If this is null, all normally visible props will be displayed
+	 * 						in the order they are defined in the bean.
+	 * 						Note that this constructor makes a copy of the list, so that
+	 * 						changes to it will not be reflected in this editor.
+	 * @param locked	If this is non-null, the view will not support
+	 * 					editing while its value is true.	
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, List<String> displayNames, Prop<Boolean> locked) {
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), locked, new ArrayList<String>(displayNames));
+	}
+
 	
 	/**
 	 * Make a new editor with default prop view factory

@@ -25,15 +25,17 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 	private Prop<Boolean> value;
 	private Prop<String> name;
 	private UpdateManager updateManager;
+	private final Prop<Boolean> locked;
 
 	private JCheckBox checkBox;
 
 	private boolean settingEnabled = false;
 	
-	private BooleanPropCheckboxEditor(Prop<Boolean> value, Prop<String> name) {
+	private BooleanPropCheckboxEditor(Prop<Boolean> value, Prop<String> name, Prop<Boolean> locked) {
 		super();
 		this.value = value;
 		this.name = name;
+		this.locked = locked;
 		
 		checkBox = new JCheckBox("");
 		
@@ -42,6 +44,9 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 
 		value.features().addListener(this);
 		name.features().addListener(this);
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
 		
 		checkBox.addChangeListener(new javax.swing.event.ChangeListener() {
 			@Override
@@ -72,7 +77,19 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 	 * @return			A new {@link BooleanPropCheckboxEditor}
 	 */
 	public static BooleanPropCheckboxEditor create(Prop<Boolean> value, Prop<String> name) {
-		return new BooleanPropCheckboxEditor(value, name);
+		return new BooleanPropCheckboxEditor(value, name, null);
+	}
+
+	/**
+	 * Make a new {@link BooleanPropCheckboxEditor}
+	 * @param value		The {@link Boolean} value to display
+	 * @param name		The name to display alongside checkbox
+	 * @param locked	While this {@link Prop} is true, editor 
+	 * 					will not make changes to model
+	 * @return			A new {@link BooleanPropCheckboxEditor}
+	 */
+	public static BooleanPropCheckboxEditor create(Prop<Boolean> value, Prop<String> name, Prop<Boolean> locked) {
+		return new BooleanPropCheckboxEditor(value, name, locked);
 	}
 
 	@Override
@@ -84,6 +101,9 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 	public void dispose() {
 		name.features().removeListener(this);
 		value.features().removeListener(this);
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
 	}
 	
 	/**
@@ -100,10 +120,13 @@ public class BooleanPropCheckboxEditor implements JView, ChangeListener {
 		update();
 	}
 
+	//If value is null or control is locked,
+	//disable it.
+	//Return whether value is null.
 	private boolean checkNull(Boolean value) {
 		boolean n = (value == null);
 		settingEnabled  = true;
-		checkBox.setEnabled(!n);
+		checkBox.setEnabled(!n && !Props.isTrue(locked));
 		settingEnabled = false;
 		return n;
 	}
