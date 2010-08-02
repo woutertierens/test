@@ -102,4 +102,18 @@ public class ListAndSelectionAndValueReferenceDefault<T> extends BeanDefault imp
 		return "Selected index " + selection().get();
 	}
 
+	/**
+	 * Get a {@link PathStep} from a {@link ListAndSelectionAndValueReference} to
+	 * the {@link ListAndSelectionAndValueReference#selectedValue()} of that reference.
+	 * @param <T>	The type of value
+	 * @return		The {@link PathStep}
+	 */
+	public static <T> PathStep<ListAndSelectionAndValueReference<T>, T> toSelection() {
+		return new PathStep<ListAndSelectionAndValueReference<T>, T>() {
+			@Override
+			public Prop<T> transform(ListAndSelectionAndValueReference<T> s) {
+				return s.selectedValue();
+			}
+		};
+	}
 }
