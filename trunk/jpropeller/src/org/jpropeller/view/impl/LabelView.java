@@ -1,5 +1,6 @@
 package org.jpropeller.view.impl;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class LabelView implements JView, ChangeListener {
 	private UpdateManager updateManager;
 	private JLabel label;
 
+	private final static DecimalFormat format = new DecimalFormat("#.##");
 	
 	/**
 	 * Create a {@link LabelView}
@@ -73,6 +75,9 @@ public class LabelView implements JView, ChangeListener {
 		
 		String s = "";
 		if (value != null) {
+			if (value instanceof Number) {
+				s = format.format(value);
+			}
 			if(value instanceof Illustrated) {
 				label.setIcon(((Illustrated)value).illustration().get());
 			} 
