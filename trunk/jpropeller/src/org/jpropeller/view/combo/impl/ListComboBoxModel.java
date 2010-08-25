@@ -98,10 +98,11 @@ public class ListComboBoxModel<T> extends AbstractListModel implements ComboBoxM
 	public Object getElementAt(int index) {
 		CList<T> list = list();
 		if (list == null) return null;
-		if (index >= 0 && index < reportSize && index < list.size()) {
+		int listSize = list.size();
+		if (index >= 0 && index < reportSize && index < listSize) {
 			return list.get(index);
 		} else {
-			logger.log(Level.WARNING, "Invalid index " + index + " outside reported size " + reportSize);
+			logger.log(Level.WARNING, "Invalid index " + index + " outside reported size " + reportSize + " or list size " + listSize);
 			return null;
 		}
 	}
