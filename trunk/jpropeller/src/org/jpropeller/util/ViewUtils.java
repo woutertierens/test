@@ -21,6 +21,11 @@ import com.jgoodies.forms.factories.Borders;
  */
 public class ViewUtils {
 
+	/**
+	 * Height of tabs on group panes and cards
+	 */
+	public final static int TAB_HEIGHT = 26; 
+	
 	private ViewUtils(){}
 
 	/**
@@ -48,7 +53,7 @@ public class ViewUtils {
 
 		JPanel top = new JPanel(new BorderLayout());
 		top.setBorder(new PaneTopSection(6, true, true, true));
-		top.setPreferredSize(new Dimension(10, 30));
+		top.setPreferredSize(new Dimension(10, TAB_HEIGHT));
 		top.add(title);
 		
 		JPanel center = new JPanel(new BorderLayout());
