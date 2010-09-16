@@ -138,6 +138,17 @@ public class CListDefault<E> implements CList<E> {
 		return new CListDefault<T>(Collections.unmodifiableList(new ArrayList<T>(contents)));
 	}
 	
+	/**
+	 * Make a new editable {@link CListDefault}, based on an
+	 * {@link ArrayList} copy of the provided contents.
+	 * @param <T>		The type of list data
+	 * @param contents	The list contents
+	 * @return			A new editable {@link CList}
+	 */
+	public static <T> CListDefault<T> editable(Collection<? extends T> contents) {
+		return new CListDefault<T>(new ArrayList<T>(contents));
+	}
+	
 	private Change handleInternalChange(Changeable changed, Change change,
 			List<Changeable> initial, Map<Changeable, Change> changes) {
 
