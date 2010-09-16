@@ -21,6 +21,7 @@ import org.jpropeller.path.BeanPath;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.calculated.background.impl.BackgroundCalculatedProp;
 import org.jpropeller.properties.calculated.impl.BuildCalculation;
+import org.jpropeller.properties.calculated.impl.BuildListCalculation;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.change.ChangeSystem;
 import org.jpropeller.properties.change.Changeable;
@@ -329,13 +330,13 @@ public class Props {
 	 * @param <T>				The type of {@link Prop} contents
 	 * @param contentsClass		The class of {@link Prop} contents
 	 * @param name				The name of the {@link Prop}
-	 * @param calculation		The {@link Calculation} giving list contents
+	 * @param calculation		The {@link Calculation} giving {@link Prop} value
 	 * @return					The {@link Prop}
 	 */
 	public static <T> Prop<T> calculated(Class<T> contentsClass, String name, Calculation<T> calculation) {
 		return new CalculatedProp<T>(PropName.create(contentsClass, name), calculation);
 	}
-
+	
 	/**
 	 * Make a {@link Prop} containing the result of a {@link Calculation}
 	 * @param <T>				The type of {@link Prop} contents
@@ -507,6 +508,20 @@ public class Props {
 	}
 
 	/**
+	 * Make a builder for a {@link Prop} containing a list calculated from given inputs (sources).
+	 * Calling {@link BuildCalculatedListProp#returning(Source)} on this
+	 * builder will produce a {@link Prop}
+	 * @param clazz 		The class of {@link Changeable} value in the prop's list
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildCalculatedListProp} - use this to build the actual {@link Prop}
+     * @param <T> 			The type of value in the props's list
+	 */
+	public static <T> BuildCalculatedListProp<T> calculatedListOn(Class<T> clazz, String name, Changeable... inputs) {
+		return new BuildCalculatedListProp<T>(clazz, name, BuildListCalculation.<T>on(inputs));
+	}
+	
+	/**
 	 * Make a builder for a {@link CalculatedProp} operating on given inputs (sources).
 	 * Calling {@link BuildCalculatedProp#returning(Source)} on this
 	 * builder will produce a {@link CalculatedProp}
@@ -580,6 +595,43 @@ public class Props {
 			} else {
 				return calculated(clazz, name, calculation);
 			}
+		}
+	}
+	
+	/**
+	 * Allows building of a calculated {@link Prop} with a {@link CList} value, just
+	 * call {@link #returning(Source)}
+	 *
+	 * @param <T>	The type of value in calculated list
+	 */
+	public static class BuildCalculatedListProp<T> {
+		private final BuildListCalculation<T> buildCalculation;
+		private final Class<T> clazz;
+		private final String name;
+		
+		/**
+		 * Create a {@link BuildCalculatedListProp}
+		 * @param clazz					The {@link Class} of value
+		 * @param name					The name of the {@link Prop}
+		 * @param buildCalculation		A builder for the {@link Calculation}
+		 */
+		private BuildCalculatedListProp(Class<T> clazz, String name, BuildListCalculation<T> buildCalculation) {
+			this.clazz = clazz;
+			this.name = name;
+			this.buildCalculation = buildCalculation;
+		}
+		
+		/**
+		 * Call this method to produce a {@link Prop} based on the
+		 * inputs provided to {@link Props#calculatedListOn(Class, String, Changeable...)},
+		 * returning the values produced by the {@link Source}. Note that the {@link Source}
+		 * must only use the values of the specified inputs.
+		 * @param source	{@link Source} of results of calculation
+		 * @return	The new {@link Prop}
+		 */
+		public Prop<CList<T>> returning(Source<List<T>> source) {
+			Calculation<List<T>> calculation = buildCalculation.returning(source);
+			return calculatedList(clazz, name, calculation);
 		}
 	}
 	
