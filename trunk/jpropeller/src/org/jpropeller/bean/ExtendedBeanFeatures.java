@@ -24,6 +24,7 @@ import org.jpropeller.properties.map.MapProp;
 import org.jpropeller.properties.map.impl.MapPropDefault;
 import org.jpropeller.properties.set.SetProp;
 import org.jpropeller.properties.values.ValueProcessor;
+import org.jpropeller.system.Props.BuildCalculatedListProp;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.util.Source;
 
@@ -82,6 +83,18 @@ public interface ExtendedBeanFeatures extends MutableBeanFeatures{
      * @param <T> 			The type of result produced
 	 */
 	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz, String name, Changeable... inputs);
+	
+	/**
+	 * Make a builder for a {@link Prop} containing a list calculated from given inputs (sources).
+	 * Calling {@link BuildCalculatedListProp#returning(Source)} on this
+	 * builder will produce a {@link Prop}
+	 * @param clazz 		The class of {@link Changeable} value in the prop's list
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildCalculatedListProp} - use this to build the actual {@link Prop}
+     * @param <T> 			The type of value in the props's list
+	 */
+	public <T> BuildAndAddCalculatedListProp<T> calculatedListOn(Class<T> clazz, String name, Changeable... inputs);
 	
 	/**
 	 * Make a builder for a {@link CalculatedProp} operating on given inputs (sources).

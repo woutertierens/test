@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
 import org.jpropeller.bean.BeanFeatures;
+import org.jpropeller.bean.BuildAndAddCalculatedListProp;
 import org.jpropeller.bean.BuildAndAddCalculatedProp;
 import org.jpropeller.bean.ExtendedBeanFeatures;
 import org.jpropeller.calculation.Calculation;
@@ -30,6 +31,7 @@ import org.jpropeller.properties.values.ValueProcessor;
 import org.jpropeller.properties.values.impl.AcceptProcessor;
 import org.jpropeller.properties.values.impl.ReadOnlyProcessor;
 import org.jpropeller.system.Props;
+import org.jpropeller.system.Props.BuildCalculatedListProp;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.util.Source;
@@ -101,6 +103,20 @@ public abstract class BeanDefault implements Bean {
 	 */
 	public <T> BuildAndAddCalculatedProp<T> calculated(Class<T> clazz, String name, Changeable... inputs) {
 		return features.calculated(clazz, name, inputs);
+	}
+	
+	/**
+	 * Make a builder for a {@link Prop} containing a list calculated from given inputs (sources).
+	 * Calling {@link BuildCalculatedListProp#returning(Source)} on this
+	 * builder will produce a {@link Prop}
+	 * @param clazz 		The class of {@link Changeable} value in the prop's list
+	 * @param name			The name of the prop
+	 * @param inputs		The inputs (sources) of data for the {@link Calculation}
+	 * @return				A {@link BuildCalculatedListProp} - use this to build the actual {@link Prop}
+     * @param <T> 			The type of value in the props's list
+	 */
+	public <T> BuildAndAddCalculatedListProp<T> calculatedListOn(Class<T> clazz, String name, Changeable... inputs) {
+		return features.calculatedListOn(clazz, name, inputs);
 	}
 
 	/**
