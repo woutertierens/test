@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.jpropeller.bean.Bean;
+import org.jpropeller.bean.BuildAndAddCalculatedListProp;
 import org.jpropeller.bean.BuildAndAddCalculatedProp;
 import org.jpropeller.bean.ExtendedBeanFeatures;
 import org.jpropeller.bean.MutableBeanFeatures;
@@ -17,6 +18,7 @@ import org.jpropeller.collection.CSet;
 import org.jpropeller.name.PropName;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.calculated.impl.BuildCalculation;
+import org.jpropeller.properties.calculated.impl.BuildListCalculation;
 import org.jpropeller.properties.calculated.impl.CalculatedProp;
 import org.jpropeller.properties.calculated.impl.CalculationDefault;
 import org.jpropeller.properties.calculated.impl.ListCalculation;
@@ -109,6 +111,42 @@ public class ExtendedBeanFeaturesDefault implements ExtendedBeanFeatures {
 		return new CalcBuilder<T>(clazz, name, BuildCalculation.<T>on(inputs), this, true, initialValue);
 	}
 
+	@Override
+	public <T> BuildAndAddCalculatedListProp<T> calculatedListOn(
+			Class<T> clazz, String name, Changeable... inputs) {
+		return new CalcListBuilder<T>(clazz, name, BuildListCalculation.<T>on(inputs), this);
+	}
+	
+	
+	/**
+	 * Allows building of a {@link Prop}, containing a 
+	 * calculated list of values, just call {@link #returning(Source)}
+	 *
+	 * @param <T>	The type of value in the calculated list
+	 */
+	private static class CalcListBuilder<T> implements BuildAndAddCalculatedListProp<T> {
+		private final BuildListCalculation<T> buildCalculation;
+		private final Class<T> clazz;
+		private final String name;
+		private final ExtendedBeanFeaturesDefault features;
+		
+		private CalcListBuilder(Class<T> clazz, String name, BuildListCalculation<T> buildCalculation, ExtendedBeanFeaturesDefault features) {
+			this.clazz = clazz;
+			this.name = name;
+			this.buildCalculation = buildCalculation;
+			this.features = features;
+		}
+
+		@Override
+		public Prop<CList<T>> returning(Source<List<T>> source) {
+			Calculation<List<T>> calculation = buildCalculation.returning(source);
+			return features.add(Props.calculatedList(clazz, name, calculation)); 				
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Allows building of a {@link CalculatedProp}, just
 	 * call {@link #returning(Source)}
