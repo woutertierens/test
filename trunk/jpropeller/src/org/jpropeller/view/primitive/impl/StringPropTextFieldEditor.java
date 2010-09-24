@@ -226,12 +226,12 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 		String value = model.get();
 		text.setEnabled(value!=null && !Props.isTrue(locked));
 		
-		//If the text field is not focussed, or value is locked, then always update the display
+		//If the text field is not focused, or value is locked, then always update the display
 		//to the new prop value, if necessary.
 		if (!text.isFocusOwner() || Props.isTrue(locked)) {
 			display();
 			
-		//If the field is focussed, we only need to update if the new value
+		//If the field is focused, we only need to update if the new value
 		//is different to the valueAtStartOfEditing
 		} else {
 			if (valueAtStartOfEditing != null && !valueAtStartOfEditing.equals(model.get())) {
@@ -243,14 +243,19 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 	}
 	
 	private void display() {
+		String value = model.get();
+		
+		//Always try to clear on null
+		if (value == null) {
+
+			if (!text.getText().equals("")) {
+				text.setText("");
+			}
+			error(false);
+		
 		//If the text field is not already showing prop value, 
-		//and we are not focussed, update it
-		if (isEditing()) {
-			String value = model.get();
-			
-			//Can't display null values
-			if (value == null) value = "";
-			
+		//and we are not focused, update it
+		} else if (isEditing()) {
 			text.setText(value);
 			
 			//We now know we are not errored, since we are displaying the actual value
