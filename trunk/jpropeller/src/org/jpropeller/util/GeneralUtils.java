@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 public class GeneralUtils {
 
 	private final static DecimalFormat TWO_DP_FORMAT = new DecimalFormat("#.##");
+	private final static DecimalFormat THREE_DP_FORMAT = new DecimalFormat("#.###");
 	
 	/**
 	 * Enable the Nimbus LaF if available
@@ -146,6 +147,15 @@ public class GeneralUtils {
 	 */
 	public static String twoDP(double number) {
 		return TWO_DP_FORMAT.format(number);
+	}
+
+	/**
+	 * Format a number to three decimal places
+	 * @param number		To format
+	 * @return				Formatted number
+	 */
+	public static String threeDP(double number) {
+		return THREE_DP_FORMAT.format(number);
 	}
 	
 	/**
