@@ -22,6 +22,7 @@
  */
 package org.jpropeller.properties.path.impl;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,16 +68,19 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 	
 	private final BeanPath<? super R, T> path;
 	
-	//FIXME this should be a weak reference
-	private Prop<T> cachedProp = null;
+	//Weak reference so that we don't hold on to otherwise
+	//unused props. This can be a problem if this PathProp itself
+	//is not read, and so doesn't have a chance to clear its cache.
+	private WeakReference<Prop<T>> cachedPropRef = null;
+	
 	private boolean cacheValid = false;
 	private boolean errored = false;
 
-	//FIXME this should have weak references
-	private final Set<Prop<?>> cachedPathProps = new IdentityHashSet<Prop<?>>();
+	//Weak references as for cachedProp
+	private final Set<WeakReference<Prop<?>>> cachedPathPropRefs = new IdentityHashSet<WeakReference<Prop<?>>>();
 	
 	private final ValueProcessor<T> processor;
-	
+
 	/**
 	 * Create a prop which always has the same value as, and reports changes to,
 	 * another prop. Essentially this mirrors that other prop.
@@ -145,14 +149,33 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 		//changed its value) then the path to our mirrored property is still the same. Deep
 		//changes to them do not change the path we follow
 		boolean pathInvalid = false;
-		for (Prop<?> cachedPathProp : cachedPathProps) {
-			Change cachedChange = changes.get(cachedPathProp);
-			if ((cachedChange!=null) && (!cachedChange.sameInstances())) {
+		
+		for (WeakReference<Prop<?>> cachedPathPropRef : cachedPathPropRefs) {
+			Prop<?> cachedPathProp = cachedPathPropRef.get();
+			//If reference is still valid, check the prop
+			if (cachedPathProp != null) {
+				Change cachedChange = changes.get(cachedPathProp);
+				if ((cachedChange!=null) && (!cachedChange.sameInstances())) {
+					pathInvalid = true;
+				}
+			//If an element of our path has been GCed, path is definitely invalid
+			} else {
 				pathInvalid = true;
 			}
 		}
+
+		//See whether we have a cached prop - if not the path is invalid
+		Prop<?> cachedProp = cachedPropRef == null ? null : cachedPropRef.get();
+		if (cachedProp == null) {
+			if (cachedProp == null) {
+				pathInvalid = true;
+			}
+		}
+
 		if (pathInvalid) {
 			cacheValid = false;
+			cachedPropRef = null;
+			cachedPathPropRefs.clear();
 			//logger.finest("PathProp CACHE REBUILD");
 
 			//This also obviously means we have a change
@@ -184,6 +207,14 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 		Props.getPropSystem().getChangeSystem().prepareRead(this);
 		
 		try {
+			Prop<T> cachedProp = cachedPropRef == null ? null : cachedPropRef.get();
+			
+			if (cachedProp == null) {
+				cacheValid = false;
+				cachedPropRef = null;
+				cachedPathPropRefs.clear();
+			}
+			
 			if ((!cacheValid) || (errored)) {
 				rebuildCache();
 			}
@@ -193,7 +224,12 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 				return null;
 			}
 			
-			return cachedProp.get();
+			//We know we still have a valid reference, since the root
+			//MUST still refer to the cached prop - the path
+			//can't have changed while prop system is in the process
+			//of a read.
+			return cachedPropRef.get().get();
+			
 		} finally {
 			Props.getPropSystem().getChangeSystem().concludeRead(this);
 		}
@@ -214,11 +250,14 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 			logger.fine("pathRoot null");
 		}
 
-		//Stop listening to old cache, and clear it
-		for (Prop<?> cachedPathProp : cachedPathProps) {
-			cachedPathProp.features().removeChangeableListener(this);
+		//Stop listening to old cache contents (if they still exist), and clear cache
+		for (WeakReference<Prop<?>> cachedPathPropRef : cachedPathPropRefs) {
+			Prop<?> cachedPathProp = cachedPathPropRef.get();
+			if (cachedPathProp != null) {
+				cachedPathProp.features().removeChangeableListener(this);
+			}
 		}
-		cachedPathProps.clear();
+		cachedPathPropRefs.clear();
 		
 		//Iterate the path from our root
 		BeanPathIterator<T> iterator = path.iteratorFrom(pathRoot);
@@ -233,7 +272,7 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 				return;
 			}
 			
-			cachedPathProps.add(prop);
+			cachedPathPropRefs.add(new WeakReference<Prop<?>>(prop));
 			
 			prop.features().addChangeableListener(this);
 		}
@@ -250,17 +289,18 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 		//logger.finest("last name '" + path.getLastName() + "' to value '" + finalProp.get() + "'");
 
 		//Before we change cachedProp, stop listening to it
-		if (cachedProp != null) {
-			cachedProp.features().removeChangeableListener(this);
+		Prop<T> oldCachedProp = cachedPropRef == null ? null : cachedPropRef.get();
+		if (oldCachedProp != null) {
+			oldCachedProp.features().removeChangeableListener(this);
 		}
 		
 		//We are done, so store the prop, and mark success
-		cachedProp = finalProp;
+		cachedPropRef = new WeakReference<Prop<T>>(finalProp);
 		errored = false;
 		cacheValid = true;
 		
 		//List to the new cachedProp
-		cachedProp.features().addChangeableListener(this);
+		finalProp.features().addChangeableListener(this);
 		
 		//logger.finest("Cache successfully rebuilt");
 
@@ -275,6 +315,15 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 		Props.getPropSystem().getChangeSystem().prepareChange(this);
 		
 		try {
+			
+			Prop<T> cachedProp = cachedPropRef == null ? null : cachedPropRef.get();
+			
+			if (cachedProp == null) {
+				cacheValid = false;
+				cachedPropRef = null;
+				cachedPathPropRefs.clear();
+			}
+			
 			if ((!cacheValid) || (errored)) {
 				rebuildCache();
 			}
@@ -283,7 +332,11 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 				throw new ReadOnlyException("Cannot look up property via path - PathProp is hence read only");
 			}
 			
-			cachedProp.set(value);
+			//We know we still have a valid reference, since the root
+			//MUST still refer to the cached prop - the path
+			//can't have changed while prop system is in the process
+			//of a write.
+			cachedPropRef.get().set(value);
 			
 			//Note we don't propagate the change - we know that the cachedProp will propagate it for us,
 			//then we will notice it and report that we have changed too. This avoids having two "initial"
