@@ -22,6 +22,11 @@ import org.jpropeller.view.update.UpdateManager;
  */
 public class UpdateManagerDefault implements UpdateManager {
 
+	//FIXME Ideally updatables should only be stored via weak references,
+	//since there is no point keeping an Updatable around just for the sake of updating it,
+	//similarly to use of Listeners. This is less important, since leaking views is
+	//harder than leaking elements of model (views tend to be less dynamic).
+	
 	//A set to receive incoming requests for updates. Swapped with changedUpdatablesTransmit.
 	private Set<Updatable> changedUpdatablesReceive = new IdentityHashSet<Updatable>(200);
 	

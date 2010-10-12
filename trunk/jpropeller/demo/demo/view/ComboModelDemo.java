@@ -1,24 +1,33 @@
 package demo.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
+import org.jpropeller.reference.impl.ReferenceDefault;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.Source;
 import org.jpropeller.view.combo.impl.ListComboBoxModel;
 import org.jpropeller.view.combo.impl.ListComboView;
+import org.jpropeller.view.impl.FlexibleView;
 import org.jpropeller.view.list.impl.ListEditView;
 import org.jpropeller.view.table.impl.BeanRowView;
 
 import test.example.LotsOfProps;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
@@ -56,6 +65,7 @@ public class ComboModelDemo {
 		final LotsOfProps example = new LotsOfProps();
 		
 		SwingUtilities.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				
@@ -69,9 +79,27 @@ public class ComboModelDemo {
 				
 				ListComboView<LotsOfProps> listComboView = ListComboView.create(reference.value(), LotsOfProps.class, true, true);
 				
+				//Always edit at least beans as a specific class
+				final FlexibleView selectedView = new FlexibleView(ReferenceDefault.create(listComboView.getReference().selection()), true, "");
+				
+				JPanel panel = new JPanel(new BorderLayout());
+				panel.add(selectedView.getComponent());
+				panel.setBorder(Borders.DIALOG_BORDER);
+				
+				JScrollPane selectedViewScroll = new JScrollPane(panel);
+				selectedViewScroll.setBorder(null);
+				
+				
+				JButton gcButton = new JButton(new AbstractAction("GC") {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.gc();
+					}
+				});
+				
 				FormLayout layout = new FormLayout(
 						"fill:default:grow",
-						"fill:default:grow, 7dlu, pref");
+						"fill:default:grow, 7dlu, pref, 7dlu, fill:default:grow, 7dlu, pref");
 				
 				DefaultFormBuilder builder = new DefaultFormBuilder(layout);
 				builder.setDefaultDialogBorder();
@@ -79,6 +107,10 @@ public class ComboModelDemo {
 				builder.append(view.getComponent());
 				builder.nextRow();
 				builder.append(listComboView.getComponent());
+				builder.nextRow();
+				builder.append(selectedView.getComponent());
+				builder.nextRow();
+				builder.append(gcButton);
 				
 				frame.add(builder.getPanel());
 				

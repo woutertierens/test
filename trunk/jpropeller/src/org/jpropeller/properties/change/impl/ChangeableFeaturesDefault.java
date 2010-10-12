@@ -13,6 +13,7 @@ import org.jpropeller.properties.change.ChangeableFeatures;
 import org.jpropeller.system.Props;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.Listeners;
+import org.jpropeller.util.WeakListeners;
 
 /**
  *	Default implementation of {@link ChangeableFeatures}, which handles
@@ -24,10 +25,14 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	
 	private final InternalChangeImplementation internalChangeImplementation;
 
-	private final Listeners<Changeable> changeableListeners = new Listeners<Changeable>();
+//	private final Listeners<Changeable> changeableListeners = new Listeners<Changeable>();
 	private final Listeners<ChangeListener> listeners = new Listeners<ChangeListener>();
 
+	private final WeakListeners<Changeable> changeableListeners = new WeakListeners<Changeable>();
+//	private final WeakListeners<ChangeListener> listeners = new WeakListeners<ChangeListener>();
+	
 	private Map<String, String> annotations = null;
+	
 	
 	private final Changeable owner;
 	

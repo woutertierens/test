@@ -55,7 +55,7 @@ public class BuildListCalculation<T> {
 	}
 	
 	/**
-	 * Produce a {@link Task}, with the sources provided to
+	 * Produce a {@link Calculation}, with the sources provided to
 	 * {@link #on(Changeable...)}, and the {@link CancellableResponse}
 	 * provided to this method.
 	 * @param resultSource		The {@link Source} of results of the {@link Calculation}
