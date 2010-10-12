@@ -62,7 +62,11 @@ public class TaskDemo {
 
 		//Make a task to remove things from l, and set it up to execute
 		Task task = new RemovalTask(l);
-		new TaskExecutor(task);		//Note we would normally hold on to this to dispose of it as necessary
+		
+		//Note we keep a reference to the executor, so it will not be GCed (it isn't kept alive
+		//as a listener)
+		@SuppressWarnings("unused")
+		TaskExecutor taskExecutor = new TaskExecutor(task);		//Note we would normally dispose of this later
 		
 		final LotsOfProps example = new LotsOfProps();
 		

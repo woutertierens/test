@@ -67,10 +67,12 @@ public class PathProp<R extends Bean, T> implements Prop<T> {
 	
 	private final BeanPath<? super R, T> path;
 	
+	//FIXME this should be a weak reference
 	private Prop<T> cachedProp = null;
 	private boolean cacheValid = false;
 	private boolean errored = false;
 
+	//FIXME this should have weak references
 	private final Set<Prop<?>> cachedPathProps = new IdentityHashSet<Prop<?>>();
 	
 	private final ValueProcessor<T> processor;

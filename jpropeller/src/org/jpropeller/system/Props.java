@@ -104,25 +104,25 @@ public class Props {
 	
 	//Methods for scheduling tasks
 	
-	/**
-	 * Schedule a task to be executed in the foreground (synchronously)
-	 * @param task		The task
-	 * @return			The new {@link TaskExecutor} used - should be 
-	 * 					disposed when task no longer needs to run 
-	 */
-	public static SynchronousTaskExecutor scheduleForegroundTask(Task task) {
-		return new SynchronousTaskExecutor(task);
-	}
+//	/**
+//	 * Schedule a task to be executed in the foreground (synchronously)
+//	 * @param task		The task
+//	 * @return			The new {@link TaskExecutor} used - should be 
+//	 * 					disposed when task no longer needs to run 
+//	 */
+//	public static SynchronousTaskExecutor scheduleForegroundTask(Task task) {
+//		return new SynchronousTaskExecutor(task);
+//	}
 	
-	/**
-	 * Schedule a task to be executed in the background (asynchronously)
-	 * @param task		The task
-	 * @return			The {@link TaskExecutor} used - should be 
-	 * 					disposed when task no longer needs to run
-	 */
-	public static TaskExecutor scheduleBackgroundTask(Task task) {
-		return new TaskExecutor(task);
-	}
+//	/**
+//	 * Schedule a task to be executed in the background (asynchronously)
+//	 * @param task		The task
+//	 * @return			The {@link TaskExecutor} used - should be 
+//	 * 					disposed when task no longer needs to run
+//	 */
+//	public static TaskExecutor scheduleBackgroundTask(Task task) {
+//		return new TaskExecutor(task);
+//	}
 	
 	//Methods for creating various Props
 	
