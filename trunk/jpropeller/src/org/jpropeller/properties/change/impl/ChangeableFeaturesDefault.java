@@ -25,11 +25,11 @@ public class ChangeableFeaturesDefault implements ChangeableFeatures {
 	
 	private final InternalChangeImplementation internalChangeImplementation;
 
-//	private final Listeners<Changeable> changeableListeners = new Listeners<Changeable>();
 	private final Listeners<ChangeListener> listeners = new Listeners<ChangeListener>();
 
+	//Changeables allow for weak listeners, so this is safe to use. It avoids some possible memory leaks
+	//where changeables are retained only from changeableListeners.
 	private final WeakListeners<Changeable> changeableListeners = new WeakListeners<Changeable>();
-//	private final WeakListeners<ChangeListener> listeners = new WeakListeners<ChangeListener>();
 	
 	private Map<String, String> annotations = null;
 	
