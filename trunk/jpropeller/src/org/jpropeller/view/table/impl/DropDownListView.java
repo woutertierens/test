@@ -26,6 +26,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.Prop;
@@ -74,8 +76,9 @@ import org.jpropeller.view.table.TableRowView;
 public class DropDownListView<T> implements JView {
 	
 	private final CompositeViewHelper helper;
-	private final JDropDownButton button;
+	private final JToggleButton button;
 	private ListAndSelectionAndValueReference<T> reference;
+	private final JTable table;
 
 	/**
 	 * Create a {@link DropDownListView}
@@ -99,6 +102,7 @@ public class DropDownListView<T> implements JView {
 		reference = new ListAndSelectionAndValueReferenceDefault<T>(modelClass, model);
 		SingleSelectionListTableView<T> listView = new SingleSelectionListTableView<T>(reference, rowView);
 		views.add(listView);
+		table = listView.getComponent();
 		
 		//TODO would be nice to specify a renderer in constructor
 		//Make a view of selected item from list as a label
@@ -106,9 +110,11 @@ public class DropDownListView<T> implements JView {
 		views.add(labelView);
 
 		button = new JDropDownButton();
+		
 		button.add(labelView.getComponent());
 		
 		JScrollPane listScroll = new JScrollPane(listView.getComponent());
+		listScroll.setBorder(null);
 		final PopupHandler handler = new PopupHandler(listScroll, listView.getComponent(), button, minWidth, height);
 
 		button.addActionListener(new ActionListener() {
@@ -255,6 +261,64 @@ public class DropDownListView<T> implements JView {
 	    }
 	    @Override public void popupMenuCanceled(PopupMenuEvent e) {}		
 	}
+	
+	//Delegates to popup table
+
+	/**
+	 * Gets the default editor of the contained {@link JTable}
+	 * for a given class. See {@link JTable#getDefaultEditor(Class)}
+	 * @param columnClass The edited class
+	 * @return The default editor
+	 */
+	public TableCellEditor getDefaultEditor(Class<?> columnClass) {
+		return table.getDefaultEditor(columnClass);
+	}
+
+	/**
+	 * Gets the default renderer of the contained {@link JTable}
+	 * for a given class. See {@link JTable#getDefaultRenderer(Class)}
+	 * @param columnClass The rendered class
+	 * @return The default renderer
+	 */
+	public TableCellRenderer getDefaultRenderer(Class<?> columnClass) {
+		return table.getDefaultRenderer(columnClass);
+	}
+
+	/**
+	 * Sets the default editor of the contained {@link JTable}
+	 * for a given class. See {@link JTable#setDefaultEditor(Class, TableCellEditor)}
+	 * @param columnClass The edited class
+	 * @param editor The default editor
+	 */
+	public void setDefaultEditor(Class<?> columnClass, TableCellEditor editor) {
+		table.setDefaultEditor(columnClass, editor);
+	}
+
+	/**
+	 * Sets the default renderer of the contained {@link JTable}
+	 * for a given class. See {@link JTable#setDefaultRenderer(Class, TableCellRenderer)}
+	 * @param columnClass The rendered class
+	 * @param renderer The default renderer
+	 */
+	public void setDefaultRenderer(Class<?> columnClass,
+			TableCellRenderer renderer) {
+		table.setDefaultRenderer(columnClass, renderer);
+	}
+
+	/**
+	 * Sets the row height of the contained {@link JTable}
+	 * @param rowHeight		The row height
+	 */
+	public void setRowHeight(int rowHeight) {
+		table.setRowHeight(rowHeight);
+	}
+
+    /**
+     * Remove header from table display
+     */
+    public void removeHeader() {
+    	table.setTableHeader(null);
+    }
 	
 	//JView methods delegated to helper
 	@Override
