@@ -109,13 +109,24 @@ public class JTabButton extends JToggleButton {
 	}
 
     /**
-     * Creates an initially unselected toggle button
-     * without setting the text or image.
+     * Creates an initially unselected tab button
+     * without setting the text or image, designed to
+     * display at left side.
+     * @param borders	Initial border settings
+     */
+	public JTabButton(int borders) {
+		super();
+		setBorders(borders);
+	}
+
+    /**
+     * Creates an initially unselected tab button
+     * without setting the text or image
      */
 	public JTabButton() {
 		super();
 	}
-	
+
 	/**
 	 * Create a {@link JTabButton} for use as a 
 	 * normal {@link JToggleButton}
