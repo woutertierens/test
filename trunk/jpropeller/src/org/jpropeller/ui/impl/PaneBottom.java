@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -24,7 +25,7 @@ public class PaneBottom extends EmptyBorder {
 	public final static Color DEFAULT_BG = new JLabel().getBackground();
 	
 	private final int pad;
-	private final int radius = 10;
+	private final int radius;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = 40;
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
@@ -70,6 +71,7 @@ public class PaneBottom extends EmptyBorder {
      */
 	public PaneBottom(int extraPadding, boolean showTop) {
 		super((showTop ? 4 : 2)+extraPadding,4+extraPadding,4+extraPadding,4+extraPadding);
+		radius = UIManager.getInt("itis.roundsize");
 		pad = showTop ? 0 : 6;
 		this.showTop = showTop;
 	}

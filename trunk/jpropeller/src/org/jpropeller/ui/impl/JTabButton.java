@@ -1,8 +1,6 @@
 package org.jpropeller.ui.impl;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,28 +10,16 @@ import java.awt.RenderingHints;
 import javax.swing.Action;
 import javax.swing.ButtonModel;
 import javax.swing.Icon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.jpropeller.ui.IconFactory.IconSize;
 import org.jpropeller.util.GeneralUtils;
-import org.jpropeller.view.Views;
 
 /**
  * Button designed to be used as a tab.
  */
 public class JTabButton extends JToggleButton {
 
-	static {
-		UIManager.put("itis.background", GeneralUtils.scaleColor(UIManager.getColor("Button.background"), 1));
-		UIManager.put("itis.background.selected", new Color(190, 200, 220));
-	}
-	
 	/**
 	 * The left border of the button should be rounded.
 	 */
@@ -83,18 +69,23 @@ public class JTabButton extends JToggleButton {
 	private Color selColor;
 	private int highlightAlpha;
 	
-	private int outerRoundRectSize = 10;
-	private int innerRoundRectSize = 8;
+	private int outerRoundRectSize;
+	private int innerRoundRectSize;
 	private int pad = 16;
 	private int shadeWidth = 8;
 	
 	private boolean pressDown = false;
+	
+	private Color unselectedForeground;
+	private Color selectedForeground;
 
 	PaintBox pressed;
 	PaintBox selected;
 	PaintBox off;
 	Paint leftShadowPaint, rightShadowPaint, topShadowPaint, bottomShadowPaint;
 	Paint blendPaint;
+	
+	
 	
 	{
 		setFocusable(false);
@@ -106,6 +97,11 @@ public class JTabButton extends JToggleButton {
 		highlightAlpha = 100;
 		
 		selColor = UIManager.getColor("itis.background.selected");
+		unselectedForeground = UIManager.getColor("itis.foreground.unselected");
+		selectedForeground = UIManager.getColor("itis.foreground.selected");
+		
+		outerRoundRectSize = UIManager.getInt("itis.roundsize");
+		innerRoundRectSize = outerRoundRectSize - 2;
 	}
 
     /**
@@ -127,6 +123,15 @@ public class JTabButton extends JToggleButton {
 		super();
 	}
 
+	/**
+	 * Set the round size of the rounded rectangles used to draw.
+	 * @param roundSize Rounding size
+	 */
+	public void setRoundSize(int roundSize) {
+		outerRoundRectSize = roundSize;
+		innerRoundRectSize = roundSize-2;
+	}
+	
 	/**
 	 * Create a {@link JTabButton} for use as a 
 	 * normal {@link JToggleButton}
@@ -309,8 +314,6 @@ public class JTabButton extends JToggleButton {
 		int width = maxX - minX;
 		int height = maxY - minY;
 		
-//		System.out.println(minX + "," + minY + " @ " + width + "x" + height);
-				
 		//Draw bg
 		g2d.setPaint(box.getBg());
 		g2d.fillRoundRect(minX, minY, width, height, outerRoundRectSize, outerRoundRectSize);
@@ -346,78 +349,16 @@ public class JTabButton extends JToggleButton {
 			
 		}
 		
+		if (model.isSelected() || model.isPressed()) {
+			super.setForeground(selectedForeground);
+		} else {
+			super.setForeground(unselectedForeground);
+		}
+		
 		g2d.dispose();
 		super.paintComponent(g);
 	}
 
-
-	
-	/**
-	 * Demonstrate the button
-	 * 
-	 * @param args
-	 *            Ignored
-	 */
-	public static void main(String args[]) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				showDemo();
-			}
-		});
-	}
-
-	/**
-	 * Show demonstration
-	 */
-	public static void showDemo() {
-		JFrame frame = new JFrame("Custom Buttons Demo");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new FlowLayout());
-		frame.add(JTabButton.getButtonsPanel());
-		frame.getContentPane().setBackground(Color.WHITE);
-		frame.setBackground(Color.WHITE);
-		frame.setSize(700, 85);
-		frame.setVisible(true);
-	}
-	
-	/**
-	 * Make a panel showing some buttons
-	 * 
-	 * @return {@link JPanel} with buttons
-	 */
-	public static JPanel getButtonsPanel() {
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-
-		JTabButton standardButton = new JTabButton("Standard Button");
-		standardButton.setPreferredSize(new Dimension(130, 28));
-
-		JTabButton rollOverButton = new JTabButton("RollOver Button");
-		rollOverButton.setPreferredSize(new Dimension(130, 28));
-
-		JTabButton disabledButton = new JTabButton("Disable Button");
-		disabledButton.setPreferredSize(new Dimension(130, 28));
-		disabledButton.setEnabled(false);
-
-		JTabButton pressedButton = new JTabButton("Pressed Button");
-		pressedButton.setPreferredSize(new Dimension(130, 28));
-
-		JTabButton labelButton = new JTabButton("");
-		labelButton.add(new JLabel("<html>line1<br />line2</html>", Views.getIconFactory()
-				.getIcon(IconSize.SMALL, "actions", "list-add"),
-				SwingConstants.LEFT));
-		// labelButton.setPreferredSize(new Dimension(130, 28));
-
-		panel.add(standardButton);
-		panel.add(rollOverButton);
-		panel.add(disabledButton);
-		panel.add(pressedButton);
-		panel.add(labelButton);
-		return panel;
-
-	}
-	
 	//Many constructors...
     /**
      * Creates a toggle button where properties are taken from the 
@@ -440,6 +381,19 @@ public class JTabButton extends JToggleButton {
 		super(icon, selected);
 	}
 
+    /**
+     * Creates a toggle button with the specified image, text
+     * and initial borders.
+     *
+     * @param text	The text that the buttons should display
+     * @param icon  the image that the button should display
+     * @param borders	Initial borders
+     */
+	public JTabButton(String text, Icon icon, int borders) {
+		super(text, icon);
+		setBorders(borders);
+	}
+	
     /**
      * Creates an initially unselected toggle button
      * with the specified image but no text.

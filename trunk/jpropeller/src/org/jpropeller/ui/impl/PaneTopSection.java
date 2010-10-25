@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.jpropeller.util.GeneralUtils;
@@ -28,14 +29,14 @@ public class PaneTopSection extends EmptyBorder {
 	
 	private final int lineMargin = 5;
 	private final int pad = 6;
-	private final int radius = 10;
+	private int radius;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = 20;
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
 	private final Color clear = new Color(0,0,0,0);
 	private final Color outline = new Color(120,120,120);
 	private final Color bg = GeneralUtils.scaleColor(DEFAULT_BG, 0.9f);
-	private final Color selectionColor = new Color(0,0,100, 40);
+	private final Color selectionColor = UIManager.getColor("itis.background.cardtab.selected");
 	
 	private final GradientPaint shadowTop = new GradientPaint(
 			1, 1, 
@@ -64,6 +65,7 @@ public class PaneTopSection extends EmptyBorder {
      */
 	public PaneTopSection(int border, boolean drawLeft, boolean drawRight, boolean selected) {
 		super(border, border, border, border);
+		radius = UIManager.getInt("itis.roundsize");
 		this.drawLeft = drawLeft;
 		this.drawRight = drawRight;
 		this.selected = selected;

@@ -24,11 +24,6 @@ import org.jpropeller.view.Views;
  */
 public class JDropDownButton extends JToggleButton {
 
-	static {
-		UIManager.put("itis.background", GeneralUtils.scaleColor(UIManager.getColor("Button.background"), 1));
-		UIManager.put("itis.background.selected", new Color(190, 200, 220));
-	}
-	
 	private Color bgColor;
 	private Color outlineColor;
 	private Color fgColor;

@@ -2,17 +2,16 @@ package org.jpropeller.ui.impl;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+
+import org.jpropeller.util.ViewUtils;
 
 /**
  * Border designed to be used round the panel displaying
@@ -26,15 +25,17 @@ public class JTabBorder extends EmptyBorder {
 	private Color selColor;
 	private int highlightAlpha;
 	
-	private int outerRoundRectSize = 10;
-	private int innerRoundRectSize = 8;
+	private int outerRoundRectSize;
+	private int innerRoundRectSize;
 
 	PaintBox selected;
 	
 	{
 		outlineColor = new Color(100,100,100);
 		highlightAlpha = 100;
-		selColor = new Color(190, 200, 220);
+		selColor = ViewUtils.outerColor();
+		outerRoundRectSize = UIManager.getInt("itis.roundsize");
+		innerRoundRectSize = outerRoundRectSize - 2;
 	}
 
     /**
@@ -47,12 +48,6 @@ public class JTabBorder extends EmptyBorder {
 
 	private void updateBoxes(int w, int h) {
 		selected = new PaintBox(
-//				new GradientPaint(		//bg
-//						0, 1, 
-//						selColor, 
-//						0, h-3, 
-//						GeneralUtils.scaleColor(selColor, 0.9), 
-//						true),
 				selColor,
 				outlineColor,			//outline
 				new GradientPaint(		//highlight
@@ -96,41 +91,6 @@ public class JTabBorder extends EmptyBorder {
 		g2d.dispose();
 	}
 
-
-	
-	/**
-	 * Demonstrate the border
-	 * 
-	 * @param args
-	 *            Ignored
-	 */
-	public static void main(String args[]) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				showDemo();
-			}
-		});
-	}
-
-	/**
-	 * Show demonstration
-	 */
-	public static void showDemo() {
-		JFrame frame = new JFrame("Custom Buttons Demo");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new FlowLayout());
-		
-		JPanel panel = new JPanel();
-		panel.setBorder(new JTabBorder());
-		frame.add(panel);
-		
-		frame.getContentPane().setBackground(Color.WHITE);
-		frame.setBackground(Color.WHITE);
-		frame.setSize(700, 85);
-		frame.setVisible(true);
-	}
-	
 	/**
 	 * Stores a set of {@link Paint}s to use to draw button
 	 */

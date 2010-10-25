@@ -36,7 +36,10 @@ public class ViewUtils {
 	 * @return			A new {@link JPanel}
 	 */
 	public final static JPanel groupPane(String title, JComponent content) {
+		final Color selectedForeground = UIManager.getColor("itis.foreground.selected");
+
 		JLabel label = new JLabel(title);
+		label.setForeground(selectedForeground);
 		label.setFont(label.getFont().deriveFont(Font.BOLD));
 		return groupPane(label, content);
 	}
@@ -85,12 +88,18 @@ public class ViewUtils {
 		return center;
 	}
 	
-	//FIXME move this to a proper UI color
-	private final static Color BG;
-	
-	static {
-		BG = new Color(190, 200, 220);
-		UIManager.put("itis.bg", BG);
+	private static Color outerColor;
+
+	/**
+	 * Get the "outer" color, used in the outermost panel that
+	 * groups together normal panels.
+	 * @return	Outer color
+	 */
+	public final static Color outerColor() {
+		if (outerColor == null) {
+			outerColor = UIManager.getColor("itis.outer.color");
+		}
+		return outerColor;
 	}
 	
 	/**
@@ -99,8 +108,7 @@ public class ViewUtils {
 	 * @param component		The {@link JComponent}
 	 */
 	public final static void outerise(JComponent component) {
-		component.setBackground(BG);
-		//component.setOpaque(false);
+		component.setBackground(outerColor());
 	}
 
 	/**
