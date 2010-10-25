@@ -11,6 +11,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 
 import org.jpropeller.util.GeneralUtils;
 
@@ -29,7 +30,7 @@ public class PaneTopToggleButton extends JToggleButton {
 	
 	private final int lineMargin = 5;
 	private int pad = 6;
-	private final int radius = 10;
+	private final int radius;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = 40;
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
@@ -37,7 +38,8 @@ public class PaneTopToggleButton extends JToggleButton {
 	private final Color clear = new Color(0,0,0,0);
 	private final Color outline = new Color(120,120,120);
 	private final Color bg = GeneralUtils.scaleColor(DEFAULT_BG, 0.9f);
-	private final Color selectionColor = new Color(0,0,100, 40);
+	private final Color selectionColor = UIManager.getColor("itis.background.cardtab.selected");
+
 	
 	private final GradientPaint shadowTop = new GradientPaint(
 			1, 1, 
@@ -59,6 +61,7 @@ public class PaneTopToggleButton extends JToggleButton {
 		setFocusable(false);
 		setContentAreaFilled(false);
 		setBorderPainted(false);
+		radius = UIManager.getInt("itis.roundsize");
 	}
 
 	
