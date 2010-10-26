@@ -42,8 +42,6 @@ import org.jpropeller.reference.Reference;
 import org.jpropeller.system.impl.PropSystemDefault;
 import org.jpropeller.task.Task;
 import org.jpropeller.task.impl.BuildTask;
-import org.jpropeller.task.impl.SynchronousTaskExecutor;
-import org.jpropeller.task.impl.TaskExecutor;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.ui.impl.ImmutableIcon;
 import org.jpropeller.util.NoInstanceAvailableException;

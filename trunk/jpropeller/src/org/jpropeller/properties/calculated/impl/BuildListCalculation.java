@@ -8,7 +8,6 @@ import org.jpropeller.calculation.Calculation;
 import org.jpropeller.collection.impl.IdentityHashSet;
 import org.jpropeller.concurrency.CancellableResponse;
 import org.jpropeller.properties.change.Changeable;
-import org.jpropeller.task.Task;
 import org.jpropeller.util.Source;
 
 /**
