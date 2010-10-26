@@ -34,6 +34,7 @@ import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
 import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.ui.impl.JDropDownButton;
+import org.jpropeller.ui.impl.NimbusDropDownButton;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
@@ -109,7 +110,12 @@ public class DropDownListView<T> implements JView {
 		LabelView labelView = new LabelView(reference.selectedValue());
 		views.add(labelView);
 
-		button = new JDropDownButton();
+		//TODO neater (automatic in button?) choosing between styles.
+		if (NimbusDropDownButton.isNimbusAvailable()) {
+			button = new NimbusDropDownButton();
+		} else {
+			button = new JDropDownButton();			
+		}
 		
 		button.add(labelView.getComponent());
 		
