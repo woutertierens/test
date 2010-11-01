@@ -31,10 +31,10 @@ public class PaneTopSection extends EmptyBorder {
 	private final int pad = 6;
 	private int radius;
 	private final int shadowSize = 4;
-	private final int shadowAlpha = 20;
+	private final int shadowAlpha = UIManager.getInt("itis.tab.shadowalpha");
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
 	private final Color clear = new Color(0,0,0,0);
-	private final Color outline = new Color(120,120,120);
+	private final Color outline = UIManager.getColor("itis.tab.outline");
 	private final Color bg = GeneralUtils.scaleColor(DEFAULT_BG, 0.9f);
 	private final Color selectionColor = UIManager.getColor("itis.background.cardtab.selected");
 	
