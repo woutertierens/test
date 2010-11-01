@@ -27,7 +27,7 @@ public class PaneBottom extends EmptyBorder {
 	private final int pad;
 	private final int radius;
 	private final int shadowSize = 4;
-	private final int shadowAlpha = 40;
+	private final int shadowAlpha = UIManager.getInt("itis.tab.shadowalpha");
 	private final Color shadowColor = new Color(0,0,0,shadowAlpha);
 	private final Color halfShadowColor = new Color(0,0,0,shadowAlpha/2);
 	private final Color clear = new Color(0,0,0,0);
@@ -44,7 +44,8 @@ public class PaneBottom extends EmptyBorder {
 			clear, 
 			false);
 
-	private final Color outline = new Color(0,0,0,120);
+	private final Color outline = UIManager.getColor("itis.tab.outline");
+;
 	private final Color bg = DEFAULT_BG;
 	private final boolean shadows = true;
 	private final boolean showTop;
