@@ -26,7 +26,6 @@ package org.jpropeller.properties.path.impl;
  * An exception thrown when a {@link PathProp} cannot look up its value
  */
 public class PathPropException extends RuntimeException {
-	private static final long serialVersionUID = -3038172194366314897L;
 
 	/**
 	 * Create an exception

@@ -4,14 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import org.jpropeller.ui.impl.PaneBottom;
 import org.jpropeller.ui.impl.PaneTopSection;
+import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 
 import com.jgoodies.forms.factories.Borders;
@@ -28,6 +31,15 @@ public class ViewUtils {
 	
 	private ViewUtils(){}
 
+	/**
+	 * Get the recommended height for a row that displays
+	 * an icon and two lines of text
+	 * @return	Row height for icon and two lines of text
+	 */
+	public final static int iconAndTwoLinesRowHeight() {
+		return 48;
+	}
+	
 	/**
 	 * Create a group pane, with a title component and content
 	 * component
@@ -184,6 +196,35 @@ public class ViewUtils {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(component);
 		return panel;
+	}
+
+	/**
+	 * Create a modal {@link JDialog} to display a {@link JView}
+	 * @param view		The {@link JView} to display
+	 * @param title		The title of the dialog
+	 * @param icon		The window icon of the dialog
+	 * @param size		The {@link Dimension} of the dialog 
+	 * 					(used for initial, preferred and also minimum)
+	 * @return			New {@link JDialog} displaying the component from 
+	 * 					{@link JView#getComponent()}
+	 */
+	public static JDialog modalDialogFromView(JView view, String title, Image icon, Dimension size) {
+		JComponent pluginPanel = view.getComponent();
+		pluginPanel.setBorder(Borders.DIALOG_BORDER);
+	
+		final JDialog pluginDialog = new JDialog();
+		pluginDialog.setTitle(title);
+		pluginDialog.setIconImage(icon);
+		pluginDialog.setModal(true);
+		
+		pluginDialog.setMinimumSize(size);
+		pluginDialog.setPreferredSize(size);
+		pluginDialog.setSize(size);
+	
+		pluginDialog.setLocationRelativeTo(null);
+		pluginDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		pluginDialog.getContentPane().add(pluginPanel);
+		return pluginDialog;
 	}
 	
 }
