@@ -134,7 +134,7 @@ public class IdentityHashSet<E> extends AbstractCollection<E> implements Set<E> 
      * @param o object to be compared for equality with this set
      * @return <tt>true</tt> if the specified object is equal to this set
      */
-	@SuppressWarnings("unchecked")		//We can use raw types since we use only equals method
+	@SuppressWarnings("rawtypes")		//We can use raw types since we use only equals method
 	@Override
 	public boolean equals(Object o) {
 		

@@ -272,7 +272,7 @@ public class BeanRowView<R extends Bean> implements TableRowView<R> {
 	}
 
 	//See below for explanation of suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public void setColumn(R row, int column, Object value) {
 		Prop<?> beanProp = findBeanProp(row, column);

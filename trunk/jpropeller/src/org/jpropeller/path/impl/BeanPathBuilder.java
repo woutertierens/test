@@ -26,7 +26,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	//We use raw transformers so we can apply them to anything - we make
 	//sure we only ever have valid types by the way we build instances
 	//of this class
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private LinkedList<Transformer> transformers;
 
 	/**
@@ -36,7 +36,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	 * @param initial		The initial transform
 	 */
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private BeanPathBuilder() {
 		transformers = new LinkedList<Transformer>();
 	}
@@ -61,7 +61,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	 * @param transformers		List of transformers
 	 */
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private BeanPathBuilder(LinkedList<Transformer> transformers) {
 		this.transformers = transformers;
 	}
@@ -80,7 +80,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	//it accepts <? super D>. We then make sure it produces something with a getter for
 	//type E  - <? extends Prop<E>>. In this way we make sure that each Transformer
 	//must provide data that the next will accept
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public <E extends Bean> BeanPathBuilder<R, E> via(Transformer<? super D, ? extends Prop<E>> nextTransform) {
 		LinkedList<Transformer> newList = new LinkedList<Transformer>(transformers);
 		newList.add(nextTransform);
@@ -104,7 +104,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 	//it accepts <? super D>. We then make sure it produces something with a getter for
 	//type E  - <? extends Prop<E>>. In this way we make sure that each Transformer
 	//must provide data that the next will accept
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public <E extends Bean> BeanPathBuilder<R, E> via(PropName<E> nextName) {
 		Transformer<? super D, ? extends Prop<E>> nextTransform = new BeanToPropTransformer<E>(nextName);
 		LinkedList<Transformer> newList = new LinkedList<Transformer>(transformers);
@@ -150,7 +150,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 		Transformer<?, ? extends Prop<D>> lastTransform;
 		
 		//We rely on valid Transformer types when created
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		List<Transformer> transforms;
 		
 		/**
@@ -161,7 +161,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 		 * 		The last transform
 		 */
 		//See first @SuppressWarnings("unchecked")
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private BeanPathDefault(List<Transformer> transforms,
 				Transformer<?, ? extends Prop<D>> lastTransform) {
 			super();
@@ -191,11 +191,11 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 		Bean current;
 		
 		//We rely on anything constructing this class to have the correct type
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		Transformer lastTransform;
 		
 		//See first suppression
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private Iterator<Transformer> iterator;
 		Prop<D> finalProp;
 
@@ -210,7 +210,7 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 		 */
 		//We use raw transformers to avoid warnings - we know the transformers follow through correctly
 		//since BeanPathBuilder enforces this as it is built
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private BeanPathIteratorDefault(Bean root, List<Transformer> transforms,
 				Transformer lastTransform) {
 			super();
