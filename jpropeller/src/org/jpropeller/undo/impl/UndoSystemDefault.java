@@ -224,7 +224,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 
 	//We can only get raw UndoDelegates from the source - we just need to trust
 	//that the source will get this right
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void prepareChange(ChangeSystem system, Changeable changed) {
 		
@@ -315,10 +315,10 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 	 */
 	private class State {
 		Changeable changeable;
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		UndoDelegate delegate;
 		Object state;
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public State(Changeable changeable,
 				UndoDelegate delegate, Object state) {
 			super();
@@ -333,7 +333,7 @@ public class UndoSystemDefault implements ChangeListener, ChangeSystemListener, 
 			delegate.restore(changeable, state);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public UndoDelegate getDelegate() {
 			return delegate;
 		}

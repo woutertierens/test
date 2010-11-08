@@ -22,7 +22,7 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 	//We use raw transformers so we can apply them to anything - we make
 	//sure we only ever have valid types by the way we build instances
 	//of this class
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private LinkedList<Transformer> transformers;
 
 	/**
@@ -32,7 +32,7 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 	 * 		The initial transform
 	 */
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public ChainTransformer(Transformer<S, T> initial) {
 		transformers = new LinkedList<Transformer>();
 		transformers.add(initial);
@@ -47,13 +47,13 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 	 * @param transformers
 	 */
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private ChainTransformer(LinkedList<Transformer> transformers) {
 		this.transformers = transformers;
 	}
 	
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public T transform(S s) {
 		Object o = s;
@@ -78,7 +78,7 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 	 * the end
 	 */
 	//See first suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public <U extends M> ChainTransformer<M, S, U> then(Transformer<T, U> nextTransform) {
 		LinkedList<Transformer> newList = new LinkedList<Transformer>(transformers);
 		newList.add(nextTransform);
@@ -102,11 +102,11 @@ public class ChainTransformer<M, S, T extends M> implements Transformer<S, T> {
 		
 		private Object current;
 		//See first suppression
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private Iterator<Transformer> iterator;
 
 		//See first suppression
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		private ChainIterator(Object root, LinkedList<Transformer> transformers) {
 			super();
 			this.current = root;

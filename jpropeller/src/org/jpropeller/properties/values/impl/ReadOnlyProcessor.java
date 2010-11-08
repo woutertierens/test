@@ -15,7 +15,7 @@ public class ReadOnlyProcessor<T> implements ValueProcessor<T> {
 	//state in the instances, all instances are identical anyway - 
 	//we just preserve compile-time type safety by handing out the instance 
 	//cast to the correct parametric type to ensure it only ever receives valid input types.
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private final static ReadOnlyProcessor INSTANCE = new ReadOnlyProcessor();
 
 	/**

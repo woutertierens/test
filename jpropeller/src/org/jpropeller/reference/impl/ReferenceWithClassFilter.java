@@ -87,7 +87,7 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	 * @return				A new reference
 	 */
 	//See docs for reasoning behind suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static ReferenceWithClassFilter createUnsafe(Class clazz, Prop filteredProp) {
 		PropName name = PropName.create(clazz, "value");
 		ClassFilterProp prop = new ClassFilterProp(clazz, name, filteredProp);
@@ -119,7 +119,7 @@ public class ReferenceWithClassFilter<M> implements Reference<M> {
 	 * @return				A new reference
 	 */
 	//See docs for reasoning behind suppression
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static ReferenceWithClassFilter createUnsafe(Class clazz, Reference filteredRef) {
 		PropName name = PropName.create(clazz, "value");
 		ClassFilterProp prop = new ClassFilterProp(clazz, name, filteredRef.value());

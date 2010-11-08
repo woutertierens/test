@@ -19,7 +19,7 @@ public interface UndoDelegateSource {
 	//We can't provide a typed UndoDelegate for an arbitrary Changeable, in any sensible way.
 	//So we just return a raw UndoDelegate - users of the source must trust that the delegate
 	//is suitable
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public UndoDelegate get(Changeable changeable) throws UndoDelegateSourceException;
 	
 }

@@ -196,7 +196,7 @@ public class FlexibleView implements JView, ChangeListener {
 	
 	//Safe to ignore the raw reference made by class filter - it exists to
 	//ensure that the class is correct
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void makeView(Class<?> clazz) {
 		//If we have done class already, return
 		if (views.containsKey(clazz)) {
@@ -244,7 +244,7 @@ public class FlexibleView implements JView, ChangeListener {
 	//have seen a Bean in the reference, rather than creating
 	//one when the FlexibleView is created (like we do with the 
 	//LabelView)
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private boolean findViewFromSystem(ViewSystem system, Class clazz) {
 		JViewSource<?> sourceFor = system.jviewSourceFor(clazz);
 		if (sourceFor != null) {

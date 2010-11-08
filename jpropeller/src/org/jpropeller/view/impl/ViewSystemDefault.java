@@ -14,7 +14,7 @@ public class ViewSystemDefault implements ViewSystem {
 
 	//Note that we ensure that we only ever add mappings from
 	//classes to matching views, via registerViewFor
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	private Map<Class, JViewSource> viewMap = new HashMap<Class, JViewSource>();
 	
 	@Override

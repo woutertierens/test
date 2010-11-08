@@ -14,7 +14,7 @@ public class NaturalComparator<T extends Comparable<? super T>> implements Compa
 	//state in the instances, all instances are identical anyway - 
 	//we just preserve compile-time type safety by handing out the instance 
 	//cast to the correct parametric type to ensure it only ever receives valid input types.
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private final static NaturalComparator INSTANCE = new NaturalComparator();
 	
 	/**
