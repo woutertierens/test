@@ -53,6 +53,7 @@ public class ComponentDialog extends JDialog {
 		getContentPane().add(buildUI());
 		
 		pack();
+		setMinimumSize(getPreferredSize());
 	}
 	
 	/**

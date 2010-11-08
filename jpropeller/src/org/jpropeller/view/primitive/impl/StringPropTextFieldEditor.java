@@ -45,17 +45,19 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 	String valueAtStartOfEditing = null;
 	
 	private final boolean multiline;
-
+	
 	private UpdateManager updateManager;
 
 	private StringPropTextFieldEditor(Prop<String> model,
-			boolean multiline, Prop<Boolean> locked) {
+			boolean multiline, Prop<Boolean> locked, final boolean editable) {
 
 		super();
 		this.model = model;
 		this.locked = locked;
 		this.multiline = multiline;
 		buildField();
+		
+		text.setEditable(editable);
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
 		updateManager.registerUpdatable(this);
@@ -79,18 +81,20 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 	}
 
 	/**
-	 * Create a {@link StringPropTextFieldEditor}
+	 * Create a {@link StringPropTextFieldEditor}.
+	 * Will be editable.
 	 * @param model		The {@link Prop} to display 
 	 * @param multiline	True if the view should support multiline editing - if so,
 	 * 					it will not commit on pressing enter, only on losing focus.
 	 * @return			A new {@link StringPropTextFieldEditor}
 	 */
 	public final static StringPropTextFieldEditor create(Prop<String> model, boolean multiline) {
-		return new StringPropTextFieldEditor(model, multiline, null);
+		return new StringPropTextFieldEditor(model, multiline, null, true);
 	}
 	
 	/**
-	 * Create a {@link StringPropTextFieldEditor}
+	 * Create a {@link StringPropTextFieldEditor}.
+	 * Will be editable when not locked.
 	 * @param model		The {@link Prop} to display 
 	 * @param multiline	True if the view should support multiline editing - if so,
 	 * 					it will not commit on pressing enter, only on losing focus.
@@ -101,11 +105,27 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 	 */
 	public final static StringPropTextFieldEditor create(Prop<String> model,
 			boolean multiline, Prop<Boolean> locked) {
-		return new StringPropTextFieldEditor(model, multiline, locked);
+		return new StringPropTextFieldEditor(model, multiline, locked, true);
 	}
 	
 	/**
-	 * Create a single line {@link StringPropTextFieldEditor}
+	 * Create a {@link StringPropTextFieldEditor}.
+	 * @param model		The {@link Prop} to display 
+	 * @param multiline	True if the view should support multiline editing - if so,
+	 * 					it will not commit on pressing enter, only on losing focus.
+	 * @param editable	If this is true, will support editing. Otherwise, will only
+	 * 					display and allow copying, even if prop is editable.
+	 * @return
+	 * 		A new {@link StringPropTextFieldEditor}
+	 */
+	public final static StringPropTextFieldEditor create(Prop<String> model,
+			boolean multiline, boolean editable) {
+		return new StringPropTextFieldEditor(model, multiline, null, editable);
+	}
+	
+	/**
+	 * Create a single line {@link StringPropTextFieldEditor}.
+	 * Will be editable when not locked.
 	 * @param model		The {@link Prop} to display 
 	 * @param locked	If this is non-null, the view will not support
 	 * 					editing while its value is true.
@@ -114,7 +134,7 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 	 */
 	public final static StringPropTextFieldEditor create(Prop<String> model,
 			Prop<Boolean> locked) {
-		return new StringPropTextFieldEditor(model, false, locked);
+		return new StringPropTextFieldEditor(model, false, locked, true);
 	}
 
 	@Override

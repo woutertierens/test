@@ -7,10 +7,13 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionAndValueReference;
+import org.jpropeller.properties.list.selection.impl.ListAndSelectionAndValueReferenceDefault;
 import org.jpropeller.ui.impl.JTableImproved;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
+import org.jpropeller.view.View;
 import org.jpropeller.view.table.FiringTableModel;
 import org.jpropeller.view.table.TableRowView;
 import org.jpropeller.view.table.columns.ColumnLayout;
@@ -26,10 +29,23 @@ import org.jpropeller.view.table.columns.impl.ColumnUpdater;
  */
 public class SingleSelectionListTableView<T> implements JView {
 
-	JTable table;
-	ListAndSelectionAndValueReference<T> model;
-	ListTableModel<T> tableModel;
+	private final JTable table;
+	private final ListAndSelectionAndValueReference<T> model;
+	private final ListTableModel<T> tableModel;
 	private ColumnUpdater columnUpdater;
+	
+	/**
+	 * Create a {@link SingleSelectionListTableView} of
+	 * the list in a particular prop
+	 * @param <S>		The type of value in the list 
+	 * @param clazz		The class of value in the list
+	 * @param prop		The {@link Prop} containing viewed {@link CList}
+	 * @param rowView	The {@link TableRowView} used to display elements of the list
+	 * @return			A new {@link SingleSelectionListTableView}
+	 */
+	public static <S> SingleSelectionListTableView<S> create(Class<S> clazz, Prop<CList<S>> prop, TableRowView<? super S> rowView) {
+		return new SingleSelectionListTableView<S>(new ListAndSelectionAndValueReferenceDefault<S>(clazz, prop), rowView);
+	}
 	
 	/**
 	 * Make a new {@link SingleSelectionListTableView}, with default column layout
@@ -161,20 +177,17 @@ public class SingleSelectionListTableView<T> implements JView {
 
 	@Override
 	public void cancel() {
-		//TODO find way to cancel
-		//Can't currently cancel
+		//Cannot cancel
 	}
 
 	@Override
 	public void commit() throws CompletionException {
-		//TODO find way to commit
-		//Can't currently commit
+		//Cannot commit
 	}
 
 	@Override
 	public boolean isEditing() {
-		// TODO find way to tell if we are editing
-		//Currently never editing (or rather - not editing in a way we can cancel or commit)
+		//Never editing
 		return false;
 	}
 
@@ -203,5 +216,12 @@ public class SingleSelectionListTableView<T> implements JView {
 		return Format.LARGE;
 	}
 
+	/**
+	 * The {@link ListAndSelectionAndValueReference} displayed by this {@link View}
+	 * @return	{@link ListAndSelectionAndValueReference}
+	 */
+	public ListAndSelectionAndValueReference<T> getModel() {
+		return model;
+	}
 	
 }
