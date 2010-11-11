@@ -14,6 +14,8 @@ import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.system.Props;
+import org.jpropeller.ui.IconAndHTMLRenderer;
+import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.info.Described;
@@ -29,6 +31,7 @@ public class LabelView implements JView, ChangeListener {
 	private Prop<?> prop;
 	private UpdateManager updateManager;
 	private JLabel label;
+	private final IconAndHTMLRenderer renderer;
 
 	private final static DecimalFormat format = new DecimalFormat("#.##");
 	
@@ -36,10 +39,13 @@ public class LabelView implements JView, ChangeListener {
 	 * Create a {@link LabelView}
 	 * 
 	 * @param prop		The {@link Prop} to display
+	 * @param renderer	{@link IconAndHTMLRenderer} to render (suitable) contents.
+	 * 					Ignored if null
 	 */
-	public LabelView(Prop<?> prop) {
+	public LabelView(Prop<?> prop, IconAndHTMLRenderer renderer) {
 		super();
 		this.prop = prop;
+		this.renderer = renderer;
 		
 		label = new JLabel();
 		
@@ -56,10 +62,19 @@ public class LabelView implements JView, ChangeListener {
 	/**
 	 * Create a {@link LabelView}
 	 * 
+	 * @param prop		The {@link Prop} to display
+	 */
+	public LabelView(Prop<?> prop) {
+		this(prop, null);
+	}
+	
+	/**
+	 * Create a {@link LabelView}
+	 * 
 	 * @param ref		The reference to display
 	 */
 	public LabelView(Reference<?> ref) {
-		this(ref.value());
+		this(ref.value(), null);
 	}
 
 	@Override
@@ -74,27 +89,38 @@ public class LabelView implements JView, ChangeListener {
 		Object value = prop.get();
 		
 		String s = "";
+		Icon icon = null;
 		if (value != null) {
-			if (value instanceof Number) {
-				s = format.format(value);
-			}
-			if(value instanceof Illustrated) {
-				label.setIcon(((Illustrated)value).illustration().get());
-			} 
-			if(value instanceof Described) {
-				s = ((Described)value).description().get();
+			if (renderer != null && renderer.canRender(value)) {
+				s = renderer.getHTML(value);
+				icon = renderer.getIcon(value);
 			} else {
-				s = value.toString();
-			}
-			if(value instanceof Icon) {
-				label.setIcon((Icon)value);
-				s = "";
+				if (value instanceof Number) {
+					s = format.format(value);
+				}
+				if(value instanceof Illustrated) {
+					label.setIcon(((Illustrated)value).illustration().get());
+				} 
+				if(value instanceof Described) {
+					s = ((Described)value).description().get();
+				} else {
+					s = value.toString();
+				}
+				if(value instanceof Icon) {
+					icon = (Icon)value;
+					s = "";
+				}
 			}
 		}
 		
 		if (!s.equals(label.getText())) {
 			label.setText(s);
 		}
+		Icon labelIcon = label.getIcon();
+		if (!GeneralUtils.equalIncludingNull(icon, labelIcon)) {
+			label.setIcon(icon);
+		}
+		
 	}
 
 	@Override

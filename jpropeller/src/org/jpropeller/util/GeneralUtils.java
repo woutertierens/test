@@ -372,5 +372,27 @@ public class GeneralUtils {
 		}
 		return value;
 	}
+
+	/**
+	 * Compare two values, first checking whether either is null
+	 * and if so considering null to be equal only to null.
+	 * @param a		First value
+	 * @param b		Second value
+	 * @return		True if objects are equal using {@link Object#equals(Object)},
+	 * 				OR both null. Note that the equality method of object a
+	 * 				is used, if this matters for debugging.
+	 */
+	public static boolean equalIncludingNull(Object a, Object b) {
+		//If a is null, only equal if b is too
+		if (a == null) {
+			return (b == null);
+		//a is not null, so if b is it is not equal
+		} else if (b == null) {
+			return false;
+		//Neither a nor b is null
+		} else {
+			return a.equals(b);
+		}
+	}
 	
 }
