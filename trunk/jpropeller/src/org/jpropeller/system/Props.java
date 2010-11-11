@@ -414,6 +414,23 @@ public class Props {
 	}
 	
 	/**
+	 * Make a new immutable prop with an enum value
+	 * @param <T>
+	 * 		The type of enum value in the prop 
+	 * @param name
+	 * 		The name of the prop
+	 * @param clazz 
+	 * 		The class of enum value in the prop
+	 * @param value
+	 * 		The value of the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public static <T extends Enum<T>> PropImmutable<T> create(Class<T> clazz, String name, T value) {
+		return PropImmutable.create(clazz, name, value);
+	}
+	
+	/**
 	 * Make a new read-only prop with a {@link Changeable} value
 	 * @param <T>
 	 * 		The type of {@link Changeable} value in the prop 
