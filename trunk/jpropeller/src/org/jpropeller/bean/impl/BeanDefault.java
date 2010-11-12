@@ -144,6 +144,11 @@ public abstract class BeanDefault implements Bean {
 			S value) {
 		return features.create(clazz, name, value);
 	}
+	
+	protected <S extends Enum<S>> PropImmutable<S> createEnum(Class<S> clazz, String name, S value) {
+		return features.create(clazz, name, value);
+	}
+	
 	protected Prop<Byte> create(String name, Byte value,
 			ValueProcessor<Byte> processor) {
 		return features.create(name, value, processor);
@@ -244,8 +249,17 @@ public abstract class BeanDefault implements Bean {
 	protected <S extends Enum<S>> PropImmutable<S> editable(Class<S> clazz, String name, S value) {
 		return features.editable(clazz, name, value);
 	}
-	
+
+	protected <S extends Enum<S>> PropImmutable<S> editableEnum(Class<S> clazz, String name, S value) {
+		return features.editable(clazz, name, value);
+	}
+
 	protected <S extends Bean> Prop<S> editable(Class<S> clazz,
+			String name, S value) {
+		return features.editable(clazz, name, value);
+	}
+
+	protected <S extends Bean> Prop<S> editableBean(Class<S> clazz,
 			String name, S value) {
 		return features.editable(clazz, name, value);
 	}
