@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 
 import org.jpropeller.collection.CList;
@@ -98,6 +99,8 @@ public class ImmutableListSelectionView<T extends Immutable> implements JView, C
 			final JTabButton button = new JTabButton(JTabButton.INDEPENDENT_BUTTON);
 			
 			final JLabel label = new JLabel(renderer.getHTML(db), renderer.getIcon(db), SwingConstants.LEFT);
+			label.setBorder(new EmptyBorder(5, 2, 5, 2));
+			label.setIconTextGap(16);
 			button.add(label);
 			
 			dbToButton.put(db, button);

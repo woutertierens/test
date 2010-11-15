@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.jpropeller.properties.Prop;
@@ -124,7 +123,7 @@ public class LabelView implements JView, ChangeListener {
 	}
 
 	@Override
-	public JComponent getComponent() {
+	public JLabel getComponent() {
 		return label;
 	}
 
