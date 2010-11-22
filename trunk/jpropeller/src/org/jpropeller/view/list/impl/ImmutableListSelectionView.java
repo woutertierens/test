@@ -11,6 +11,7 @@ import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -83,8 +84,9 @@ public class ImmutableListSelectionView<T extends Immutable> implements JView, C
 	 * 									values.
 	 * @param locked					If this is non-null and has value true, the view will not
 	 * 									make changes to the model {@link Prop}.
+	 * @param useRadioButtons			True to use {@link JRadioButton}, false for {@link JTabButton}s
 	 */
-	public ImmutableListSelectionView(final Prop<T> model, List<T> possibleSelections, IconAndHTMLRenderer renderer, Prop<Boolean> locked) {
+	public ImmutableListSelectionView(final Prop<T> model, List<T> possibleSelections, IconAndHTMLRenderer renderer, Prop<Boolean> locked, final boolean useRadioButtons) {
 
 		this.model = model;
 		this.locked = locked;
@@ -96,11 +98,16 @@ public class ImmutableListSelectionView<T extends Immutable> implements JView, C
 		group = new ButtonGroup();
 		for (final T db : selections) {
 			
-			final JTabButton button = new JTabButton(JTabButton.INDEPENDENT_BUTTON);
+			//final JToggleButton button = new JTabButton(JTabButton.INDEPENDENT_BUTTON);
+			final JToggleButton button = new JRadioButton();
 			
 			final JLabel label = new JLabel(renderer.getHTML(db), renderer.getIcon(db), SwingConstants.LEFT);
-			label.setBorder(new EmptyBorder(5, 2, 5, 2));
-			label.setIconTextGap(16);
+			if (useRadioButtons) {
+				label.setBorder(new EmptyBorder(5, 24, 5, 2));
+			} else {
+				label.setBorder(new EmptyBorder(5, 2, 5, 2));
+				label.setIconTextGap(16);
+			}
 			button.add(label);
 			
 			dbToButton.put(db, button);
@@ -115,7 +122,9 @@ public class ImmutableListSelectionView<T extends Immutable> implements JView, C
 					if (!updating && button.isSelected()) {
 						model.set(db);
 					}
-					label.setForeground(button.isSelected() ? selectedForeground : unselectedForeground);
+					if (!useRadioButtons) {
+						label.setForeground(button.isSelected() ? selectedForeground : unselectedForeground);
+					}
 				}
 			});
 		}
