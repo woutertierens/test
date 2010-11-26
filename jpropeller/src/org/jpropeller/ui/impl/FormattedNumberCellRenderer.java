@@ -37,7 +37,7 @@ public class FormattedNumberCellRenderer extends DefaultTableCellRenderer {
 	 * Create a renderer, default format of "#.##"
 	 * @param opaque Opaque or not.
 	 */
-	FormattedNumberCellRenderer(boolean opaque) {
+	public FormattedNumberCellRenderer(boolean opaque) {
 		this(opaque, new DecimalFormat("#.##"));
 	}
 	
@@ -46,7 +46,7 @@ public class FormattedNumberCellRenderer extends DefaultTableCellRenderer {
 	 * @param opaque Opaque or not.
 	 * @param format {@link Format} for numbers
 	 */
-	FormattedNumberCellRenderer(boolean opaque, Format format) {
+	public FormattedNumberCellRenderer(boolean opaque, Format format) {
 		super();		
 		setOpaque(opaque);
 		this.format = format;
