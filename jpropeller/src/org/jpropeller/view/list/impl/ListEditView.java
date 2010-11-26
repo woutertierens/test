@@ -129,6 +129,34 @@ public class ListEditView<T> implements JView{
 		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked);
 	}
 	
+	
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListAndSelectionAndValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @param editSelected
+	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param locked	Property showing whether editing is locked, or null if the
+	 * 					editing is always unlocked
+	 * @param indexColumn		True to have an index column 
+	 * @param indexName 		Name of index caolumn, if present
+	 * @param indexBase 		Base (normally 0 or 1) for index values
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase) {
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, indexColumn, indexName, indexBase);
+	}
+	
 	/**
 	 * Create a {@link ListEditView}
 	 * @param model
@@ -143,11 +171,30 @@ public class ListEditView<T> implements JView{
 	 * 		If true, an extra panel is shown to edit the selected item
 	 * @param locked	Property showing whether editing is locked, or null if the
 	 * 					editing is always unlocked
-	 * @param editedClasses
-	 * 		The classes for which a specific editor will be looked up,
-	 * 		to be used when an element of that class is selected
+	 * @param indexColumn		True to have an index column 
+	 * @param indexName 		Name of index caolumn, if present
+	 * @param indexBase 		Base (normally 0 or 1) for index values
 	 */
 	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked) {
+		this(model, clazz, rowView, source, editSelected, locked, false, "", 0);
+	}
+	
+	/**
+	 * Create a {@link ListEditView}
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @param editSelected
+	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param locked	Property showing whether editing is locked, or null if the
+	 * 					editing is always unlocked
+	 */
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -160,7 +207,7 @@ public class ListEditView<T> implements JView{
 		selectedReference = PathPropBuilder.from(clazz, model).toRef(refToSelected);
 		
 		//Make table view, put table in a scroll pane
-		tableView = new SingleSelectionListTableView<T>(model, rowView);
+		tableView = new SingleSelectionListTableView<T>(model, rowView, null, false, indexColumn, indexName, indexBase);
 		JTable table = tableView.getComponent();
 		JScrollPane tableScroll = new JScrollPane(table);
 		tablePanel = new JPanel(new BorderLayout());
