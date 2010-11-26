@@ -61,6 +61,7 @@ public class SingleSelectionListTableView<T> implements JView {
 		this(model, rowView, null, false);
 	}
 	
+	
 	/**
 	 * Make a new {@link SingleSelectionListTableView}
 	 * @param model				The model to be displayed - references the list 
@@ -76,8 +77,29 @@ public class SingleSelectionListTableView<T> implements JView {
 			TableRowView<? super T> rowView,
 			ColumnLayout columnLayout,
 			boolean sorting) {
+		this(model, rowView, columnLayout, sorting, false, "", 0);
+	}
+	
+	/**
+	 * Make a new {@link SingleSelectionListTableView}
+	 * @param model				The model to be displayed - references the list 
+	 * 							that will be displayed as rows of a table
+	 * @param rowView			The {@link TableRowView} to convert from 
+	 * 							elements of the list to rows of the {@link JTable}
+	 * @param columnLayout 		The layout of the table columns, or null to 
+	 * 							use default {@link JTable} behaviour
+	 * @param sorting			True to allow sorting of table, false otherwise
+	 * @param indexColumn		True to have an index column 
+	 * @param indexName 		Name of index caolumn, if present
+	 * @param indexBase 		Base (normally 0 or 1) for index values
+	 */
+	public SingleSelectionListTableView(
+			ListAndSelectionAndValueReference<T> model, 
+			TableRowView<? super T> rowView,
+			ColumnLayout columnLayout,
+			boolean sorting, boolean indexColumn, String indexName, int indexBase) {
 		this.model = model;
-		tableModel = new ListTableModel<T>(model, rowView);
+		tableModel = new ListTableModel<T>(model, rowView, indexColumn, indexName, indexBase);
 		
 		//Only allow the selection to be set when the table model is NOT firing a change - 
 		//this is somewhat messy, but is necessary to wrest control of updating the selection
