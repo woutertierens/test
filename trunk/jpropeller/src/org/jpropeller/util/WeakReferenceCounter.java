@@ -46,7 +46,6 @@ public class WeakReferenceCounter<T> implements Iterable<T> {
 		Object collected;
 		while ((collected = queue.poll())!= null) {
 			counts.remove(collected);
-			collected = queue.poll();
 		}
 	}
 

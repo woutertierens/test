@@ -35,6 +35,7 @@ public class ListSelectionProp implements Prop<Integer> {
 	private PropName<Integer> name;
 	private int index;
 	private boolean postSelectOnDeletion = true;
+	private boolean selectFirstRatherThanNothing = true;
 	private CList<?> list;
 
 	/**
@@ -173,8 +174,14 @@ public class ListSelectionProp implements Prop<Integer> {
 		Props.getPropSystem().getChangeSystem().prepareRead(this);
 		try {
 			//Check whether index is valid - if not, reset it first
+			//Note that we are fine to read the list state here, so
+			//we can also try to select within the list where possible.
 			if (index < -1 || index >= list.size()) {
-				resetIndex();
+				if (!list.isEmpty() && selectFirstRatherThanNothing) {
+					index = 0;
+				} else {
+					index = -1;
+				}
 			}
 			
 			return index;
