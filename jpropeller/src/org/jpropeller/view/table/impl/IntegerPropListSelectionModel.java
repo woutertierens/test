@@ -88,7 +88,6 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 			}
 		});
 
-		//FIXME Check this works - not sure it does
 		//Perform initial sync from prop to delegate
 		handlePropChange();
 	}

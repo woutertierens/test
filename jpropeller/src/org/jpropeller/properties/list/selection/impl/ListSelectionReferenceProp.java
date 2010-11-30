@@ -106,26 +106,24 @@ public class ListSelectionReferenceProp<T> implements Prop<Integer> {
 	}
 
 	private ListSelectionProp currentSelection() {
-		
-		
+				
 		//Make sure we have a ListSelection on the current list
 		CList<T> currentList = listProp.get();
 
-		//If the list is null, just skip
-		if (currentList == null) return null;
+		//If the list is null, just clear all old selections (we don't need 
+		//any selections for a null list) and return null selection
+		if (currentList == null) {
+			clearAllSelections();
+			return null;
+		}
 		
 		ListSelectionProp currentSelection = selectionMap.get(currentList);
 		
-		//If we don't have a selection for this list, we need to make a new one, and get rid of any old ones
+		//If we don't have a selection for this list, we need to 
+		//get rid of any old ones, and make a new one
 		if (currentSelection == null) {
 			
-			//We need to get old selection(s) to stop listening to lists, or they will hang around as long
-			//as the list does. We also don't need to listen to them any more.
-			for (ListSelectionProp oldSelection : selectionMap.values()) {
-				oldSelection.dispose();
-				oldSelection.features().removeChangeableListener(this);
-			}			
-			selectionMap.clear();
+			clearAllSelections();
 			
 			currentSelection = new ListSelectionProp(currentList);
 			selectionMap.put(currentList, currentSelection);
@@ -140,6 +138,16 @@ public class ListSelectionReferenceProp<T> implements Prop<Integer> {
 		}
 		
 		return currentSelection;
+	}
+
+	private void clearAllSelections() {
+		//We need to get old selection(s) to stop listening to lists, or they will hang around as long
+		//as the list does. We also don't need to listen to them any more.
+		for (ListSelectionProp oldSelection : selectionMap.values()) {
+			oldSelection.dispose();
+			oldSelection.features().removeChangeableListener(this);
+		}			
+		selectionMap.clear();
 	}
 	
 	@Override
