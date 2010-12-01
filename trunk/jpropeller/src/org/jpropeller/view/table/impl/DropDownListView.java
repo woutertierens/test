@@ -1,6 +1,7 @@
 package org.jpropeller.view.table.impl;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -24,6 +25,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
@@ -93,15 +95,15 @@ public class DropDownListView<T> implements JView {
 	 * @param minWidth		The minimum width of the table popup used for selection. If
 	 * 						the button provided by {@link #getComponent()} is wider than this,
 	 * 						then the table popup will expand to the same width.
-	 * @param height		The height of the popup. If this is insufficient to display all
+	 * @param maxHeight		The maximum height of the popup. If this is insufficient to display all
 	 * 						list elements, then the popup will contain a scrollbar.
 	 * @param displayHeader	True to display table header in popup, false otherwise.
 	 */
-	public DropDownListView(Class<T> modelClass, Prop<CList<T>> model, TableRowView<? super T> rowView, int minWidth, int height, boolean displayHeader) {
+	public DropDownListView(Class<T> modelClass, Prop<CList<T>> model, TableRowView<? super T> rowView, int minWidth, final int maxHeight, boolean displayHeader) {
 		List<View> views = new ArrayList<View>();
 		
 		reference = new ListAndSelectionAndValueReferenceDefault<T>(modelClass, model);
-		SingleSelectionListTableView<T> listView = new SingleSelectionListTableView<T>(reference, rowView);
+		final SingleSelectionListTableView<T> listView = new SingleSelectionListTableView<T>(reference, rowView);
 		views.add(listView);
 		table = listView.getComponent();
 		
@@ -118,11 +120,28 @@ public class DropDownListView<T> implements JView {
 		}
 		
 		button.add(labelView.getComponent());
-		
-		JScrollPane listScroll = new JScrollPane(listView.getComponent());
-		listScroll.setBorder(null);
-		final PopupHandler handler = new PopupHandler(listScroll, listView.getComponent(), button, minWidth, height);
 
+		final JScrollPane listScroll = new JScrollPane(listView.getComponent());
+		listScroll.setBorder(null);
+
+		Runnable preparePopup = new Runnable() {
+			@Override
+			public void run() {
+				Dimension size = listView.getComponent().getPreferredSize();
+				int preferredHeight = size.height;
+				if (preferredHeight > maxHeight) {
+					preferredHeight = maxHeight;
+				}
+				//Widths will be replaced by the popup handler
+				listScroll.setPreferredSize(new Dimension(10, preferredHeight));
+				listScroll.setMaximumSize(new Dimension(10, preferredHeight));
+				listScroll.setMinimumSize(new Dimension(10, preferredHeight));
+			}
+		};
+
+		final PopupHandler handler = new PopupHandler(listScroll, listView.getComponent(), button, minWidth, preparePopup);
+
+		
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -202,19 +221,20 @@ public class DropDownListView<T> implements JView {
 		private final Component popupComponent;
 		private final Component invoker;
 		private final int minWidth;
-		private final int height;
 		private final int gap = 4;
+		private final Runnable preparePopup;
 
-		public PopupHandler(Component popupComponent, Component focusComponent, Component invoker, int minWidth, int height) {
+		public PopupHandler(Component popupComponent, Component focusComponent, Component invoker, int minWidth, Runnable preparePopup) {
 			
 			this.invoker = invoker;
 			this.focusComponent = focusComponent;
 			this.popupComponent = popupComponent;
 			this.minWidth = minWidth;
-			this.height = height;
+			this.preparePopup = preparePopup;
 			
 		    popup = new JPopupMenu();
 		    popup.removeAll();
+		    popup.setBorder(new MatteBorder(1, 1, 1, 1, Color.darkGray));
 		    popup.setLayout(new BorderLayout());
 		    popup.add(popupComponent, BorderLayout.CENTER);
 
@@ -231,8 +251,10 @@ public class DropDownListView<T> implements JView {
 		    	if (width < minWidth) {
 		    		width = minWidth;
 		    	}
-			    popupComponent.setPreferredSize(new Dimension(width, height));
-			    popupComponent.setMinimumSize(new Dimension(width, height));
+		    	preparePopup.run();
+			    popupComponent.setPreferredSize(new Dimension(width, popupComponent.getPreferredSize().height));
+			    popupComponent.setMinimumSize(new Dimension(width, popupComponent.getMinimumSize().height));
+			    popupComponent.setMaximumSize(new Dimension(width, popupComponent.getMaximumSize().height));
 			    popup.pack();
 				
 				//Find position relative to invoker - if we would appear (partially) off screen bottom, display above
