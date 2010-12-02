@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
@@ -33,6 +36,7 @@ public class LabelView implements JView, ChangeListener {
 	private final IconAndHTMLRenderer renderer;
 
 	private final static DecimalFormat format = new DecimalFormat("#.##");
+	private final static DateTimeFormatter dateTimeFormat = DateTimeFormat.shortDateTime();
 	
 	/**
 	 * Create a {@link LabelView}
@@ -94,20 +98,22 @@ public class LabelView implements JView, ChangeListener {
 				s = renderer.getHTML(value);
 				icon = renderer.getIcon(value);
 			} else {
-				if (value instanceof Number) {
-					s = format.format(value);
-				}
+
 				if(value instanceof Illustrated) {
-					label.setIcon(((Illustrated)value).illustration().get());
-				} 
-				if(value instanceof Described) {
-					s = ((Described)value).description().get();
-				} else {
-					s = value.toString();
-				}
-				if(value instanceof Icon) {
+					icon = (((Illustrated)value).illustration().get());
+				} else	if(value instanceof Icon) {
 					icon = (Icon)value;
 					s = "";
+				}
+				
+				if (value instanceof Described) {
+					s = ((Described)value).description().get();
+				} else if (value instanceof Number) {
+					s = format.format(value);
+				} else if (value instanceof DateTime) {
+					s = dateTimeFormat.print((DateTime)value);
+				} else {
+					s = value.toString();
 				}
 			}
 		}
