@@ -328,8 +328,7 @@ public class DropDownListView<T> implements JView {
 	 * @param columnClass The rendered class
 	 * @param renderer The default renderer
 	 */
-	public void setDefaultRenderer(Class<?> columnClass,
-			TableCellRenderer renderer) {
+	public void setDefaultRenderer(Class<?> columnClass, TableCellRenderer renderer) {
 		table.setDefaultRenderer(columnClass, renderer);
 	}
 

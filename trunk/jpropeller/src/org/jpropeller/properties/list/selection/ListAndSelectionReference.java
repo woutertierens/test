@@ -1,7 +1,7 @@
 package org.jpropeller.properties.list.selection;
 
 import org.jpropeller.collection.CList;
-import org.jpropeller.properties.list.selection.impl.ListSelectionReferenceProp;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.reference.Reference;
 
 /**
@@ -20,6 +20,6 @@ public interface ListAndSelectionReference<T> extends Reference<CList<T>>{
 	 * @return
 	 * 		The selection index
 	 */
-	public ListSelectionReferenceProp<T> selection();
+	public Prop<Integer> selection();
 
 }
