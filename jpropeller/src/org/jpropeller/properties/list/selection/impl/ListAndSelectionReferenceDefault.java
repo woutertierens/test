@@ -15,9 +15,30 @@ import org.jpropeller.reference.Reference;
  */
 public class ListAndSelectionReferenceDefault<T> extends BeanDefault implements Reference<CList<T>>, ListAndSelectionReference<T> {
 
-	ListSelectionReferenceProp<T> selection;
+	Prop<Integer> selection;
 	Prop<CList<T>> value;
 
+	/**
+	 * Make a new {@link ListAndSelectionReferenceDefault}
+	 * @param list			The {@link Prop} of {@link CList} in the reference
+	 * @param selection		The {@link Prop} of integer selection index in the reference
+	 * @return 				A new {@link ListAndSelectionReferenceDefault}
+	 * @param <T>			The type of element in the list 
+	 */
+	public static <T> ListAndSelectionReferenceDefault<T> create(Prop<CList<T>> list, Prop<Integer> selection) {
+		return new ListAndSelectionReferenceDefault<T>(list, selection);
+	}
+	
+	/**
+	 * Make a new {@link ListAndSelectionReferenceDefault}
+	 * @param list			The {@link Prop} of {@link CList} in the reference
+	 * @param selection		The {@link Prop} of integer selection index in the reference
+	 */
+	public ListAndSelectionReferenceDefault(Prop<CList<T>> list, Prop<Integer> selection) {
+		this.value = addProp(list);
+		this.selection = addProp(selection);
+	}
+	
 	/**
 	 * Make a new {@link ListAndSelectionReferenceDefault}
 	 * @param clazz
@@ -35,7 +56,7 @@ public class ListAndSelectionReferenceDefault<T> extends BeanDefault implements 
 	}
 
 	@Override
-	public ListSelectionReferenceProp<T> selection() {
+	public Prop<Integer> selection() {
 		return selection;
 	}
 
