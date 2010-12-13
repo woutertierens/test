@@ -28,6 +28,7 @@ import org.jpropeller.view.bean.impl.BeanEditor;
 import org.jpropeller.view.impl.CompositeViewHelper;
 import org.jpropeller.view.impl.FlexibleView;
 import org.jpropeller.view.table.TableRowView;
+import org.jpropeller.view.table.columns.ColumnLayout;
 import org.jpropeller.view.table.impl.SingleSelectionListTableView;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -120,6 +121,29 @@ public class ListEditView<T> implements JView{
 	 * 		The source for new elements to add to the list
 	 * @param editSelected
 	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param columnLayout	The {@link ColumnLayout} to use, or null if not required 
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, ColumnLayout columnLayout) {
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, false, null, -1, columnLayout);
+	}
+	
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListAndSelectionAndValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @param editSelected
+	 * 		If true, an extra panel is shown to edit the selected item
 	 * @param locked	Property showing whether editing is locked, or null if the
 	 * 					editing is always unlocked
 	 * @return 
@@ -154,7 +178,7 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, indexColumn, indexName, indexBase);
+		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, indexColumn, indexName, indexBase, null);
 	}
 	
 	/**
@@ -176,7 +200,7 @@ public class ListEditView<T> implements JView{
 	 * @param indexBase 		Base (normally 0 or 1) for index values
 	 */
 	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked) {
-		this(model, clazz, rowView, source, editSelected, locked, false, "", 0);
+		this(model, clazz, rowView, source, editSelected, locked, false, "", 0, null);
 	}
 	
 	/**
@@ -194,7 +218,7 @@ public class ListEditView<T> implements JView{
 	 * @param locked	Property showing whether editing is locked, or null if the
 	 * 					editing is always unlocked
 	 */
-	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase) {
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase, ColumnLayout columnLayout) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -207,7 +231,7 @@ public class ListEditView<T> implements JView{
 		selectedReference = PathPropBuilder.from(clazz, model).toRef(refToSelected);
 		
 		//Make table view, put table in a scroll pane
-		tableView = new SingleSelectionListTableView<T>(model, rowView, null, false, indexColumn, indexName, indexBase);
+		tableView = new SingleSelectionListTableView<T>(model, rowView, columnLayout, false, indexColumn, indexName, indexBase);
 		JTable table = tableView.getComponent();
 		JScrollPane tableScroll = new JScrollPane(table);
 		tablePanel = new JPanel(new BorderLayout());
