@@ -465,6 +465,23 @@ public class Props {
 	}
 
 	/**
+	 * Make a new editable prop with an {@link Immutable} value
+	 * @param <T>
+	 * 		The type of {@link Immutable} value in the prop 
+	 * @param name
+	 * 		The name of the prop
+	 * @param clazz 
+	 * 		The class of {@link Immutable} value in the prop
+	 * @param value
+	 * 		The value of the prop
+	 * @return
+	 * 		The new prop
+	 */
+	public static <T extends Immutable> Prop<T> editableChangeable(Class<T> clazz, String name, T value) {
+		return PropImmutable.editable(clazz, name, value);
+	}
+	
+	/**
 	 * Make an unmodifiable (read only) view of a given {@link Prop}
 	 * @param newName		The new string name for the {@link ViewProp}
 	 * @param viewed		The {@link Prop} we are viewing
