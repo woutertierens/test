@@ -2,6 +2,8 @@ package org.jpropeller.view.table.columns.impl;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -75,6 +77,17 @@ public class ColumnUpdater implements TableModelListener {
     			newColumn.setMinWidth(info.minWidth());
     			newColumn.setMaxWidth(info.maxWidth());
     			
+    			
+    			TableCellEditor cellEditor = info.editor();
+    			if (cellEditor != null) {
+    				newColumn.setCellEditor(cellEditor);
+    			}
+ 
+    			TableCellRenderer cellRenderer = info.renderer();
+    			if (cellRenderer != null) {
+    				newColumn.setCellRenderer(cellRenderer);
+    			}
+
                 addColumn(newColumn);
         		
         	}
