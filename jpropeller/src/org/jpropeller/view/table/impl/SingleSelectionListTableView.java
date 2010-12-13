@@ -48,6 +48,21 @@ public class SingleSelectionListTableView<T> implements JView {
 	}
 	
 	/**
+	 * Create a {@link SingleSelectionListTableView} of
+	 * the list in a particular prop
+	 * @param <S>		The type of value in the list 
+	 * @param clazz		The class of value in the list
+	 * @param prop		The {@link Prop} containing viewed {@link CList}
+	 * @param rowView	The {@link TableRowView} used to display elements of the list
+	 * @param columnLayout 		The layout of the table columns, or null to 
+	 * 							use default {@link JTable} behaviour
+	 * @return			A new {@link SingleSelectionListTableView}
+	 */
+	public static <S> SingleSelectionListTableView<S> create(Class<S> clazz, Prop<CList<S>> prop, TableRowView<? super S> rowView, ColumnLayout columnLayout) {
+		return new SingleSelectionListTableView<S>(new ListAndSelectionAndValueReferenceDefault<S>(clazz, prop), rowView, columnLayout, false);
+	}
+	
+	/**
 	 * Make a new {@link SingleSelectionListTableView}, with default column layout
 	 * and no sorting
 	 * @param model
