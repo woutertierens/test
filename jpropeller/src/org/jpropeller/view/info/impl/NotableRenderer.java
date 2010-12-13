@@ -15,6 +15,11 @@ import org.jpropeller.view.info.Notable;
  */
 public class NotableRenderer implements IconAndHTMLRenderer {
 
+	/**
+	 * Standard width for a column displaying notes in a table
+	 */
+	public final static int NOTABLE_COLUMN_WIDTH = 45;
+	
 	private final static NotableRenderer DISPLAY_TEXT_INSTANCE = new NotableRenderer(true);
 	private final static NotableRenderer INSTANCE = new NotableRenderer(false);
 	

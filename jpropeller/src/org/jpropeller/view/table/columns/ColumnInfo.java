@@ -1,5 +1,8 @@
 package org.jpropeller.view.table.columns;
 
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+
 import org.jpropeller.properties.change.Immutable;
 
 /**
@@ -30,5 +33,19 @@ public interface ColumnInfo extends Immutable {
 	 * @return	Maximum width
 	 */
 	public int maxWidth();
+	
+	/**
+	 * The {@link TableCellEditor} for this column, or
+	 * null if no special editor should be set.
+	 * @return	Default {@link TableCellEditor}
+	 */
+	public TableCellEditor editor();
+	
+	/**
+	 * The {@link TableCellRenderer} for this column, or
+	 * null if no special renderer should be set.
+	 * @return	Default {@link TableCellRenderer}
+	 */
+	public TableCellRenderer renderer();
 
 }
