@@ -95,7 +95,7 @@ public class LabelView implements JView, ChangeListener {
 		Icon icon = null;
 		if (value != null) {
 			if (renderer != null && renderer.canRender(value)) {
-				s = renderer.getHTML(value);
+				s = "<html>" + renderer.getHTML(value) + "</html>";
 				icon = renderer.getIcon(value);
 			} else {
 
