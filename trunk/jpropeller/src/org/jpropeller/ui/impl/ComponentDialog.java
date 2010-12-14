@@ -40,7 +40,7 @@ public class ComponentDialog extends JDialog {
 	 * @param modal 		Whether the dialog is modal
 	 * @param closeable		Whether frame closes when requested
 	 */
-	private ComponentDialog(
+	public ComponentDialog(
 			Component component, Frame owner, 
 			String title, boolean modal, boolean closeable) {
 		super(owner, title, modal);
