@@ -63,6 +63,23 @@ public class PropUtils {
 	}
 	
 	/**
+	 * Find the user-readable, localised setting for a given property of a class
+	 * Note that the property must be "true" (when trimmed and converted to lower case)
+	 * to give a true value, all other strings will be treated as false.
+	 * @param clazz The class
+	 * @param name The name of the property
+	 * @return The setting, or false if not found
+	 */
+	public static boolean localisedBoolean(Class<?> clazz, String name) {
+		try {
+			ResourceBundle res = ResourceBundle.getBundle(clazz.getCanonicalName());
+			return "true".equals(res.getString(name).trim().toLowerCase());
+		} catch (MissingResourceException mre) {
+			return false; 
+		}
+	}
+	
+	/**
 	 * Find the user-readable, localised name for a class of {@link Bean}
 	 * @param beanClass		The class of bean containing the prop
 	 * @return				The user readable class name. This will be 
