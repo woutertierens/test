@@ -1,6 +1,7 @@
 package org.jpropeller.util;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,6 +47,7 @@ public class ListSelectionSource<T> implements Source<T> {
 	private JPanel panel;
 	private Frame owner;
 	private String title;
+	private JScrollPane scroll;
 	
 	
 	/**
@@ -100,7 +102,7 @@ public class ListSelectionSource<T> implements Source<T> {
 				listProp);
 
 		view = new SingleSelectionListTableView<T>(listRef, tableRowView);
-		JScrollPane scroll = new JScrollPane(view.getComponent());
+		scroll = new JScrollPane(view.getComponent());
         if (!showTableHeader) {
         	view.getComponent().setTableHeader(null);
         }
@@ -221,6 +223,14 @@ public class ListSelectionSource<T> implements Source<T> {
 	 */
 	public void setRowHeight(int rowHeight) {
 		view.setRowHeight(rowHeight);
+	}
+	
+	/**
+	 * Set preferred size of scroll pane in dialog
+	 * @param d	Size
+	 */
+	public void setPreferredSize(Dimension d) {
+		scroll.setPreferredSize(d);
 	}
 
 }
