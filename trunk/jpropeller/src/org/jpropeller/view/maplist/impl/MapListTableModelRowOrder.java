@@ -346,8 +346,9 @@ public class MapListTableModelRowOrder<K, V, L extends CList<V>> extends Abstrac
 	}
 
 	@Override
-	public void tableRowViewChanged(TableRowView<?> tableRowView) {
-		columnChange = true;
+	public void tableRowViewChanged(TableRowView<?> tableRowView, boolean columnsChanged) {
+		//If we have a new columns change from row view, then track it
+		columnChange = columnChange || columnsChanged;
 
 		//Ask for an update
 		updateManager.updateRequiredBy(this);

@@ -72,7 +72,7 @@ public class MapPairRowView<R, K, V, O> implements TableRowView<R>, ChangeListen
 	
 	private void fireChange() {
 		for (TableRowViewListener listener : listeners) {
-			listener.tableRowViewChanged(this);
+			listener.tableRowViewChanged(this, true);
 		}
 	}
 	
