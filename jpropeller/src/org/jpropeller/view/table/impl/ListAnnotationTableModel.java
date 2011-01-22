@@ -152,8 +152,11 @@ public class ListAnnotationTableModel<K, V> extends AbstractTableModel
 	}
 
 	@Override
-	public void tableRowViewChanged(TableRowView<?> tableRowView) {
-		handleChange(true, true);
+	public void tableRowViewChanged(TableRowView<?> tableRowView, boolean columnsChanged) {
+		//Row view can't cause a complete data change (in the sense of number of rows
+		//changing), but can cause a column change. Note that a column change automatically
+		//includes changes to rows as well.
+		handleChange(false, columnsChanged);
 	}
 
 	@Override

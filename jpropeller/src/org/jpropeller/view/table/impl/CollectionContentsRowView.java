@@ -85,7 +85,7 @@ public class CollectionContentsRowView<R, C> implements TableRowView<R>, ChangeL
 	
 	private void fireChange() {
 		for (TableRowViewListener listener : listeners) {
-			listener.tableRowViewChanged(this);
+			listener.tableRowViewChanged(this, true);
 		}
 	}
 	

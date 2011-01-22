@@ -77,7 +77,7 @@ public class MapRowView<R, K, V> implements TableRowView<R>, ChangeListener {
 	
 	private void fireChange() {
 		for (TableRowViewListener listener : listeners) {
-			listener.tableRowViewChanged(this);
+			listener.tableRowViewChanged(this, true);
 		}
 	}
 	
