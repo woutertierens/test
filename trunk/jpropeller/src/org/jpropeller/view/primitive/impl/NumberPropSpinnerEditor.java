@@ -317,7 +317,7 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	
 	/**
 	 * Create a new {@link NumberPropSpinnerEditor}
-	 * the model, and 1-based indexing in the display
+	 * displaying integer values
 	 * @param model		The {@link Prop} to display
 	 * @param locked	When this has value true, this {@link View} will not support editing.
 	 * @return			A new {@link NumberPropSpinnerEditor}
@@ -327,5 +327,29 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 				new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1), 
 				NumberConverterDefaults.getIntegerConverter(), 
 				locked);
+	}
+	
+	/**
+	 * Create a new {@link NumberPropSpinnerEditor}
+	 * displaying double values
+	 * @param model		The {@link Prop} to display
+	 * @param locked	When this has value true, this {@link View} will not support editing.
+	 * @return			A new {@link NumberPropSpinnerEditor}
+	 */
+	public final static NumberPropSpinnerEditor<Double> createDouble(Prop<Double> model, Prop<Boolean> locked) {
+		return new NumberPropSpinnerEditor<Double>(model, 
+				new SpinnerNumberModel(0d, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1d), 
+				NumberConverterDefaults.getDoubleConverter(), 
+				locked);
+	}
+	
+	/**
+	 * Create a new {@link NumberPropSpinnerEditor}
+	 * displaying double values
+	 * @param model		The {@link Prop} to display
+	 * @return			A new {@link NumberPropSpinnerEditor}
+	 */
+	public final static NumberPropSpinnerEditor<Double> createDouble(Prop<Double> model) {
+		return createDouble(model, null);
 	}
 }
