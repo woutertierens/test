@@ -163,6 +163,45 @@ public class StringUtilities {
 	 * Generate a new name, guaranteed to be different from the
 	 * provided name.
 	 * 
+	 * Where the provided name ends with " x", where x is a 
+	 * valid string representation of an integer, the returned 
+	 * name will be the same, but with " x" replaced by " y", where 
+	 * y is the standard string representation of the integer x+1.
+	 * 
+	 * Where the provided name does NOT end with " x", the returned
+	 * name will be the provided name with " 2" appended to it.
+	 * 
+	 * Hence this naming is compatible (for example) with attempting 
+	 * to alter duplicate strings so they have a "copy number" appended.
+	 * To do this, repeatedly call {@link #incrementName(String)} on a
+	 * candidate name, until the returned string is unique. The candidate
+	 * name should be set to the returned string on each call, to "count"
+	 * the string through copy numbers until it is unique. This is slightly
+	 * inefficient, but acceptable for fairly small sets of strings.
+	 * 
+	 * @param name		The input name
+	 * @return			The (different) output name.
+	 */
+	public final static String incrementName(String name) {
+		
+		int lastSpace = name.indexOf(" ");
+		if (lastSpace > -1) {
+			String numberString = name.substring(lastSpace + 1);
+			try {
+				int number = Integer.parseInt(numberString);
+				return name.substring(0, lastSpace) + " " + Integer.toString(number+1);
+			} catch (NumberFormatException nfe) {
+				//Just carry on through to default rename
+			}
+		}
+		
+		return name + " 2";
+	}
+	
+	/**
+	 * Generate a new name, guaranteed to be different from the
+	 * provided name.
+	 * 
 	 * Where the provided name ends with "(x)", where x is a 
 	 * valid string representation of an integer >= 2, the returned 
 	 * name will be the same, but with "(x)" replaced by "(y)", where 
@@ -182,7 +221,7 @@ public class StringUtilities {
 	 * @param name		The input name
 	 * @return			The (different) output name.
 	 */
-	public final static String incrementName(String name) {
+	public final static String incrementNameWithBrackets(String name) {
 		//See if we already have a number - if we do, increment it
 		//We need a closing bracket at end
 		if (name.endsWith(")")) {
