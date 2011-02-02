@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jpropeller.bean.Bean;
 import org.jpropeller.name.PropName;
@@ -12,6 +14,7 @@ import org.jpropeller.path.BeanPathIterator;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.transformer.Transformer;
 import org.jpropeller.transformer.impl.BeanToPropTransformer;
+import org.jpropeller.util.GeneralUtils;
 
 /**
  * A means of building a {@link BeanPath} in a typesafe way, using
@@ -23,6 +26,8 @@ import org.jpropeller.transformer.impl.BeanToPropTransformer;
  */
 public class BeanPathBuilder<R extends Bean, D extends Bean> {
 
+	private final static Logger logger = GeneralUtils.logger(BeanPathBuilder.class);
+	
 	//We use raw transformers so we can apply them to anything - we make
 	//sure we only ever have valid types by the way we build instances
 	//of this class
@@ -167,6 +172,12 @@ public class BeanPathBuilder<R extends Bean, D extends Bean> {
 			super();
 			this.transforms = transforms;
 			this.lastTransform = lastTransform;
+			
+			for (Transformer t : transforms) {
+				if (t == null) {
+					logger.log(Level.SEVERE, "Null transform in bean path", new RuntimeException("Exception to show stack trace"));
+				}
+			}
 		}
 
 		@Override
