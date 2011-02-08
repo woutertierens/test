@@ -58,9 +58,9 @@ public class RoundedTitleBorder extends RoundedBorder {
      * @param title
      * 		The title to display
      * @param titleGradientColor1
-     * 		The first colour used in gradient fill of title area
+     * 		The first color used in gradient fill of title area
      * @param titleGradientColor2
-     * 		The second colour used in gradient fill of title area
+     * 		The second color used in gradient fill of title area
      */
     public RoundedTitleBorder(String title, Color titleGradientColor1, Color titleGradientColor2) {
         super(10);

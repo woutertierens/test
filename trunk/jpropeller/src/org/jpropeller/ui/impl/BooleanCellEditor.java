@@ -27,7 +27,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
 	private final BooleanCellRenderer renderer = new BooleanCellRenderer(true);
 	private Component rendererComponent = null;
 
-	private final static Color highlightColour = new Color(255, 255, 255, 50);
+	private final static Color highlightColor = new Color(255, 255, 255, 50);
 	
 	private final JLabel label = new JLabel() {
 		protected void paintComponent(java.awt.Graphics g) {
@@ -37,7 +37,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
 			}
 			if (inComponent) {
 				Graphics2D g2 = (Graphics2D)g;
-				g2.setColor(highlightColour);
+				g2.setColor(highlightColor);
 				g.fillRect(0, 0, getWidth(), getHeight());
 			}
 		};

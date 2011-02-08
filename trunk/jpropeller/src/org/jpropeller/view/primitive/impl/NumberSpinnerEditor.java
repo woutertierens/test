@@ -54,7 +54,7 @@ public class NumberSpinnerEditor<T extends Number & Comparable<T>> implements JV
 	private final BiTransformer<T, T> displayTransformer;
 
 	/**
-	 * Original default bg colour for spinner
+	 * Original default bg color for spinner
 	 */
 	private Color defaultBackground;
 

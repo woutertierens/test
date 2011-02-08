@@ -12,7 +12,7 @@ import java.awt.geom.AffineTransform;
 import javax.swing.Icon;
 
 /**
- * A simple icon that draws a swatch of flat colour with an
+ * A simple icon that draws a swatch of flat color with an
  * outline of another color, with a set width and height,
  * and a blank border around the swatch
  */

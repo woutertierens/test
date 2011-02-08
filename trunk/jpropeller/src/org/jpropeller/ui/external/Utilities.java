@@ -107,10 +107,10 @@ public class Utilities {
     }
 
     /**
-     * Derive a new colour from an old one, by changing the alpha
-     * @param base		The old base colour
+     * Derive a new color from an old one, by changing the alpha
+     * @param base		The old base color
      * @param alpha		The new alpha
-     * @return			A colour with the same RGB values as base, but a new alpha
+     * @return			A color with the same RGB values as base, but a new alpha
      */
     public static Color deriveColorAlpha(Color base, int alpha) {
         return new Color(base.getRed(), base.getGreen(), base.getBlue(), alpha);
