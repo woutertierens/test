@@ -49,7 +49,7 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	private final BiTransformer<T, T> displayTransformer;
 
 	/**
-	 * Original default bg colour for spinner
+	 * Original default bg color for spinner
 	 */
 	private Color defaultBackground;
 
