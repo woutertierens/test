@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import org.jpropeller.transformer.Transformer;
+
 /**
  * Simple general purpose utility methods
  * These are not specific to jpropeller itself
@@ -392,6 +394,62 @@ public class GeneralUtils {
 		//Neither a nor b is null
 		} else {
 			return a.equals(b);
+		}
+	}
+	
+	/**
+	 * Search for the next free file name, following
+	 * a linear indexing system
+	 * @param firstIndex		The first file index to check
+	 * @param fileNamer			A {@link Transformer} from a file index
+	 * 							to an actual file.
+	 * @return					The first free file index
+	 * @throws IOException		If files cannot be checked for existence, etc.
+	 */
+	public static int findNextFreeFileIndex(int firstIndex, Transformer<Integer, File> fileNamer) throws IOException {
+		
+		//Scan for a free file
+		int index = firstIndex;
+		
+		//If index is 0, use 1 instead
+		if (index == 0) {
+			index = 1;
+		}
+		
+		//First, scan exponentially upwards
+		while (fileNamer.transform(index).exists()) {
+			index*= 2;
+			//System.out.println("Scanned up to " + index);
+		}
+		
+		//Now, binary search for a free file
+		int step = index/2;
+		while (step > 0) {
+			if (fileNamer.transform(index).exists()) {
+				index += step;
+				//System.out.println("Exists - up by " + step + " to " + index);
+			} else {
+				index -= step;
+				//System.out.println("Doesn't exist - stepped down by " + step + " to " + index);
+			}
+			step /= 2;
+		}
+		
+		//System.out.println("Binary searched to " + index);
+		
+		//Note we may have moved onto the last used file, so linear scan for last "bit"
+		index -= 2;
+		while (index < 0 || fileNamer.transform(index).exists()) {
+			index++;
+		}
+
+		//System.out.println("Linear scanned to " + index);
+		
+		//Now check that index doesn't exist, and index-1 does (or is negative)
+		if (!fileNamer.transform(index).exists() && (index == 0 || fileNamer.transform(index-1).exists())) {
+			return index;
+		} else {
+			throw new RuntimeException("Logical failure in finding free index.");
 		}
 	}
 	
