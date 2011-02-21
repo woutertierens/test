@@ -45,6 +45,34 @@ public class GeneralUtils {
         }
 	}
 
+	/**
+	 * Get the default documents folder for the system.
+	 * Should be used instead of System.getProperty("user.home"), as a default
+	 * location for files.
+	 * @return	Default documents folder.
+	 */
+	public static File getDocumentsFolder() {
+		//This is always a good default, and is all we need on Windows, where it
+		//will be "My Documents" or possibly "Documents" in the user's home directory.
+		File defaultFile = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory();
+		
+		String osName = System.getProperty("os.name");
+		if (osName != null) {
+			osName = osName.toLowerCase();
+			
+			//On OS X we can always use the same path relative to the user home - the
+			//file name is always the same, and is only displayed differently in different
+			//languages (http://developer.apple.com/library/mac/#documentation/MacOSX/Conceptual/BPInternational/Articles/LocalizingPathnames.html#//apple_ref/doc/uid/20002141-BBCFJBFB)
+			if (osName.indexOf("mac os x") >= 0) {
+				File osxFile = new File(System.getProperty("user.home") + File.separator + "Documents");
+				if (osxFile.exists() && osxFile.isDirectory()) {
+					return osxFile;
+				}
+			}
+		}
+			
+		return defaultFile;
+	}
 	
 	/**
 	 * Enable console logging.
