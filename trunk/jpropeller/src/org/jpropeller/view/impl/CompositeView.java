@@ -1,8 +1,11 @@
 package org.jpropeller.view.impl;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
@@ -14,8 +17,9 @@ import org.jpropeller.view.View;
  * @param <C> 		The type of {@link JComponent} provided
  */
 public class CompositeView<C extends JComponent> implements JView {
+//FIXME need to remove C, it is not used or all that useful
 	
-	private final C component;
+	private final JComponent component;
 	private final CompositeViewHelper helper;
 	private final boolean selfNaming;
 	private final Runnable disposeRunnable;
@@ -63,7 +67,8 @@ public class CompositeView<C extends JComponent> implements JView {
 			C component,
 			boolean selfNaming,
 			Runnable disposeRunnable) {
-		this.component = component;
+		this.component = new RetainingPanel(component);
+		
 		this.selfNaming = selfNaming;
 		helper = new CompositeViewHelper(views);
 		this.disposeRunnable = disposeRunnable;
@@ -71,7 +76,7 @@ public class CompositeView<C extends JComponent> implements JView {
 
 
 	@Override
-	public C getComponent() {
+	public JComponent getComponent() {
 		return component;
 	}
 
@@ -114,5 +119,49 @@ public class CompositeView<C extends JComponent> implements JView {
 	public Format format() {
 		return Format.LARGE;
 	}
-
+	
+	/**
+	 * Exists entirely to wrap (invisibly) a contents
+	 * JComponent, but also retain a reference to this
+	 * CompositeView so that it is not garbage collected
+	 * if nothing explicitly retains it (as is often the
+	 * case for views, where the view itself is not interesting
+	 * to the user, just the component it provides)
+	 */
+	private class RetainingPanel extends JPanel {
+		@SuppressWarnings("unused")
+		private final Object cv = CompositeView.this;		
+		private final JComponent contents;
+		private RetainingPanel(JComponent contents) {
+			super(new BorderLayout());
+			this.contents = contents;
+			add(contents);
+			setOpaque(contents.isOpaque());
+		}
+		
+		@Override
+		public void setForeground(Color fg) {
+			super.setForeground(fg);
+			if (contents != null) {
+				contents.setForeground(fg);
+			}
+		}
+		
+		@Override
+		public void setBackground(Color bg) {
+			super.setBackground(bg);
+			if (contents != null) {
+				contents.setBackground(bg);
+			}
+		}
+		
+		@Override
+		public void setOpaque(boolean isOpaque) {
+			super.setOpaque(isOpaque);
+			if (contents != null) {
+				contents.setOpaque(isOpaque);
+			}
+		}
+	}
+	
 }
