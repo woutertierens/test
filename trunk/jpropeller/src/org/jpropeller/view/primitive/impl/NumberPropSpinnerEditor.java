@@ -55,6 +55,8 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 
 	private UpdateManager updateManager;
 
+	private boolean changingSelf = false;
+
 	/**
 	 * Create a {@link NumberPropSpinnerEditor}
 	 * @param model
@@ -133,7 +135,10 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 		spinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				commit();
+				//Ignore changes we make to our own state
+				if (!changingSelf) {
+					commit();
+				}
 			}
 		});
 				
@@ -227,13 +232,18 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 			//spinner
 			T displayValue = displayTransformer.transform(value);
 			
-			//Expand the range of the number model as necessary to contain the
-			//new value
-			if (numberModel.getMinimum() != null && numberModel.getMinimum().compareTo(displayValue) > 0){
-				numberModel.setMinimum(displayValue);
-			}
-			if (numberModel.getMaximum() != null && numberModel.getMaximum().compareTo(displayValue) < 0){
-				numberModel.setMaximum(displayValue);
+			changingSelf  = true;
+			try {
+				//Expand the range of the number model as necessary to contain the
+				//new value
+				if (numberModel.getMinimum() != null && numberModel.getMinimum().compareTo(displayValue) > 0){
+					numberModel.setMinimum(displayValue);
+				}
+				if (numberModel.getMaximum() != null && numberModel.getMaximum().compareTo(displayValue) < 0){
+					numberModel.setMaximum(displayValue);
+				}
+			} finally {
+				changingSelf = false;
 			}
 			
 			spinner.setValue(converter.toNumber(displayValue));
