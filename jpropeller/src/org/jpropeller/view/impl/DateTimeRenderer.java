@@ -1,24 +1,46 @@
 package org.jpropeller.view.impl;
 
 import javax.swing.Icon;
+import javax.swing.UIManager;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jpropeller.ui.IconAndHTMLRenderer;
-import org.jpropeller.view.info.Notable;
 
 /**
- * Renders {@link Notable} instances, or the
- * {@link String} values from the {@link Notable#note()} properties.
- * Icon is blank if there is no note (null or whitespace only),
- * or a question mark if there is a note.
+ * Renders {@link DateTime} instances
  */
 public class DateTimeRenderer implements IconAndHTMLRenderer {
 
 	private final static DateTimeRenderer INSTANCE = new DateTimeRenderer();
-	private final static DateTimeFormatter dateTimeFormat = DateTimeFormat.shortDateTime();
 
+	/**
+	 * {@link UIManager} key used to store/retrieve default {@link DateTimeFormatter}
+	 */
+	public static final String DEFAULT_DATETIME_FORMAT_KEY = "itis.datetime.format";
+	
+	private final static DateTimeFormatter dateTimeFormat;
+	static {
+		Object o = UIManager.get(DEFAULT_DATETIME_FORMAT_KEY);
+		System.out.println("Got " + o + " as default datetime format");
+		if (o != null && o instanceof DateTimeFormatter) {
+			dateTimeFormat = (DateTimeFormatter)o;
+			System.out.println("Got formatter like " + dateTimeFormat.print(new DateTime()));
+		//Default to local short format
+		} else {
+			dateTimeFormat = DateTimeFormat.shortDateTime();
+		}
+	}
+	
+	/**
+	 * Get a default {@link DateTimeFormatter} for general use
+	 * @return	Default {@link DateTimeFormatter}
+	 */
+	public final static DateTimeFormatter defaultDateTimeFormatter() { 
+		return dateTimeFormat;
+	}
+	
 	/**
 	 * Shared instances only
 	 */
