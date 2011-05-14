@@ -1,9 +1,11 @@
 package org.jpropeller.properties.values;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import org.jpropeller.comparison.ComparatorFilter;
+import org.jpropeller.comparison.ComparisonOrDefaultFilter;
 import org.jpropeller.comparison.ComparisonType;
 import org.jpropeller.comparison.Filter;
 import org.jpropeller.comparison.RangeFilter;
@@ -55,6 +57,74 @@ public class Values {
 	 */
 	public static <S extends Comparable<? super S>> ValueProcessor<S> comparison(ComparisonType type, S limit) {
 		return FilterProcessor.create(ComparatorFilter.get(type, limit));
+	}
+	
+	/**
+	 * Gets a {@link ComparisonOrDefaultFilter} using natural ordering
+	 * 
+	 * @param type			The type of comparison - lets us check the resulting 
+	 * 						value of {@link Comparator#compare(Object, Object)}
+	 * @param limit			The limit against which we are checking
+	 * 						This must be immutable.
+	 * @param defaultValue	The value set when the comparison fails
+	 * @param <S>			The type of value compared
+	 *  
+	 * @return 				A {@link ComparatorFilter} as specified
+	 */
+	public static <S extends Comparable<? super S>> ValueProcessor<S> comparisonOrDefault(ComparisonType type, S limit, S defaultValue) {
+		return ComparisonOrDefaultFilter.get(type, limit, defaultValue);
+	}
+
+	/**
+	 * Processes so that contents are more than or equal to a limit,
+	 * and will just rest to that limit otherwise. Natural ordering is
+	 * used for comparison.
+	 * 
+	 * @param limit			The limit against which we are checking
+	 * 						This must be immutable.
+	 * @param <S>			The type of value compared
+	 *  
+	 * @return 				A {@link ComparisonOrDefaultFilter} as specified
+	 */
+	public static <S extends Comparable<? super S>> ValueProcessor<S> clipMoreThanOrEqual(S limit) {
+		return ComparisonOrDefaultFilter.get(ComparisonType.MORE_THAN_OR_EQUAL, limit, limit);
+	}
+	
+	/**
+	 * Processes so that contents are less than or equal to a limit,
+	 * and will just rest to that limit otherwise. Natural ordering is
+	 * used for comparison.
+	 * 
+	 * @param limit			The limit against which we are checking
+	 * 						This must be immutable.
+	 * @param <S>			The type of value compared
+	 *  
+	 * @return 				A {@link ComparisonOrDefaultFilter} as specified
+	 */
+	public static <S extends Comparable<? super S>> ValueProcessor<S> clipLessThanOrEqual(S limit) {
+		return ComparisonOrDefaultFilter.get(ComparisonType.LESS_THAN_OR_EQUAL, limit, limit);
+	}
+	
+	/**
+	 * Processes so that contents within a range (inclusive of endpoints),
+	 * and will just reset to the nearest endpoint otherwise. Natural ordering is
+	 * used for comparison.
+	 * 
+	 * @param min			The minimum against which we are checking
+	 * 						This must be immutable.
+	 * @param max			The maximum against which we are checking
+	 * 						This must be immutable.
+	 * @param <S>			The type of value compared
+	 *  
+	 * @return 				A {@link ComparisonOrDefaultFilter} as specified
+	 */
+	public static <S extends Comparable<? super S>> ValueProcessor<S> clipRange(S min, S max) {
+		List<ValueProcessor<S>> subs = new ArrayList<ValueProcessor<S>>();
+		{
+			subs.add(Values.clipMoreThanOrEqual(min));
+			subs.add(Values.clipLessThanOrEqual(max));
+		}
+		return Values.composite(subs);
 	}
 	
 	/**

@@ -23,10 +23,8 @@ public class DateTimeRenderer implements IconAndHTMLRenderer {
 	private final static DateTimeFormatter dateTimeFormat;
 	static {
 		Object o = UIManager.get(DEFAULT_DATETIME_FORMAT_KEY);
-		System.out.println("Got " + o + " as default datetime format");
 		if (o != null && o instanceof DateTimeFormatter) {
 			dateTimeFormat = (DateTimeFormatter)o;
-			System.out.println("Got formatter like " + dateTimeFormat.print(new DateTime()));
 		//Default to local short format
 		} else {
 			dateTimeFormat = DateTimeFormat.shortDateTime();
