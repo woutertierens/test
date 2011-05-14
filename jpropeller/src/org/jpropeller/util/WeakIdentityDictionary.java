@@ -4,7 +4,9 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implements a similar interface to {@link Map}, but much simpler.
@@ -45,6 +47,23 @@ public class WeakIdentityDictionary<K, V> {
 		return map.get(keyref);
 	}
 
+	/**
+	 * Return a snapshot of the set of keys in the dictionary, at this
+	 * point in time.
+	 * @return	Keys in dictionary
+	 */
+	public synchronized Set<K> keySet() {
+		Set<K> set = new HashSet<K>();
+		Set<WeakReference<K>> keySet = map.keySet();
+		for (WeakReference<K> weakRef : keySet) {
+			K k = weakRef.get();
+			if (k != null) {
+				set.add(k);
+			}
+		}
+		return set;
+	}
+	
 	/**
 	 * Set the value associated with the key
 	 * 
