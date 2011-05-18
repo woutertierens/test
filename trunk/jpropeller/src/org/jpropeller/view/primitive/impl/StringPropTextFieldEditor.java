@@ -1,6 +1,7 @@
 package org.jpropeller.view.primitive.impl;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -205,6 +206,23 @@ public class StringPropTextFieldEditor implements JView, ChangeListener {
 		}
 	}
 	
+	
+	/**
+	 * Get {@link Font} used by text component
+	 * @return	Text component {@link Font}
+	 */
+	public Font getFont() {
+		return text.getFont();
+	}
+
+	/**
+	 * Set {@link Font} used by text component
+	 * @param font Text component {@link Font}
+	 */
+	public void setFont(Font font) {
+		text.setFont(font);
+	}
+
 	@Override
 	public void commit() {
 		//If we are editing, set the new prop value

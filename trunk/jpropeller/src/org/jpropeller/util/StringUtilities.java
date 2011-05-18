@@ -1,5 +1,7 @@
 package org.jpropeller.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
@@ -249,6 +251,21 @@ public class StringUtilities {
 		//Default is just to add (2) - we start from 2 so that
 		//we will have "name", "name (2)", "name (3)" etc.
 		return name + " (2)";
+	}
+	
+	/**
+	 * Get the whole contents of a stream as a string, using default encoding
+	 * @param stream		The stream to read
+	 * @return				The string
+	 * @throws IOException	If stream cannot be read
+	 */
+	public final static String stringFromStream(InputStream stream) throws IOException {
+		int i = 0;
+		StringBuilder builder = new StringBuilder();
+		while ((i = stream.read()) >= 0) {
+			builder.append((char)i);				
+		}
+		return builder.toString();
 	}
 
 }
