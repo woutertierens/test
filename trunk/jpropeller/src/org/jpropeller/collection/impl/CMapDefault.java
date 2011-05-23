@@ -321,6 +321,11 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//map change we will fire
 			boolean existingValue = core.containsKey(key);
 
+			//If we have an existing key, use the exact same instance
+			if (existingValue) {
+				key = findExactExistingKey(key);
+			}
+			
 			//Try to put in core - if we get a runtime exception the 
 			//value is not put, so nothing to do
 			V oldValue = core.put(key, value);
@@ -391,6 +396,19 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 		trackAroundMapChange(action);
 	}
 
+	//This is unfortunate but necessary... When we are tracking keys,
+	//we want to add and remove key instances from tracking, rather than
+	//using non-identical key instances that are equal. This function gets
+	//the actual key instance in the map that is equal() to the specified key k,
+	//or null if not found.
+	private K findExactExistingKey(K k) {
+		for (K checkKey : core.keySet()) {
+			if (k.equals(checkKey)) {
+				return checkKey;
+			}
+		}
+		return null;
+	}
 	
 	//Cast to K is safe, since we check that the key is in the map
 	//before casting, and if it is in the map it is of type K
@@ -408,6 +426,11 @@ public class CMapDefault<K, V> implements CMap<K, V> {
 			//The key IS present, so is of type K
 			K k = (K)key;
 
+			//We want to work with the ACTUAL key instance in the map,
+			//but specified key may just be equal(). For example, if
+			//we stop tracking k, we need the exact instance.
+			k = findExactExistingKey(k);
+			
 			//Try to remove from core - if we get a runtime exception the 
 			//value is not removed, so nothing to do
 			V oldValue = core.remove(k);
