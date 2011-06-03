@@ -1,5 +1,8 @@
 package org.jpropeller.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -126,6 +129,19 @@ public class FileUtils {
 				throw new IOException("Reached end of file");
 			}
 		}
+	}
+	
+	/**
+	 * Copy the whole of one file to another
+	 * @param inFile		Input file
+	 * @param outFile		Output file
+	 * @throws IOException	If files cannot be read and written appropriately
+	 */
+	public final static void copyFile(File inFile, File outFile) throws IOException {
+		FileChannel in = new FileInputStream(inFile).getChannel();
+		FileChannel out = new FileOutputStream(outFile).getChannel();
+		int fileLength = (int)in.size();
+		transferFile(in, fileLength, out);
 	}
 	
 	/**
