@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -37,6 +38,29 @@ public class FileUtils {
 		return builder.toString();
 	}
 
+	/**
+	 * Read all data from an input stream into a temporary file, which is marked
+	 * for deletion on exit, then returned.
+	 * @param in	The input stream
+	 * @return		The temp file
+	 * @throws IOException	If stream cannot be read, or file cannot be created or written
+	 */
+	public final static File tempFileFromInputStream(InputStream in) throws IOException {
+		File temp = File.createTempFile("FromInputStream", ".tmp");
+		temp.deleteOnExit();
+		
+		FileOutputStream out = new FileOutputStream(temp);
+		
+		byte[] buf = new byte[1024];
+		int r = -1;
+		while((r = in.read(buf, 0, buf.length)) != -1) {
+			out.write(buf, 0, r);
+		}
+		out.close();
+		
+		return temp;
+	}
+	
 	/**
 	 * Read a long value from file channel
 	 * @param buf	The buffer, must have capacity at least 8
