@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
@@ -27,7 +29,7 @@ public class FileUtils {
 	 * @return			The string
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static String readString(ByteBuffer buf, FileChannel in, int length) throws IOException {
+	public final static String readString(ByteBuffer buf, ReadableByteChannel in, int length) throws IOException {
 		readBytesAndFlip(buf, in, length);
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < length; i++) {
@@ -125,9 +127,10 @@ public class FileUtils {
 	 * @param bytes		The number of bytes to read
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static void readBytesAndFlip(ByteBuffer buf, FileChannel in, int bytes) throws IOException {
+	public final static void readBytesAndFlip(ByteBuffer buf, ReadableByteChannel in, int bytes) throws IOException {
 		buf.clear();
 		buf.limit(bytes);
+		//System.out.println("Reading " + bytes + " bytes");
 		int total = 0;
 		while (total < bytes) {
 			int r = in.read(buf);
@@ -227,7 +230,7 @@ public class FileUtils {
 	 * @param val		The string
 	 * @throws IOException	If data cannot be written
 	 */
-	public final static void writeString(ByteBuffer buf, FileChannel out, String val) throws IOException {
+	public final static void writeString(ByteBuffer buf, WritableByteChannel out, String val) throws IOException {
 		buf.clear();
 		
 		CharsetEncoder encoder = USASCII.newEncoder();
@@ -275,7 +278,7 @@ public class FileUtils {
 	 * @param out		The output channel	
 	 * @throws IOException	If data cannot be written
 	 */
-	public final static void writeBufferFully(ByteBuffer buf, FileChannel out) throws IOException {
+	public final static void writeBufferFully(ByteBuffer buf, WritableByteChannel out) throws IOException {
 		int toWrite = buf.remaining();
 		int total = 0;
 		while (total < toWrite) {
