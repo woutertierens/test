@@ -71,7 +71,7 @@ public class FileUtils {
 	 * @return		The long value
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static long readLong(ByteBuffer buf, FileChannel in) throws IOException {
+	public final static long readLong(ByteBuffer buf, ReadableByteChannel in) throws IOException {
 		readBytesAndFlip(buf, in, 8);
 		long l = buf.getLong();
 		buf.rewind();
@@ -86,9 +86,24 @@ public class FileUtils {
 	 * @return		The int value
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static int readInt(ByteBuffer buf, FileChannel in) throws IOException {
+	public final static int readInt(ByteBuffer buf, ReadableByteChannel in) throws IOException {
 		readBytesAndFlip(buf, in, 4);
 		int i = buf.getInt();
+		buf.rewind();
+		return i;
+	}
+	
+	/**
+	 * Read a byte value (as int) from file channel
+	 * @param buf	The buffer, must have capacity at least 1
+	 * 				When method returns, will contain the byte data read.
+	 * @param in	The input channel
+	 * @return		The byte value, as an int
+	 * @throws IOException	If data cannot be read
+	 */
+	public final static int readByte(ByteBuffer buf, ReadableByteChannel in) throws IOException {
+		readBytesAndFlip(buf, in, 1);
+		int i = buf.get();
 		buf.rewind();
 		return i;
 	}
@@ -101,7 +116,7 @@ public class FileUtils {
 	 * @return		The int value
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static long readUnsignedIntAsLong(ByteBuffer buf, FileChannel in) throws IOException {
+	public final static long readUnsignedIntAsLong(ByteBuffer buf, ReadableByteChannel in) throws IOException {
 		return ((long)readInt(buf, in)) & 0xFFFFFFFFL;
 	}
 
@@ -149,7 +164,7 @@ public class FileUtils {
 	 * @param in		The input channel	
 	 * @throws IOException	If data cannot be read
 	 */
-	public final static void readFully(ByteBuffer buf, FileChannel in) throws IOException {
+	public final static void readFully(ByteBuffer buf, ReadableByteChannel in) throws IOException {
 		while (buf.hasRemaining()) {
 			int r = in.read(buf);
 			if (r < 0) {
@@ -248,9 +263,24 @@ public class FileUtils {
 	 * @param val	The int value
 	 * @throws IOException	If data cannot be written
 	 */
-	public final static void writeInt(ByteBuffer buf, FileChannel out, int val) throws IOException {
+	public final static void writeInt(ByteBuffer buf, WritableByteChannel out, int val) throws IOException {
 		buf.clear();
 		buf.putInt(val);
+		buf.flip();
+		writeBufferFully(buf, out);
+		buf.clear();
+	}
+	
+	/**
+	 * Write a byte to output channel
+	 * @param buf	The buffer, must have capacity at least 1
+	 * @param out	The output channel
+	 * @param val	The byte value
+	 * @throws IOException	If data cannot be written
+	 */
+	public final static void writeByte(ByteBuffer buf, WritableByteChannel out, int val) throws IOException {
+		buf.clear();
+		buf.put((byte)(val & 0xFF));
 		buf.flip();
 		writeBufferFully(buf, out);
 		buf.clear();
@@ -263,7 +293,7 @@ public class FileUtils {
 	 * @param val	The long value
 	 * @throws IOException	If data cannot be written
 	 */
-	public final static void writeLong(ByteBuffer buf, FileChannel out, long val) throws IOException {
+	public final static void writeLong(ByteBuffer buf, WritableByteChannel out, long val) throws IOException {
 		buf.clear();
 		buf.putLong(val);
 		buf.flip();
