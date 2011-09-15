@@ -12,6 +12,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.Scanner;
 
 /**
  * Utility methods for working with FileChannels, ByteBuffers, etc.
@@ -20,6 +21,15 @@ public class FileUtils {
 	
 	private static final Charset USASCII = Charset.forName("US-ASCII"); 
 
+	/**
+	 * Read an entire input stream to a string, assuming UTF-8 encoding
+	 * @param is	The input stream
+	 * @return		The string
+	 */
+	public static String convertStreamToString(InputStream is) { 
+	    return new Scanner(is, "UTF-8").useDelimiter("\\A").next();
+	}
+	
 	/**
 	 * Read length bytes as an ASCII string
 	 * @param buf		The buffer, must have capacity at least length
@@ -31,7 +41,7 @@ public class FileUtils {
 	 */
 	public final static String readString(ByteBuffer buf, ReadableByteChannel in, int length) throws IOException {
 		readBytesAndFlip(buf, in, length);
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();	
 		for (int i = 0; i < length; i++) {
 			//TODO use the Charset instead
 			builder.append((char)buf.get());				
