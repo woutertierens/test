@@ -18,6 +18,9 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.jpropeller.transformer.Transformer;
 
 /**
@@ -72,6 +75,19 @@ public class GeneralUtils {
 		}
 			
 		return defaultFile;
+	}
+
+	/**
+	 * Produce a filename with a prefix, then a hyphen, then the current time
+	 * in standard format, then the suffix.
+	 * @param prefix	The file prefix (filename, or path and filename, etc.)
+	 * @param suffix	The file suffix
+	 * @return			The full file name
+	 */
+	public static String timeStampedFilename(String prefix, String suffix) {
+		DateTime now = new DateTime();
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("YYYY-MM-dd HH-mm");
+		return prefix + "-" + now.toString(formatter) + suffix;
 	}
 	
 	/**
