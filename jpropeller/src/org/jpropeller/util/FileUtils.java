@@ -104,7 +104,7 @@ public class FileUtils {
 	}
 	
 	/**
-	 * Read a byte value (as int) from file channel
+	 * Read an UNSIGNED byte value (as int) from file channel
 	 * @param buf	The buffer, must have capacity at least 1
 	 * 				When method returns, will contain the byte data read.
 	 * @param in	The input channel
@@ -113,7 +113,8 @@ public class FileUtils {
 	 */
 	public final static int readByte(ByteBuffer buf, ReadableByteChannel in) throws IOException {
 		readBytesAndFlip(buf, in, 1);
-		int i = buf.get();
+		int i = buf.get();	
+		i = i & 0xFF;
 		buf.rewind();
 		return i;
 	}
@@ -282,7 +283,8 @@ public class FileUtils {
 	}
 	
 	/**
-	 * Write a byte to output channel
+	 * Write a byte to output channel. Note that int is expected to be non-negative, and
+	 * is written as an UNSIGNED byte.
 	 * @param buf	The buffer, must have capacity at least 1
 	 * @param out	The output channel
 	 * @param val	The byte value
