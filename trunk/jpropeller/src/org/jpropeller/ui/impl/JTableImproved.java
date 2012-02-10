@@ -9,6 +9,9 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.jpropeller.ui.table.TableExportTransferHandler;
+import org.jpropeller.ui.table.TableExporter;
+
 /**
  * A {@link JTable} with improvements (mostly improved
  * editors and displays for standard types)
@@ -112,6 +115,12 @@ public class JTableImproved extends JTable {
 		//clicking a column header), and they do it with a similar optional "fix", then
 		//after finishing swearing, enable that fix here as well, and get rid of the 
 		//overrides on columnMoved and columnMarginChanged
+		
+		
+		//Better default copy support
+		TableExportTransferHandler.createAndAttach(this, new TableExporter());
+		
+		//TODO add a right click handler to show a popup with "copy"
 	}
 	
 	//Workaround for bug 4330950, stops editing before starting to move column
