@@ -2,6 +2,7 @@ package org.jpropeller.view.table.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
@@ -9,10 +10,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.jpropeller.collection.CCollection;
+import org.jpropeller.concurrency.CancellableResponse;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
+import org.jpropeller.task.Task;
+import org.jpropeller.task.impl.BuildTask;
+import org.jpropeller.task.impl.SynchronousTaskExecutor;
 
 /**
  * A {@link ListSelectionModel} for {@link JTable} row selection,
@@ -151,6 +157,32 @@ class IntegerPropListSelectionModel implements ListSelectionModel {
 
 	public String toString() {
 		return "IntegerPropDefaultListSelectionModel using delegate: " + delegate.toString();
+	}
+	
+	/**
+	 * Create a {@link SynchronousTaskExecutor} executing a task that
+	 * will update the specified index to always have a selection
+	 * when a collection contains entries.
+	 * @param index				The index to update
+	 * @param collection		The collection index is a selection within
+	 * @return	A new {@link SynchronousTaskExecutor} - make sure to retain a reference
+	 * 			to allow the task to keep executing.
+	 */
+	public final static SynchronousTaskExecutor makeEnforcedSelectionTask(final Prop<Integer> index, final Prop<? extends CCollection<?>> collection) {
+		
+		//Make task to do the resize 
+		Task task = BuildTask.on(index, collection).withResponse(new CancellableResponse() {
+			@Override
+			public void respond(AtomicBoolean shouldCancel) {
+				int size = collection.get().size();
+				int ind = index.get();
+				
+				if (ind == -1 && size != 0) {
+					index.set(0);
+				}
+			}
+		});
+		return new SynchronousTaskExecutor(task);
 	}
 	
 	//Delegated ListSelectionModel methods
