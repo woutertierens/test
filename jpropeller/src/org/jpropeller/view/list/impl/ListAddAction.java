@@ -2,6 +2,8 @@ package org.jpropeller.view.list.impl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import org.jpropeller.properties.list.selection.ListAndSelectionReference;
 import org.jpropeller.system.Props;
 import org.jpropeller.ui.IconFactory.IconSize;
 import org.jpropeller.util.NoInstanceAvailableException;
+import org.jpropeller.util.SingleInstanceListSource;
 import org.jpropeller.util.Source;
 import org.jpropeller.util.Target;
 import org.jpropeller.view.CompletionException;
@@ -37,7 +40,7 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	private final static Icon icon = Views.getIconFactory().getIcon(IconSize.SMALL, "actions", "list-add");
 	
 	private final ListAndSelectionReference<T> reference;
-	private final Source<T> source;
+	private final Source<List<T>> source;
 	private final Target<T> postAddTarget;
 
 	private UpdateManager updateManager;
@@ -69,7 +72,7 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	 */
 	public ListAddAction(
 			ListAndSelectionReference<T> reference,
-			Source<T> source,
+			Source<List<T>> source,
 			Prop<Boolean> locked,
 			String text, Icon icon,
             String desc, Integer mnemonic,
@@ -128,7 +131,7 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	public static <T> ListAddAction<T> create(ListAndSelectionReference<T> reference, Source<T> source, Prop<Boolean> locked) {
 		return new ListAddAction<T>(
 				reference,
-				source,
+				new SingleInstanceListSource<T>(source),
 				locked,
 				Messages.getString("ListAddAction.addText"), 
 				icon, 
@@ -155,6 +158,62 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 	 * 		The type of element in the list 
 	 */
 	public static <T> ListAddAction<T> create(ListAndSelectionReference<T> reference, Source<T> source, Prop<Boolean> locked, Target<T> postAddTarget) {
+		return new ListAddAction<T>(
+				reference,
+				new SingleInstanceListSource<T>(source),
+				locked,
+				Messages.getString("ListAddAction.addText"), 
+				icon, 
+				Messages.getString("ListAddAction.addDescription"), 
+				Messages.getInt("ListAddAction.addMnemonic"),
+				postAddTarget); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	/**
+	 * Create an action with
+	 * no icon. Text, mnemonic and tooltip set by resources.
+	 * @param reference
+	 * 		Reference to the {@link CList} to act on, and the selection index of
+	 * the item to delete.
+	 * @param source
+	 * 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return
+	 * 		A new {@link ListAddAction}
+	 * @param <T>
+	 * 		The type of element in the list 
+	 */
+	public static <T> ListAddAction<T> createWithListSource(ListAndSelectionReference<T> reference, Source<List<T>> source, Prop<Boolean> locked) {
+		return new ListAddAction<T>(
+				reference,
+				source,
+				locked,
+				Messages.getString("ListAddAction.addText"), 
+				icon, 
+				Messages.getString("ListAddAction.addDescription"), 
+				Messages.getInt("ListAddAction.addMnemonic"),
+				null); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	/**
+	 * Create an action with
+	 * no icon. Text, mnemonic and tooltip set by resources.
+	 * @param reference
+	 * 		Reference to the {@link CList} to act on, and the selection index of
+	 * the item to delete.
+	 * @param source
+	 * 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, button is
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return
+	 * 		A new {@link ListAddAction}
+	 * @param postAddTarget	{@link Target} to which new list elements are passed just 
+	 * 						after they are added to the list.  
+	 * @param <T>
+	 * 		The type of element in the list 
+	 */
+	public static <T> ListAddAction<T> createWithListSource(ListAndSelectionReference<T> reference, Source<List<T>> source, Prop<Boolean> locked, Target<T> postAddTarget) {
 		return new ListAddAction<T>(
 				reference,
 				source,
@@ -208,17 +267,22 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 			}
 
 			try {
-				T newElement = source.get();
+				List<T> newElements = new ArrayList<T>(source.get());
 				
-				//Add the new element
-				list.add(index + 1, newElement);
-				
-				//Select the newly added element
-				reference.selection().set(index+1);
-				
-				//Perform post addition targt
-				if (postAddTarget != null) {
-					postAddTarget.put(newElement);
+				//We run the elements in REVERSE, since we add them at the same
+				//index repeatedly, displacing existing elements down.
+				Collections.reverse(newElements);
+				for (T newElement : newElements) {
+					//Add the new element
+					list.add(index + 1, newElement);
+					
+					//Select the newly added element
+					reference.selection().set(index+1);
+					
+					//Perform post addition target
+					if (postAddTarget != null) {
+						postAddTarget.put(newElement);
+					}
 				}
 				
 			} catch (NoInstanceAvailableException niae) {
