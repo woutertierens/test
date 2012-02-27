@@ -20,6 +20,7 @@ import org.jpropeller.properties.path.impl.PathPropBuilder;
 import org.jpropeller.reference.Reference;
 import org.jpropeller.transformer.PathStep;
 import org.jpropeller.ui.external.SimpleInternalFrame;
+import org.jpropeller.util.SingleInstanceListSource;
 import org.jpropeller.util.Source;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
@@ -48,7 +49,7 @@ public class ListEditView<T> implements JView{
 	ListAndSelectionAndValueReference<T> model;
 	TableRowView<? super T> rowView;
 	SingleSelectionListTableView<T> tableView;
-	Source<T> source;
+	Source<List<T>> source;
 	Class<T> clazz;
 	JComponent panel;
 	private JComponent buttonPanel;
@@ -81,7 +82,7 @@ public class ListEditView<T> implements JView{
 	public static <S> ListEditView<S> create(CList<S> list, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected) {
 		ListAndSelectionAndValueReference<S> model = 
 			new ListAndSelectionAndValueReferenceDefault<S>(clazz, list);
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null);
+		return new ListEditView<S>(model, clazz, rowView, new SingleInstanceListSource<S>(source), editSelected, null);
 	}
 	
 	/**
@@ -103,7 +104,7 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null);
+		return new ListEditView<S>(model, clazz, rowView, new SingleInstanceListSource<S>(source), editSelected, null);
 	}
 	
 	/**
@@ -126,7 +127,7 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, ColumnLayout columnLayout) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, null, false, null, -1, columnLayout);
+		return new ListEditView<S>(model, clazz, rowView, new SingleInstanceListSource<S>(source), editSelected, null, false, null, -1, columnLayout);
 	}
 	
 	/**
@@ -150,9 +151,33 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked) {
+		return new ListEditView<S>(model, clazz, rowView, new SingleInstanceListSource<S>(source), editSelected, locked);
+	}
+
+	/**
+	 * Create a {@link ListEditView}, using a new 
+	 * {@link ListAndSelectionAndValueReference}
+	 * @param <S>
+	 * 		The type of contents of the list 
+	 * @param model
+	 * 		The model to be edited
+	 * @param clazz
+	 * 		The class of list elements
+	 * @param rowView
+	 * 		A view to convert from list elements to rows of the table
+	 * @param source
+	 * 		The source for new elements to add to the list
+	 * @param editSelected
+	 * 		If true, an extra panel is shown to edit the selected item
+	 * @param locked	Property showing whether editing is locked, or null if the
+	 * 					editing is always unlocked
+	 * @return 
+	 * 		A new {@link ListEditView}
+	 */
+	public static <S> ListEditView<S> createWithListSource(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<List<S>> source, boolean editSelected, Prop<Boolean> locked) {
 		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked);
 	}
-	
+
 	
 	/**
 	 * Create a {@link ListEditView}, using a new 
@@ -178,7 +203,7 @@ public class ListEditView<T> implements JView{
 	 * 		A new {@link ListEditView}
 	 */
 	public static <S> ListEditView<S> create(ListAndSelectionAndValueReference<S> model, Class<S> clazz, TableRowView<? super S> rowView, Source<S> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase) {
-		return new ListEditView<S>(model, clazz, rowView, source, editSelected, locked, indexColumn, indexName, indexBase, null);
+		return new ListEditView<S>(model, clazz, rowView, new SingleInstanceListSource<S>(source), editSelected, locked, indexColumn, indexName, indexBase, null);
 	}
 	
 	/**
@@ -199,7 +224,7 @@ public class ListEditView<T> implements JView{
 	 * @param indexName 		Name of index caolumn, if present
 	 * @param indexBase 		Base (normally 0 or 1) for index values
 	 */
-	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked) {
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<List<T>> source, boolean editSelected, Prop<Boolean> locked) {
 		this(model, clazz, rowView, source, editSelected, locked, false, "", 0, null);
 	}
 	
@@ -218,7 +243,7 @@ public class ListEditView<T> implements JView{
 	 * @param locked	Property showing whether editing is locked, or null if the
 	 * 					editing is always unlocked
 	 */
-	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<T> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase, ColumnLayout columnLayout) {
+	private ListEditView(ListAndSelectionAndValueReference<T> model, Class<T> clazz, TableRowView<? super T> rowView, Source<List<T>> source, boolean editSelected, Prop<Boolean> locked, boolean indexColumn, String indexName, int indexBase, ColumnLayout columnLayout) {
 		this.model = model;
 		this.rowView = rowView;
 		this.source = source;
@@ -321,7 +346,7 @@ public class ListEditView<T> implements JView{
 	}
 	
 	private JComponent buildButtonPanel(Prop<Boolean> locked) {
-		JView view = ListButtonsViewFactory.makeView(model, source, locked);
+		JView view = ListButtonsViewFactory.makeViewWithListSource(model, source, locked);
 		views.add(view);
 		return view.getComponent();
 	}

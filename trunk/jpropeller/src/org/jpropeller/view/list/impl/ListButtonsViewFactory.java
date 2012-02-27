@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.list.selection.ListAndSelectionReference;
+import org.jpropeller.util.SingleInstanceListSource;
 import org.jpropeller.util.Source;
 import org.jpropeller.util.Target;
 import org.jpropeller.view.JView;
@@ -69,7 +70,22 @@ public class ListButtonsViewFactory {
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Prop<Boolean> locked) {
 		return makeView(model, source, null, true, ButtonsViewLayout.HORIZONTAL, locked);
 	}
-	
+
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list
+	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.  
+	 * @return 				The view
+	 */
+	public static <T> JView makeViewWithListSource(ListAndSelectionReference<T> model, Source<List<T>> source, Prop<Boolean> locked) {
+		return makeViewWithListSource(model, source, null, true, ButtonsViewLayout.HORIZONTAL, locked, null);
+	}
+
 	/**
 	 * Make a {@link JView} for {@link CList}s
 	 * 
@@ -149,7 +165,7 @@ public class ListButtonsViewFactory {
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout, Prop<Boolean> locked) {
 		return makeView(model, source, target, textLabels, layout, locked, null);
 	}
-	
+
 	/**
 	 * Make a {@link JView} for {@link CList}s
 	 * 
@@ -168,6 +184,27 @@ public class ListButtonsViewFactory {
 	 * @return 				The view
 	 */
 	public static <T> JView makeView(ListAndSelectionReference<T> model, Source<T> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout, Prop<Boolean> locked, Target<T> postAddTarget) {
+		return makeViewWithListSource(model, new SingleInstanceListSource<T>(source), target, textLabels, layout, locked, postAddTarget);
+	}
+	
+	/**
+	 * Make a {@link JView} for {@link CList}s
+	 * 
+	 * @param <T>			The type of list contents
+	 * 
+	 * @param model 		The model to be viewed
+	 * @param source 		The source of new elements to add to the list, or null to have
+	 * 						no add button
+	 * @param target 		The target to which to put elements removed from the list 
+	 * @param textLabels	True to show text on buttons
+	 * @param layout		{@link ButtonsViewLayout} for this view
+	 * @param locked		{@link Prop} that controls editing - when true, buttons are
+	 * 						disabled, otherwise enabled. If null, editing is always enabled.
+	 * @param postAddTarget	{@link Target} to which new list elements are passed just after they are added
+	 * 						to the list.  
+	 * @return 				The view
+	 */
+	public static <T> JView makeViewWithListSource(ListAndSelectionReference<T> model, Source<List<T>> source, Target<T> target, boolean textLabels, ButtonsViewLayout layout, Prop<Boolean> locked, Target<T> postAddTarget) {
 
 		//Keep list of all views
 		List<View> views = new LinkedList<View>();
@@ -186,7 +223,7 @@ public class ListButtonsViewFactory {
 
 		JButton add = null;
 		if (source != null) {
-			ListAddAction<T> addAction = ListAddAction.create(model, source, locked, postAddTarget);
+			ListAddAction<T> addAction = ListAddAction.createWithListSource(model, source, locked, postAddTarget);
 			views.add(addAction);
 			add = new JButton(addAction);
 		}
