@@ -34,6 +34,7 @@ public class BackgroundCalculationBean extends BeanDefault {
 	};
 
 	//Default calc using slowCalculation
+	@SuppressWarnings("unchecked")	//Don't care about generic arrays for varargs parameter - would LOVE a definition-site suppress!
 	private final Calculation<Long> calculation = new CalculationDefault<Prop<? extends Long>, Long>(slowCalculation, i);
 	
 	//Property using calculation
