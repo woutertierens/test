@@ -25,6 +25,9 @@ public class TableExporter {
 	private final List<ValueExporter> userExporters;
 	private final ValueExporter fallback;
 	
+	/**
+	 * Create a {@link TableExporter}
+	 */
 	@SuppressWarnings("unchecked")
 	public TableExporter() {
 		defaultExporters = new LinkedList<ValueExporter>();
@@ -47,7 +50,12 @@ public class TableExporter {
 	public void addUserExporter(ValueExporter exporter) {
 		userExporters.add(exporter);
 	}
-		
+	
+	/**
+	 * Export a table
+	 * @param table		The table whose data will be exported
+	 * @param to		The {@link Writer} to accept data from table
+	 */
 	public void exportTable(final JTable table, final Writer to) {
 		PrintWriter out = new PrintWriter(to);
 		
@@ -124,6 +132,12 @@ public class TableExporter {
 		return "\"" + dirty.replaceAll("[\"]", "\"\"") + "\"";
 	}
 
+	/**
+	 * Get the exported for a class
+	 * @param clazz		The class
+	 * @return			An exporter for the class, by preference a user exporter, then
+	 * 					a default exporter, then finally a fallback if nothing else is available.
+	 */
 	public ValueExporter exporterFor(Class<?> clazz) {
 		for(final ValueExporter exporter : userExporters) {
 			if(exporter.canExport(clazz)) {
@@ -138,6 +152,9 @@ public class TableExporter {
 		return fallback;
 	}
 
+	/**
+	 * Default transformer for {@link Color}s
+	 */
 	public final static Transformer<Object, String> COLOR_TRANSFORMER = new Transformer<Object, String>() {
 		@Override
 		public String transform(Object s) {
@@ -159,6 +176,9 @@ public class TableExporter {
 		}
 	};
 	
+	/**
+	 * Default transformer for {@link Color}s
+	 */
 	public final static Transformer<Object, String> TOSTRING_TRANSFORMER = new Transformer<Object, String>() {
 		@Override
 		public String transform(Object s) {
@@ -166,6 +186,9 @@ public class TableExporter {
 		}
 	};
 	
+	/**
+	 * Default transformer for numbers
+	 */
 	public final static Transformer<Object, String> NUMBER_TRANSFORMER = new Transformer<Object, String>() {
 		private final NumberFormat NUMBER_FORMAT = new DecimalFormat();
 		
