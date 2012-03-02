@@ -5,7 +5,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -17,7 +20,10 @@ import org.jpropeller.ui.impl.PaneTopSection;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.View;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Utility methods for {@link View}s
@@ -226,5 +232,58 @@ public class ViewUtils {
 		pluginDialog.getContentPane().add(pluginPanel);
 		return pluginDialog;
 	}
+
+	/**
+	 * Create a modal {@link JDialog} to display a {@link JView}
+	 * This will also have a close button to hide the dialog.
+	 * @param view		The {@link JView} to display
+	 * @param title		The title of the dialog
+	 * @param icon		The window icon of the dialog
+	 * @param size		The {@link Dimension} of the dialog 
+	 * 					(used for initial, preferred and also minimum)
+	 * @return			New {@link JDialog} displaying the component from 
+	 * 					{@link JView#getComponent()}
+	 */
+	public static JDialog closableModalDialogFromView(JView view, String title, Image icon, Dimension size) {
+		JComponent viewComp = view.getComponent();
+			
+		final JDialog dialog = new JDialog();
+		dialog.setTitle(title);
+		dialog.setIconImage(icon);
+		dialog.setModal(true);
+		
+		dialog.setMinimumSize(size);
+		dialog.setPreferredSize(size);
+		dialog.setSize(size);
 	
+		dialog.setLocationRelativeTo(null);
+		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		
+		JButton closeButton = new JButton(new AbstractAction("Close") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+			}
+		});
+		
+		// Build the panel
+		FormLayout layout = new FormLayout(
+				"fill:10dlu:grow",
+			//   view                  close
+				"fill:10dlu:grow, 3dlu, pref");
+
+		DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+		CellConstraints cc = new CellConstraints();
+
+		builder.add(viewComp, 		cc.xy(1, 1));
+
+		builder.add(closeButton, 	cc.xy(1, 3));
+
+		JPanel panel = builder.getPanel();
+		panel.setBorder(Borders.DIALOG_BORDER);
+
+		dialog.getContentPane().add(panel);
+		return dialog;
+	}
+
 }
