@@ -155,8 +155,12 @@ public class LabelPropView<T> implements JView, UpdatableSingleValueView<Bean> {
 	public void update() {
 		T t = help.getPropValue();
 		
-		if (t == null) return;
+		String s = "";
 		
+		if (t != null) {
+			s = formatter.transform(t);
+		}
+
 		int newHorizAlignment;
 		if (t instanceof Number) {
 			newHorizAlignment = SwingConstants.TRAILING;
@@ -166,9 +170,7 @@ public class LabelPropView<T> implements JView, UpdatableSingleValueView<Bean> {
 		if (label.getHorizontalAlignment() != newHorizAlignment) {
 			label.setHorizontalAlignment(newHorizAlignment);
 		}
-
-		String s = formatter.transform(t);
-
+		
 		if (!label.getText().equals(s)) {
 			label.setText(s);
 		}		
