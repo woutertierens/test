@@ -76,17 +76,24 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	private final Prop<Boolean> locked;
 	
 	private final List<String> displayNames;
-
-	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked) {
-		this(model, factory, locked, null);
+	
+	private static String defaultLayoutString() {
+		return Views.getViewSystem().getStandard3ColumnDefinition();
 	}
 	
-	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked, List<String> displayNames) {
+	private String layoutString = Views.getViewSystem().getStandard3ColumnDefinition();
+
+	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked) {
+		this(model, factory, locked, null, defaultLayoutString());
+	}
+	
+	private BeanEditor(Reference<M> model, PropViewFactory factory, Prop<Boolean> locked, List<String> displayNames, String layoutString) {
 		super();
 		this.model = model;
 		this.factory = factory;
 		this.locked = locked;
 		this.displayNames = displayNames;
+		this.layoutString = layoutString;
 		
 		panel = new JPanel(new BorderLayout());
 		
@@ -127,7 +134,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, List<String> displayNames) {
-		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null, new ArrayList<String>(displayNames));
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null, new ArrayList<String>(displayNames), defaultLayoutString());
 	}
 
 	/**
@@ -146,7 +153,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 	 * @return	 		A new {@link BeanEditor}
 	 */
 	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, List<String> displayNames, Prop<Boolean> locked) {
-		return new BeanEditor<M>(model, new PropViewFactoryDefault(), locked, new ArrayList<String>(displayNames));
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), locked, new ArrayList<String>(displayNames), defaultLayoutString());
 	}
 
 	
@@ -161,6 +168,18 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null);
 	}
 
+	/**
+	 * Make a new editor with default prop view factory
+	 * 
+	 * @param <M> 		The type of bean in the model 
+	 * @param model 	The model containing the bean
+	 * @param layoutString	Set the formatting string used for columns in {@link FormLayout}
+	 * @return	 		A new {@link BeanEditor}
+	 */
+	public static <M extends Bean> BeanEditor<M> create(Reference<M> model, String layoutString) {
+		return new BeanEditor<M>(model, new PropViewFactoryDefault(), null, null, layoutString);
+	}
+	
 	/**
 	 * Make a new editor
 	 * 
@@ -271,7 +290,7 @@ public class BeanEditor<M extends Bean> implements JView, SingleValueView<M>, Ch
 		
 		//logger.finest("rebuild()");
 		
-		FormLayout layout = new FormLayout(Views.getViewSystem().getStandard3ColumnDefinition());
+		FormLayout layout = new FormLayout(layoutString);
 		
 		DefaultFormBuilder builder = new DefaultFormBuilder(layout);
 		//builder.setDefaultDialogBorder();
