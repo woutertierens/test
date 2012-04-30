@@ -1,10 +1,13 @@
 package org.jpropeller.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -326,5 +329,25 @@ public class FileUtils {
 		while (total < toWrite) {
 			total += out.write(buf);
 		}
+	}
+
+	/**
+	 * Create a new temp file, marked for deletion on exit, and copy the entire contents
+	 * of specified {@link InputStream} to the file, then return the file.
+	 * @param inputStream	The data to write to the file.
+	 * @return				A new temporary file, marked for deletion on exit, containing all data from stream.
+	 * @throws IOException	If stream cannot be read, file cannot be created, or file cannot be written.
+	 */
+	public static File streamToTempFile(BufferedInputStream inputStream) throws IOException {
+		File file = File.createTempFile("inputStreamContents", ".bin");
+		file.deleteOnExit();
+		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+		int b = -1;
+		while ((b = inputStream.read()) != -1) {
+			outputStream.write(b);
+		}
+		outputStream.flush();
+		outputStream.close();
+		return file;
 	}
 }
