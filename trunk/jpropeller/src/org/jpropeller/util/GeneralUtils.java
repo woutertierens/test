@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -37,8 +38,14 @@ public class GeneralUtils {
 	 */
 	public static void enableNimbus() {
     	try {            
-            UIManager.setLookAndFeel(
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+//            UIManager.setLookAndFeel(
+//                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+    		for (LookAndFeelInfo laf :
+    			UIManager.getInstalledLookAndFeels()) {
+    			    if ("Nimbus".equals(laf.getName())) {
+    			         UIManager.setLookAndFeel(laf.getClassName());
+    			}
+    		}
         } catch (Exception e) {
         	//Fall back to system look and feel if nimbus not available
         	try{
