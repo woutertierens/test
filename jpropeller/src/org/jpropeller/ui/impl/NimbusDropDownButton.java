@@ -15,8 +15,6 @@ import javax.swing.border.EmptyBorder;
 import org.jpropeller.ui.IconFactory.IconSize;
 import org.jpropeller.view.Views;
 
-import com.sun.java.swing.Painter;
-
 /**
  * Button designed to be used as a drop down combo box replacement.
  * Note that this uses the nimbus LaF when available, otherwise
@@ -26,20 +24,20 @@ public class NimbusDropDownButton extends JToggleButton {
 
 	private final int dividerSize = 20;
 
-	private final Painter<?> disabled = (Painter<?>)UIManager.get("ComboBox[Disabled].backgroundPainter");
-	private final Painter<?> enabled = (Painter<?>)UIManager.get("ComboBox[Enabled].backgroundPainter");	
-	private final Painter<?> focusedMouseOver = (Painter<?>)UIManager.get("ComboBox[Focused+MouseOver].backgroundPainter");
-	private final Painter<?> focusedPressed = (Painter<?>)UIManager.get("ComboBox[Focused+Pressed].backgroundPainter");
-	private final Painter<?> focused = (Painter<?>)UIManager.get("ComboBox[Focused].backgroundPainter");	
-	private final Painter<?> mouseOver = (Painter<?>)UIManager.get("ComboBox[MouseOver].backgroundPainter");
-//	private final Painter<?> pressed = (Painter<?>)UIManager.get("ComboBox[Pressed].backgroundPainter");
+	private final PainTer disabled = new PainTer(UIManager.get("ComboBox[Disabled].backgroundPainter"));
+	private final PainTer enabled = new PainTer(UIManager.get("ComboBox[Enabled].backgroundPainter"));	
+	private final PainTer focusedMouseOver = new PainTer(UIManager.get("ComboBox[Focused+MouseOver].backgroundPainter"));
+	private final PainTer focusedPressed = new PainTer(UIManager.get("ComboBox[Focused+Pressed].backgroundPainter"));
+	private final PainTer focused = new PainTer(UIManager.get("ComboBox[Focused].backgroundPainter"));	
+	private final PainTer mouseOver = new PainTer(UIManager.get("ComboBox[MouseOver].backgroundPainter"));
+//	private final PainTer pressed = new PainTer(UIManager.get("ComboBox[Pressed].backgroundPainter"));
 
 	//FIXME use proper arrow painters
-//	Painter<?> arrowEnabled = (Painter<?>)UIManager.get("ComboBox:\"ComboBox.arrowButton\"[Enabled].foregroundPainter");
-//	Painter<?> arrowDisabled = (Painter<?>)UIManager.get("ComboBox:\"ComboBox.arrowButton\"[Disabled].foregroundPainter");
+//	PainTer arrowEnabled = new PainTer(UIManager.get("ComboBox:\"ComboBox.arrowButton\"[Enabled].foregroundPainter"));
+//	PainTer arrowDisabled = new PainTer(UIManager.get("ComboBox:\"ComboBox.arrowButton\"[Disabled].foregroundPainter"));
 
 	//FIXME find out what this is for
-	//Painter<?> enabledSelected = (Painter<?>)UIManager.get("ComboBox[Enabled+Selected].backgroundPainter");	
+	//PainTer enabledSelected = new PainTer(UIManager.get("ComboBox[Enabled+Selected].backgroundPainter"));	
 
 	private final static Icon dropdownSelected = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "dropdown-selected");
 	private final static Icon dropdownUnselected = Views.getIconFactory().getIcon(IconSize.SMALL, "jpropeller", "dropdown-unselected");
@@ -90,7 +88,7 @@ public class NimbusDropDownButton extends JToggleButton {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g.create();
 
-		Painter<?> painter = disabled;
+		PainTer painter = disabled;
 		//Painter<?> arrowPainter = arrowDisabled;
 		if (isEnabled()) {
 			//arrowPainter = arrowEnabled;
@@ -117,7 +115,7 @@ public class NimbusDropDownButton extends JToggleButton {
 			}
 		}
 		
-		painter.paint(g2d, null, getWidth(), getHeight());
+		painter.paint(g2d, getWidth(), getHeight());
 		
 		/*
 		arrowPainter.paint(g2d, null, getWidth(), getHeight());
