@@ -55,10 +55,10 @@ public class PainTer {
 	}
 	
 	private static Method paintMethod(Class<?> c) {
-		System.out.println("Class " + c);
+//		System.out.println("Class " + c);
 	    Method[] allMethods = c.getMethods();
 	    for (Method m : allMethods) {
-	    	System.out.println("Method " + m);
+//	    	System.out.println("Method " + m);
 	    	Class<?>[] parameterTypes = m.getParameterTypes();
 	    	//Look for public void paint(Graphics2D g, _, int width, int height);
 	    	//Where the "_" indicates we don't care about that parameter - we will pass
