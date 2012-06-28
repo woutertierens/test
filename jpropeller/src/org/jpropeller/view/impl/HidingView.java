@@ -45,6 +45,7 @@ public class HidingView implements JView, ChangeListener {
 		
 		panel = new JPanel(new BorderLayout());
 		hidingPanel = new JPanel(new BorderLayout());
+		hidingPanel.setOpaque(false);
 		hidingPanel.add(component);
 		
 		panel.add(hidingPanel);
