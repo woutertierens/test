@@ -54,6 +54,22 @@ public class FileUtils {
 	}
 
 	/**
+	 * Read bytes from a {@link ByteBuffer} as an ASCII string, stopping at the first zero byte.
+	 * @param buf		The buffer, must have a 0 byte available to read (eventually)
+	 * @return			The string
+	 * @throws IOException	If data cannot be read
+	 */
+	public final static String readStringToNull(ByteBuffer buf) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		int b = 0;
+		while ((b = buf.get()) != 0) {
+			builder.append((char)b);				
+		}
+		return builder.toString();
+	}
+
+	
+	/**
 	 * Read all data from an input stream into a temporary file, which is marked
 	 * for deletion on exit, then returned.
 	 * @param in	The input stream
