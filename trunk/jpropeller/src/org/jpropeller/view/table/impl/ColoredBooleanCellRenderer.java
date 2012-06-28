@@ -17,8 +17,8 @@ public class ColoredBooleanCellRenderer extends DefaultTableCellRenderer {
 
 	//TODO optimise drawing speed - get rid of the transparency, solid red for true, use image for the dots
 	
-	private static final int border = 4;
-	private static final int extraBorder = 3;
+	private static final int border = 1;
+	private static final int extraBorder = 5;
 
 	private Color c = null;
 	private Color cl = null;
@@ -28,7 +28,7 @@ public class ColoredBooleanCellRenderer extends DefaultTableCellRenderer {
 //	private final static Color fl = Color.white;
 //	private final static Color fd = new Color(200, 200, 200);
 
-	private final static Color f = null;
+	private final static Color f = Color.white;
 	private final static Color fl = new Color(255, 255, 255, 40);
 	private final static Color fd = new Color(0, 0, 0, 40);
 	
