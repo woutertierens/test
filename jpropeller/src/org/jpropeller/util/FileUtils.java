@@ -373,6 +373,12 @@ public class FileUtils {
 		return file;
 	}
 
+	/**
+	 * Make a new list, with the same elements as the provided list,
+	 * but with any null elements omitted.
+	 * @param list	The input list
+	 * @return		A new list, same elements as input list with nulls removed
+	 */
 	public static <A> List<A> filterNull(List<A> list) {
 		List<A> mList = new ArrayList<A>(list.size());
 		for (A a : list) {
@@ -381,6 +387,14 @@ public class FileUtils {
 		return mList;		
 	}
 	
+	/**
+	 * Map a list using a transformed
+	 * @param list	The input list
+	 * @param t		The transformer to apply to each element of the input list,
+	 * 				to yield the corresponding element of the output list
+	 * @return		A new list, where each element is the result of transforming
+	 * 				the corresponding element of the input list
+	 */
 	public static <A, B> List<B> map(List<A> list, Transformer<A, B> t) {
 		List<B> mList = new ArrayList<B>(list.size());
 		for (A a : list) {
@@ -389,6 +403,14 @@ public class FileUtils {
 		return mList;
 	}
 	
+	/**
+	 * Load a file's contents as a string, using the specified encoding,
+	 * and convert it to a list of lines as provided by {@link BufferedReader#readLine()}
+	 * @param file			The file to read
+	 * @param encoding		The string encoding to use, or null to use system default
+	 * @return				The lines of text in the file
+	 * @throws IOException	If file cannot be read, or parsed as string, or encoding is unsupported.
+	 */
 	public static List<String> fileToLines(File file, String encoding) throws IOException {
 		FileInputStream stream = new FileInputStream(file);
         if (encoding == null) {
@@ -401,6 +423,11 @@ public class FileUtils {
 
 	}
 	
+	/**
+	 * Get the {@link File} in the user's home directory with the specified name.
+	 * @param name	File name
+	 * @return		File
+	 */
 	public static File userFile(String name) {
 		return new File(System.getProperty("user.home"), name);
 	}
