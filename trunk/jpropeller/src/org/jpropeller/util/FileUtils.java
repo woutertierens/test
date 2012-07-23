@@ -2,11 +2,13 @@ package org.jpropeller.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -15,7 +17,11 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+import org.jpropeller.transformer.Transformer;
 
 /**
  * Utility methods for working with FileChannels, ByteBuffers, etc.
@@ -366,4 +372,47 @@ public class FileUtils {
 		outputStream.close();
 		return file;
 	}
+
+	public static <A> List<A> filterNull(List<A> list) {
+		List<A> mList = new ArrayList<A>(list.size());
+		for (A a : list) {
+			if (a != null)mList.add(a);
+		}
+		return mList;		
+	}
+	
+	public static <A, B> List<B> map(List<A> list, Transformer<A, B> t) {
+		List<B> mList = new ArrayList<B>(list.size());
+		for (A a : list) {
+			mList.add(t.transform(a));
+		}
+		return mList;
+	}
+	
+	public static List<String> fileToLines(File file, String encoding) throws IOException {
+		FileInputStream stream = new FileInputStream(file);
+        if (encoding == null) {
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            return readLines(reader);
+        } else {
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(stream, encoding));
+            return readLines(reader);
+        }
+
+	}
+	
+	public static File userFile(String name) {
+		return new File(System.getProperty("user.home"), name);
+	}
+
+	private static List<String> readLines(BufferedReader reader) throws IOException {
+        List<String> list = new ArrayList<String>();
+        String line = reader.readLine();
+        while (line != null) {
+            list.add(line);
+            line = reader.readLine();
+        }
+        return list;
+	}
+
 }
