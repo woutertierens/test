@@ -22,7 +22,9 @@ import org.jpropeller.properties.exception.InvalidValueException;
 import org.jpropeller.properties.exception.ReadOnlyException;
 import org.jpropeller.system.Props;
 import org.jpropeller.transformer.BiTransformer;
+import org.jpropeller.transformer.Transformer;
 import org.jpropeller.transformer.impl.IdentityBiTransformer;
+import org.jpropeller.transformer.impl.IdentityTransformer;
 import org.jpropeller.transformer.impl.ZeroToOneBaseTransformer;
 import org.jpropeller.util.GeneralUtils;
 import org.jpropeller.util.NumberConverter;
@@ -47,6 +49,8 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	private final Prop<Boolean> locked;
 	
 	private final BiTransformer<T, T> displayTransformer;
+	
+	private final Transformer<T, T> inputFilter;
 
 	/**
 	 * Original default bg color for spinner
@@ -107,6 +111,33 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	public NumberPropSpinnerEditor(final Prop<T> model, 
 			SpinnerNumberModel numberModel, NumberConverter<T> converter, Prop<Boolean> locked,
 			BiTransformer<T, T> displayTransformer) {
+		this(model, numberModel, converter, locked, displayTransformer, null);
+	}
+	
+	/**
+	 * Create a {@link NumberPropSpinnerEditor}
+	 * @param model			The model for this {@link View} 
+	 * @param numberModel	The number model for the spinner. 
+	 * 						Please do not use this number model except to pass it 
+	 * 						to this constructor.
+	 * @param converter Converter to move from {@link Number} to T and back
+	 * @param locked	While this {@link Prop} is true, editor 
+	 * 					will not make changes to model
+	 * @param displayTransformer	The transformer used for display. The FORWARDS
+	 * 								transform, {@link BiTransformer#transform(Object)} is
+	 * 								used to convert an actual value to a displayed value,
+	 * 								and the REVERSE transform, {@link BiTransformer#transformBack(Object)}
+	 * 								is used to convert a displayed value back to an actual value.
+	 * 								This is probably most useful for converting between good, honest
+	 * 								0-based index values and the horror of 1-based indices for the user.
+	 * @param inputFilter			The transformer used to convert from values that would be commited to the
+	 * 								model, to values that WILL be comitted to the model. Can be used for example
+	 * 								to enforce a limited range of values that can be specified by the user. Note
+	 * 								that this is AFTER transformation of the value.
+	 */
+	public NumberPropSpinnerEditor(final Prop<T> model, 
+			SpinnerNumberModel numberModel, NumberConverter<T> converter, Prop<Boolean> locked,
+			BiTransformer<T, T> displayTransformer, Transformer<T, T> inputFilter) {
 
 		super();
 		this.model = model;
@@ -116,6 +147,12 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 			this.displayTransformer = displayTransformer;
 		} else {
 			this.displayTransformer = new IdentityBiTransformer<T>();
+		}
+		
+		if (inputFilter != null) {
+			this.inputFilter = inputFilter;
+		} else {
+			this.inputFilter = new IdentityTransformer<T>();
 		}
 
 		updateManager = Props.getPropSystem().getUpdateManager();
@@ -174,7 +211,8 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 		//If we are editing, set the new prop value
 		if (isEditing()) {
 			try {
-				model.set(currentSpinnerValueAsModelValue());
+				T intendedValue = currentSpinnerValueAsModelValue();				
+				model.set(inputFilter.transform(intendedValue));
 				error(false);
 			} catch (ReadOnlyException e) {
 				error(true);
@@ -362,4 +400,23 @@ public class NumberPropSpinnerEditor<T extends Number & Comparable<T>> implement
 	public final static NumberPropSpinnerEditor<Double> createDouble(Prop<Double> model) {
 		return createDouble(model, null);
 	}
+	
+	/**
+	 * Create a new {@link NumberPropSpinnerEditor}
+	 * displaying double values, with an input filter
+	 * @param model		The {@link Prop} to display
+	 * @param locked	When this has value true, this {@link View} will not support editing.
+	 * @param inputFilter 			The transformer used to convert from values that would be commited to the
+	 * 								model, to values that WILL be comitted to the model. Can be used for example
+	 * 								to enforce a limited range of values that can be specified by the user. Note
+	 * 								that this is AFTER transformation of the value.
+	 * @return			A new {@link NumberPropSpinnerEditor}
+	 */
+	public final static NumberPropSpinnerEditor<Double> createDouble(Prop<Double> model, Prop<Boolean> locked, Transformer<Double, Double> inputFilter) {
+		return new NumberPropSpinnerEditor<Double>(model, 
+				new SpinnerNumberModel(0d, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1d), 
+				NumberConverterDefaults.getDoubleConverter(), 
+				locked, null, inputFilter);
+	}
+
 }
