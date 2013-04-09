@@ -5,8 +5,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -177,24 +175,17 @@ public class TableExporter {
 	};
 	
 	/**
-	 * Default transformer for {@link Color}s
+	 * Default transformer for any object
 	 */
 	public final static Transformer<Object, String> TOSTRING_TRANSFORMER = new Transformer<Object, String>() {
 		@Override
 		public String transform(Object s) {
-			return "" + s;
+			return s == null ? "" : "" + s;
 		}
 	};
 	
 	/**
 	 * Default transformer for numbers
 	 */
-	public final static Transformer<Object, String> NUMBER_TRANSFORMER = new Transformer<Object, String>() {
-		private final NumberFormat NUMBER_FORMAT = new DecimalFormat();
-		
-		@Override
-		public String transform(Object s) {
-			return NUMBER_FORMAT.format(s);
-		}
-	};
+	public final static Transformer<Object, String> NUMBER_TRANSFORMER = TOSTRING_TRANSFORMER;
 }
