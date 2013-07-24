@@ -1,14 +1,21 @@
 package org.jpropeller.view.combo.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.JComboBox;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.Prop;
+import org.jpropeller.properties.change.Change;
+import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
 import org.jpropeller.properties.constrained.impl.SelectionFromCollectionProp;
+import org.jpropeller.system.Props;
 import org.jpropeller.view.CompletionException;
 import org.jpropeller.view.JView;
 import org.jpropeller.view.combo.ListComboBoxReference;
+import org.jpropeller.view.update.UpdateManager;
 
 /**
  * A {@link JView} displaying a {@link CList} as a {@link JComboBox},
@@ -16,20 +23,42 @@ import org.jpropeller.view.combo.ListComboBoxReference;
  *
  * @param <T> The type of element in the {@link CList}
  */
-public class ListComboView<T> implements JView {
+public class ListComboView<T> implements JView, ChangeListener {
 
-	JComboBox combo;
-	ListComboBoxReference<T> model;
-	ListComboBoxModel<T> comboModel;
-	
+	private final JComboBox combo;
+	private final ListComboBoxReference<T> model;
+	private final ListComboBoxModel<T> comboModel;
+	private final Prop<Boolean> locked;
+	private UpdateManager updateManager;
+
 	/**
 	 * Make a new {@link ListComboView}
 	 * @param comboModel		The combo model to be displayed
 	 */
 	private ListComboView(ListComboBoxModel<T> comboModel) {
+		this(comboModel, null);
+	}
+	
+	/**
+	 * Make a new {@link ListComboView}
+	 * @param comboModel		The combo model to be displayed
+	 * @param locked			If this is non-null and has value true, view will not allow editing
+	 */
+	private ListComboView(ListComboBoxModel<T> comboModel, Prop<Boolean> locked) {
 		this.comboModel = comboModel;
 		this.model = comboModel.getModel();
 		combo = new JComboBox(comboModel);
+		
+		updateManager = Props.getPropSystem().getUpdateManager();
+		updateManager.registerUpdatable(this);
+
+		this.locked = locked;
+		if (locked != null) {
+			locked.features().addListener(this);
+		}
+
+		//Start out up to date
+		update();
 	}
 	
 	/**
@@ -66,6 +95,26 @@ public class ListComboView<T> implements JView {
 		ListComboBoxReference<S> comboRef = ListComboBoxReferenceDefault.create(list, selection);
 		ListComboBoxModel<S> comboModel = new ListComboBoxModel<S>(comboRef, valueClass);
 		return new ListComboView<S>(comboModel);
+	}
+	
+	/**
+	 * Make a new {@link ListComboView}
+	 * @param valueClass 		The class of value in the list
+	 * @param list				The prop containing the list to display
+	 * @param selection			The prop containing the selection
+	 * @param locked			If this is non-null and has value true, view will not allow editing
+	 * 
+	 * @param <S>				The type of value in the list 
+	 * @return 					New {@link ListComboView}
+	 */
+	public static <S> ListComboView<S> create(
+			Class<S> valueClass, 
+			Prop<CList<S>> list, 
+			Prop<S> selection,
+			Prop<Boolean> locked) {
+		ListComboBoxReference<S> comboRef = ListComboBoxReferenceDefault.create(list, selection);
+		ListComboBoxModel<S> comboModel = new ListComboBoxModel<S>(comboRef, valueClass, locked);
+		return new ListComboView<S>(comboModel, locked);
 	}
 	
 	/**
@@ -108,9 +157,18 @@ public class ListComboView<T> implements JView {
 	}
 
 	@Override
+	public void change(List<Changeable> initial, Map<Changeable, Change> changes) {
+		Props.getPropSystem().getUpdateManager().updateRequiredBy(this);
+	}
+
+	@Override
 	public void dispose() {
 		//Dispose our model
 		comboModel.dispose();
+		if (locked != null) {
+			locked.features().removeListener(this);
+		}
+		updateManager.deregisterUpdatable(this);
 	}
 
 	@Override
@@ -118,6 +176,8 @@ public class ListComboView<T> implements JView {
 		//JComboBox updates itself automatically based on combo model changes, without using
 		//the UpdateManager - the combo model does use UpdateManager though, and this 
 		//achieves the same goal
+		//We just manage enable/disable state of the JComboBox
+		combo.setEnabled(!Props.isTrue(locked));
 	}
 
 	@Override

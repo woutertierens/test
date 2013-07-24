@@ -13,6 +13,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 
 import org.jpropeller.collection.CList;
+import org.jpropeller.properties.Prop;
 import org.jpropeller.properties.change.Change;
 import org.jpropeller.properties.change.ChangeListener;
 import org.jpropeller.properties.change.Changeable;
@@ -63,6 +64,8 @@ public class ListComboBoxModel<T> extends AbstractListModel implements ComboBoxM
 	
 	private UpdateManager updateManager;
 	
+	private final Prop<Boolean> locked;
+	
 	/**
 	 * Create {@link ComboBoxModel} using data in a {@link Reference}
 	 * @param model					The model to display
@@ -70,6 +73,18 @@ public class ListComboBoxModel<T> extends AbstractListModel implements ComboBoxM
 	 * 								allows for type safe selection methods
 	 */
 	public ListComboBoxModel(ListComboBoxReference<T> model, Class<T> selectionClass) {
+		this(model, selectionClass, null);
+	}
+
+	/**
+	 * Create {@link ComboBoxModel} using data in a {@link Reference}
+	 * @param model					The model to display
+	 * @param selectionClass		The class to be accepted for selections, 
+	 * 								allows for type safe selection methods
+	 * @param locked				If this is not null, then we will NOT change the selection
+	 * 								when its value is true.
+	 */
+	public ListComboBoxModel(ListComboBoxReference<T> model, Class<T> selectionClass, Prop<Boolean> locked) {
 		super();
 		
 		updateManager = Props.getPropSystem().getUpdateManager();
@@ -84,6 +99,8 @@ public class ListComboBoxModel<T> extends AbstractListModel implements ComboBoxM
 
 		//Listen to our model
 		model.features().addListener(this);
+		
+		this.locked = locked;
 	}
 	
 	private CList<T> list() {
@@ -200,9 +217,9 @@ public class ListComboBoxModel<T> extends AbstractListModel implements ComboBoxM
 		
 		T selection = model.selection().get();
 		
-		//Only consider new selection if it is different from old one
+		//Only consider new selection if it is different from old one, and we are not locked
 		if ((selection != null && (!selection.equals( anObject ))) ||
-				(selection == null && anObject != null)) {
+				(selection == null && anObject != null) && !Props.isTrue(locked)) {
 
 			//Reject selection of a non-null type not allowed in the list
 			if ((anObject != null) && (!selectionClass.isAssignableFrom(anObject.getClass()))) return;
