@@ -68,8 +68,9 @@ public class ListSelectionSource<T> implements Source<T> {
 			TableRowView<? super T> tableRowView,
 			boolean showTableHeader)
 	{
-		this(owner, title, listProp, clazz, tableRowView, showTableHeader, null);
+		this(owner, title, listProp, clazz, tableRowView, showTableHeader, null, null);
 	}
+	
 	/**
 	 * Create a {@link ListSelectionSource}
 	 * 
@@ -84,14 +85,42 @@ public class ListSelectionSource<T> implements Source<T> {
 	 * @param choiceDescription	Description of the choice to be made,
 	 * 							to be displayed as the text of a {@link JLabel}
 	 * 							above the selection list. Will accept {@link JLabel}
-	 * 							compatible html.
+	 * 							compatible html. Null to omit.
 	 */
 	public ListSelectionSource(
 			Frame owner, String title, 
 			Prop<CList<T>> listProp, Class<T> clazz, 
 			TableRowView<? super T> tableRowView,
 			boolean showTableHeader,
-			String choiceDescription) {
+			String choiceDescription)
+	{
+		this(owner, title, listProp, clazz, tableRowView, showTableHeader, choiceDescription, null);
+	}
+	
+	/**
+	 * Create a {@link ListSelectionSource}
+	 * 
+	 * @param owner				The owner of this dialog, or null 
+	 * @param title				The title of the dialog
+	 * @param listProp 			The property containing the
+	 * 							list of elements to choose from
+	 * @param clazz 			The class of instance provided
+	 * @param tableRowView		The view for the table display		
+	 * @param showTableHeader 	True to display the table row
+	 * 							header in dialog, false to hide it
+	 * @param choiceDescription	Description of the choice to be made,
+	 * 							to be displayed as the text of a {@link JLabel}
+	 * 							above the selection list. Will accept {@link JLabel}
+	 * 							compatible html. Null to omit.
+	 * @param additionalComponent	Additional component to display below the selection list, null to omit.
+	 */
+	public ListSelectionSource(
+			Frame owner, String title, 
+			Prop<CList<T>> listProp, Class<T> clazz, 
+			TableRowView<? super T> tableRowView,
+			boolean showTableHeader,
+			String choiceDescription,
+			JComponent additionalComponent) {
 		super();
 		
 		this.owner = owner;
@@ -113,6 +142,10 @@ public class ListSelectionSource<T> implements Source<T> {
         
         if (choiceDescription != null) {
         	panel.add(new JLabel(choiceDescription), BorderLayout.NORTH);
+        }
+        
+        if (additionalComponent != null) {
+        	panel.add(additionalComponent, BorderLayout.SOUTH);
         }
 		
         //Remove the mapping for Enter and Shift-Enter, which normally
