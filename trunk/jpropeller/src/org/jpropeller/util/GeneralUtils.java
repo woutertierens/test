@@ -378,6 +378,18 @@ public class GeneralUtils {
 		}
 	}
 
+    /**
+     * Sleep for at least a given time, ignoring any {@link InterruptedException}
+     * @param millis		Time to sleep, in milliseconds
+     */
+	public static void sleep(long millis) {
+		long end = System.currentTimeMillis() + millis;
+		long left = 0;
+		while ((left = (end - System.currentTimeMillis())) > 0) {
+			sleepUpTo(left);
+		}
+	}
+
 
 	/**
 	 *	Copies src file to dst file.
