@@ -25,6 +25,7 @@ public class PaneBottom extends EmptyBorder {
 	public final static Color DEFAULT_BG = new JLabel().getBackground();
 	
 	private final int pad;
+	private final int padRight;
 	private final int radius;
 	private final int shadowSize = 4;
 	private final int shadowAlpha = UIManager.getInt("itis.tab.shadowalpha");
@@ -49,6 +50,7 @@ public class PaneBottom extends EmptyBorder {
 	private final Color bg = DEFAULT_BG;
 	private final boolean shadows = true;
 	private final boolean showTop;
+	private final boolean showRight;
 
     /**
      * Creates a border with no extra padding
@@ -71,10 +73,22 @@ public class PaneBottom extends EmptyBorder {
      * @param showTop			True to show top border, false otherwise
      */
 	public PaneBottom(int extraPadding, boolean showTop) {
-		super((showTop ? 4 : 2)+extraPadding,4+extraPadding,4+extraPadding,4+extraPadding);
+		this(extraPadding, showTop, true);
+	}
+    
+	/**
+     * Creates a border
+     * @param extraPadding		The number of extra pixels of padding
+     * @param showTop			True to show top border, false otherwise
+     * @param showRight			True to show right border, false otherwise
+     */
+	public PaneBottom(int extraPadding, boolean showTop, boolean showRight) {
+		super((showTop ? 4 : 2)+extraPadding,4+extraPadding,4+extraPadding,(showRight ? 4 : 2)+extraPadding);
 		radius = UIManager.getInt("itis.roundsize");
 		pad = showTop ? 0 : 6;
+		padRight = showRight ? 0 : 6;
 		this.showTop = showTop;
+		this.showRight = showRight;
 	}
 	
 	@Override
@@ -100,24 +114,28 @@ public class PaneBottom extends EmptyBorder {
 
 		//Draw bg
 		g2d.setPaint(bg);
-		g2d.fillRoundRect(0, -pad, w-1, h-1+pad, radius, radius);
+		g2d.fillRoundRect(0, -pad, w-1 + padRight, h-1+pad, radius, radius);
 
 		//Draw shadow
 		if (shadows) {
 			if (showTop) {
 				g2d.setPaint(shadow1);
-				g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
+				g2d.fillRoundRect(1, -pad, w-2 + padRight, h-1+pad, radius, radius);
 			}
 			g2d.setPaint(shadow2);
-			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
-			g2d.setPaint(shadow3);
-			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
+			g2d.fillRoundRect(1, -pad, w-2 + padRight, h-1+pad, radius, radius);
+			
+			if (showRight) {
+				g2d.setPaint(shadow3);
+				g2d.fillRoundRect(1, -pad, w-2 + padRight, h-1+pad, radius, radius);
+			}
+			
 			g2d.setPaint(shadow4);
-			g2d.fillRoundRect(1, -pad, w-2, h-1+pad, radius, radius);
+			g2d.fillRoundRect(1, -pad, w-2 + padRight, h-1+pad, radius, radius);
 		}
 		
 		g2d.setPaint(outline);
-		g2d.drawRoundRect(0, -pad, w-1, h-1+pad, radius, radius);
+		g2d.drawRoundRect(0, -pad, w-1 + padRight, h-1+pad, radius, radius);
 
 		g2d.dispose();
 	}
