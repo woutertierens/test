@@ -46,6 +46,23 @@ public class JTabBorder extends EmptyBorder {
 		super(6,6,6,6);
 	}
 
+    /**
+     * Creates an initially unselected toggle button
+     * without setting the text or image.
+     * @param inset The inset on all sides.
+     */
+	public JTabBorder(int inset) {
+		super(inset,inset,inset,inset);
+	}
+
+	/**
+	 * Set the highlight alpha value
+	 * @param highlightAlpha
+	 */
+	public void setHighlightAlpha(int highlightAlpha) {
+		this.highlightAlpha = highlightAlpha;
+	}
+
 	private void updateBoxes(int w, int h) {
 		selected = new PaintBox(
 				selColor,

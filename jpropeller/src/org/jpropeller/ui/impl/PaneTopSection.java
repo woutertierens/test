@@ -99,7 +99,7 @@ public class PaneTopSection extends EmptyBorder {
 			if (!drawRight) {
 				g2d.clipRect(x, y, w-1, h);
 			}
-			g2d.fillRoundRect(x + 1 - leftPad, y + 1, w - 2 + leftPad + rightPad, h - 2 + pad, radius-1, radius-1);
+			g2d.fillRoundRect(x - leftPad, y, w - 1 + leftPad + rightPad, h - 1 + pad, radius-1, radius-1);
 			g2d.setClip(oldClip);
 		}
 		
