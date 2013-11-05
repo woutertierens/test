@@ -64,7 +64,7 @@ public class BackgroundCalculationBean extends BeanDefault {
 	public Prop<Long> i() {return i;};
 	
 	/**
-	 * Access calculated property - just mirrors i, but with simulated delay due to calculation
+	 * Access calculated property - just mirrors i, but with simulated delay fro calculation
 	 * @return
 	 * 		calculated property
 	 */
