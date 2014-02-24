@@ -50,6 +50,30 @@ public class SynchronousTaskExecutor implements Changeable {
 		Props.getPropSystem().getChangeSystem().addTask(task);
 	}
 	
+
+    /**
+     * Create a {@link SynchronousTaskExecutor}
+     * This will execute the given task synchronously whenever one if
+     * its sources changes.
+     * @param task    The task to execute
+     * @param runOnStartup whether or not to run immediately on construction
+     */
+    public SynchronousTaskExecutor(Task task,boolean runOnStartup) {
+        this.task = task;
+        
+        //Listen to each source changeable of the task, from a view
+        //level
+        for (Changeable changeable : task.getSources()) {
+            changeable.features().addChangeableListener(this);
+        }
+        
+        if(runOnStartup)
+        {
+            //Start updated
+            Props.getPropSystem().getChangeSystem().addTask(task);
+        }
+    }
+	
 	@Override
 	public ChangeableFeatures features() {
 		return features;
