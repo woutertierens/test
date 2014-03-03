@@ -3,6 +3,7 @@ package org.jpropeller.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,6 +39,27 @@ public class FileUtils {
 	public static String convertStreamToString(InputStream is) { 
 	    return new Scanner(is, "UTF-8").useDelimiter("\\A").next();
 	}
+	
+	/**
+	 * Read an entire input stream to a byte array
+	 * @param is	The input stream
+	 * @return		The byte array
+	 * @throws IOException 
+	 */
+	public static byte[] convertStreamToByteArray(InputStream is) throws IOException { 
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+		int nRead;
+		byte[] data = new byte[2048];
+
+		while ((nRead = is.read(data)) != -1) {
+		  buffer.write(data, 0, nRead);
+		}
+		buffer.flush();
+		
+		return buffer.toByteArray();
+	}
+
 	
 	/**
 	 * Read length bytes as an ASCII string
