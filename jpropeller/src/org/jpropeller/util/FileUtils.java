@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -29,6 +31,7 @@ import org.jpropeller.transformer.Transformer;
  */
 public class FileUtils {
 	
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final Charset USASCII = Charset.forName("US-ASCII"); 
 
 	/**
@@ -464,4 +467,26 @@ public class FileUtils {
         return list;
 	}
 
+	/**
+	 * Write a string to a file in UTF-8 encoding
+	 * @param s				The string to write
+	 * @param file			The file to write to - any contents will be replaced with string.
+	 * @throws IOException	If file cannot be written
+	 */
+	public static void writeStringToFile(String s, File file) throws IOException {
+		Writer w = new OutputStreamWriter(new FileOutputStream(file), UTF8);
+		w.append(s);
+		w.flush();
+		w.close();
+	}
+
+	/**
+	 * Read a string from a file in UTF-8 encoding
+	 * @param file			The file to read from
+	 * @return 				The whole file as a string
+	 * @throws IOException	If file cannot be read
+	 */
+	public static String readStringFromFile(File file) throws IOException {
+	    return new Scanner(new FileInputStream(file), "UTF-8").useDelimiter("\\A").next();
+	}
 }
