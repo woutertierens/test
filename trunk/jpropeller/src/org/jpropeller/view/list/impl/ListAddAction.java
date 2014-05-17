@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.properties.Prop;
@@ -286,7 +287,11 @@ public class ListAddAction<T> extends AbstractAction implements ChangeListener, 
 				}
 				
 			} catch (NoInstanceAvailableException niae) {
-				//Nothing to do - most likely user cancelled selection
+				//Nothing to do - most likely user cancelled selection. However if there is a user-visible message,
+				//show it in an option pane
+				if (niae.isUserVisibleMessage()) {
+					JOptionPane.showMessageDialog(null, niae.getMessage(), "Cannot add", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 			
 		} finally {
