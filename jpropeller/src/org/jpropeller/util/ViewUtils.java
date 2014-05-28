@@ -13,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import org.jpropeller.ui.impl.PaneBottom;
@@ -128,6 +129,7 @@ public class ViewUtils {
 	public final static void outerise(JComponent component) {
 		component.setBackground(outerColor());
 	}
+
 
 	/**
 	 * Format a list of {@link JComponent}s as "outer" components, which do not contain
@@ -284,6 +286,81 @@ public class ViewUtils {
 
 		dialog.getContentPane().add(panel);
 		return dialog;
+	}
+	
+	/**
+	 * Combines the 3 JComponents into JSplitPanes, in a useful layout with a top left, a top right and a bottom component.
+	 * draggingEnabled should typically be a global setting for enabling or disabling split panes.
+	 * @param topLeft
+	 * @param topRight
+	 * @param bottom
+	 * @param draggingEnabled
+	 * @return the resulting JSplitPane
+	 */
+	public static final JSplitPane make3Panes(JComponent topLeft, JComponent topRight, JComponent bottom, boolean draggingEnabled)
+	{
+		JSplitPane topPanel=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				topLeft, topRight);
+		topPanel.setOneTouchExpandable(draggingEnabled);
+		topPanel.setResizeWeight(0.5);
+		topPanel.setDividerLocation(0.5);
+		topPanel.setEnabled(draggingEnabled);
+		ViewUtils.outerise(topPanel);
+		JSplitPane component=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topPanel, bottom);
+		component.setOneTouchExpandable(draggingEnabled);
+		component.setResizeWeight(0.7);
+		component.setDividerLocation(0.5);
+		component.setEnabled(draggingEnabled);
+		ViewUtils.outerise(component);
+		return component;
+	}
+	
+	/**
+	 * Combines the 3 JComponents into JSplitPanes, in a useful layout, with a top left, a top right and a bottom component.
+	 * The location of the split panes is specified by horizLoc and vertLoc, which get passed to JSplitPane.setResizeWeight
+	 * draggingEnabled should typically be a global setting for enabling or disabling split panes.
+	 * @param topLeft
+	 * @param topRight
+	 * @param bottom
+	 * @param draggingEnabled
+	 * @return the resulting JSplitPane
+	 */
+	public static final JSplitPane make3Panes(JComponent topLeft, JComponent topRight, JComponent bottom, boolean draggingEnabled, double horizLoc, double vertLoc)
+	{
+		JSplitPane topPanel=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				topLeft, topRight);
+		topPanel.setOneTouchExpandable(draggingEnabled);
+		topPanel.setResizeWeight(horizLoc);
+		topPanel.setDividerLocation(0.5);
+		topPanel.setEnabled(draggingEnabled);
+		ViewUtils.outerise(topPanel);
+		JSplitPane component=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topPanel, bottom);
+		component.setOneTouchExpandable(draggingEnabled);
+		component.setResizeWeight(vertLoc);
+		component.setDividerLocation(0.5);
+		component.setEnabled(draggingEnabled);
+		ViewUtils.outerise(component);
+		return component;
+	}
+	
+	/**
+	 * Combines the 2 JComponents into JSplitPanes, in a useful layout, with a top and a bottom component.
+	 * draggingEnabled should typically be a global setting for enabling or disabling split panes.
+	 * The location of the split pane divider is specified by vertLoc, which get passed to JSplitPane.setResizeWeight
+	 * @return the resulting JSplitPane
+	 */
+	public static final JSplitPane make2Panes(JComponent top, JComponent bottom, boolean draggingEnabled, double vertLoc)
+	{
+		JSplitPane panel=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				top, bottom);
+		panel.setOneTouchExpandable(draggingEnabled);
+		panel.setResizeWeight(vertLoc);
+		panel.setDividerLocation(0.5);
+		panel.setEnabled(draggingEnabled);
+		ViewUtils.outerise(panel);
+		return panel;
 	}
 
 }
