@@ -297,23 +297,9 @@ public class ViewUtils {
 	 * @param draggingEnabled
 	 * @return the resulting JSplitPane
 	 */
-	public static final JSplitPane make3Panes(JComponent topLeft, JComponent topRight, JComponent bottom, boolean draggingEnabled)
+	public static final JSplitPane make3Panes(JComponent topLeft,JComponent topRight,JComponent bottom,boolean draggingEnabled)
 	{
-		JSplitPane topPanel=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				topLeft, topRight);
-		topPanel.setOneTouchExpandable(draggingEnabled);
-		topPanel.setResizeWeight(0.5);
-		topPanel.setDividerLocation(0.5);
-		topPanel.setEnabled(draggingEnabled);
-		ViewUtils.outerise(topPanel);
-		JSplitPane component=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topPanel, bottom);
-		component.setOneTouchExpandable(draggingEnabled);
-		component.setResizeWeight(0.7);
-		component.setDividerLocation(0.5);
-		component.setEnabled(draggingEnabled);
-		ViewUtils.outerise(component);
-		return component;
+		return make3Panes(topLeft,topRight,bottom,draggingEnabled,0.5,0.5);
 	}
 	
 	/**
@@ -326,7 +312,7 @@ public class ViewUtils {
 	 * @param draggingEnabled
 	 * @return the resulting JSplitPane
 	 */
-	public static final JSplitPane make3Panes(JComponent topLeft, JComponent topRight, JComponent bottom, boolean draggingEnabled, double horizLoc, double vertLoc)
+	public static final JSplitPane make3Panes(JComponent topLeft,JComponent topRight,JComponent bottom,boolean draggingEnabled,double horizLoc,double vertLoc)
 	{
 		JSplitPane topPanel=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				topLeft, topRight);
@@ -334,14 +320,20 @@ public class ViewUtils {
 		topPanel.setResizeWeight(horizLoc);
 		topPanel.setDividerLocation(0.5);
 		topPanel.setEnabled(draggingEnabled);
+		topPanel.setDividerSize(20);
 		ViewUtils.outerise(topPanel);
+		topPanel.setMinimumSize(new Dimension(300,200));
+		bottom.setMinimumSize(new Dimension(300,300));
 		JSplitPane component=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				topPanel, bottom);
 		component.setOneTouchExpandable(draggingEnabled);
 		component.setResizeWeight(vertLoc);
 		component.setDividerLocation(0.5);
+		component.setDividerSize(20);
 		component.setEnabled(draggingEnabled);
 		ViewUtils.outerise(component);
+		topPanel.setUI(new ModifiedBasicSplitPaneUI());
+		component.setUI(new ModifiedBasicSplitPaneUI());
 		return component;
 	}
 	
@@ -351,7 +343,7 @@ public class ViewUtils {
 	 * The location of the split pane divider is specified by vertLoc, which get passed to JSplitPane.setResizeWeight
 	 * @return the resulting JSplitPane
 	 */
-	public static final JSplitPane make2Panes(JComponent top, JComponent bottom, boolean draggingEnabled, double vertLoc)
+	public static final JSplitPane make2Panes(JComponent top,JComponent bottom,boolean draggingEnabled,double vertLoc)
 	{
 		JSplitPane panel=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				top, bottom);
@@ -360,6 +352,10 @@ public class ViewUtils {
 		panel.setDividerLocation(0.5);
 		panel.setEnabled(draggingEnabled);
 		ViewUtils.outerise(panel);
+		top.setMinimumSize(new Dimension(300,200));
+		bottom.setMinimumSize(new Dimension(300,300));
+		panel.setDividerSize(20);
+		panel.setUI(new ModifiedBasicSplitPaneUI());
 		return panel;
 	}
 
