@@ -94,6 +94,23 @@ public class MultiSelectionListTableView implements JView, TableView {
 			ColumnLayout columnLayout,
 			boolean sorting
 			) {
+		this(firingTableModel,selection,columnLayout,sorting,false);
+	}
+	
+	/**
+	 * Make a new {@link MultiSelectionListTableView}
+	 * @param firingTableModel	The actual table model to display
+	 * @param selection			The prop giving selected indices
+	 * @param columnLayout		The layout of the table columns, or null to use default {@link JTable} behaviour
+	 * @param sorting			True to allow sorting of table, false otherwise
+	 * @param horizScrollModified True to improve the behaviour w.r.t horizontal scrolling
+	 */
+	public MultiSelectionListTableView(
+			FiringTableModel firingTableModel,
+			Prop<? extends CCollection<Integer>> selection,
+			ColumnLayout columnLayout,
+			boolean sorting, boolean horizScrollModified
+			) {
 		
 		this.tableModel = firingTableModel;
 		
@@ -108,10 +125,10 @@ public class MultiSelectionListTableView implements JView, TableView {
 		};
 				
 		if (columnLayout == null) {
-			table = new JTableImproved(tableModel);
+			table = new JTableImproved(tableModel,horizScrollModified);
 		} else {
 			final DefaultTableColumnModel cm = new DefaultTableColumnModel();
-			table = new JTableImproved(tableModel, cm);
+			table = new JTableImproved(tableModel, cm,horizScrollModified);
 			columnUpdater = new ColumnUpdater(tableModel, cm, columnLayout);
 		}
 		

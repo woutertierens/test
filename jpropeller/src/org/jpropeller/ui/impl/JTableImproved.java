@@ -18,6 +18,11 @@ import org.jpropeller.ui.table.TableExporter;
  */
 public class JTableImproved extends JTable {
 
+	/**
+	 * see http://stackoverflow.com/questions/6104916/how-to-make-jtable-both-autoresize-and-horizontall-scrollable
+	 */
+	private boolean horizScrollModified=false;
+
     /**
      * Constructs a default <code>JTable</code> that is initialized with a default
      * data model, a default column model, and a default selection
@@ -29,6 +34,21 @@ public class JTableImproved extends JTable {
      */
 	public JTableImproved() {
 		super();
+		init();
+	}
+	
+    /**
+     * Constructs a default <code>JTable</code> that is initialized with a default
+     * data model, a default column model, and a default selection
+     * model.
+     *
+     * @see #createDefaultDataModel
+     * @see #createDefaultColumnModel
+     * @see #createDefaultSelectionModel
+     */
+	public JTableImproved(boolean horizScrollModified) {
+		super();
+		this.horizScrollModified=horizScrollModified;
 		init();
 	}
 
@@ -48,6 +68,21 @@ public class JTableImproved extends JTable {
 
     /**
      * Constructs a <code>JTable</code> that is initialized with
+     * <code>dm</code> as the data model, a default column model,
+     * and a default selection model.
+     *
+     * @param dm        the data model for the table
+     * @see #createDefaultColumnModel
+     * @see #createDefaultSelectionModel
+     */
+	public JTableImproved(TableModel dm,boolean horizScrollModified) {
+		super(dm);
+		this.horizScrollModified=horizScrollModified;
+		init();
+	}
+
+    /**
+     * Constructs a <code>JTable</code> that is initialized with
      * <code>dm</code> as the data model, <code>cm</code>
      * as the column model, and a default selection model.
      *
@@ -57,6 +92,21 @@ public class JTableImproved extends JTable {
      */
 	public JTableImproved(TableModel dm, TableColumnModel cm) {
 		super(dm, cm);
+		init();
+	}
+
+    /**
+     * Constructs a <code>JTable</code> that is initialized with
+     * <code>dm</code> as the data model, <code>cm</code>
+     * as the column model, and a default selection model.
+     *
+     * @param dm        the data model for the table
+     * @param cm        the column model for the table
+     * @see #createDefaultSelectionModel
+     */
+	public JTableImproved(TableModel dm, TableColumnModel cm,boolean horizScrollModified) {
+		super(dm, cm);
+		this.horizScrollModified=horizScrollModified;
 		init();
 	}
 
@@ -137,6 +187,17 @@ public class JTableImproved extends JTable {
             cellEditor.stopCellEditing();
         }
         super.columnMarginChanged(e);
+    }
+    
+
+	/**
+	 * see http://stackoverflow.com/questions/6104916/how-to-make-jtable-both-autoresize-and-horizontall-scrollable
+	 */
+    @Override
+    public boolean getScrollableTracksViewportWidth()
+    {
+    	if(!horizScrollModified || getParent()==null) return super.getScrollableTracksViewportWidth();
+        return getPreferredSize().width < getParent().getWidth();
     }
 
 }
