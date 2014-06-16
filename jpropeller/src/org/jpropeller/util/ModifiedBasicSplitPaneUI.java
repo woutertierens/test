@@ -2110,7 +2110,7 @@ public ModifiedBasicSplitPaneDivider(ModifiedBasicSplitPaneUI ui) {
 
 }
 
-private void revalidate() {
+public void revalidate() {
     invalidate();
     if (splitPane != null) {
         splitPane.revalidate();
