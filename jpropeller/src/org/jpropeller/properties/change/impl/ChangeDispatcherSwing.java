@@ -20,11 +20,6 @@ import org.jpropeller.properties.change.Changeable;
  */
 public class ChangeDispatcherSwing implements ChangeDispatcher {
 
-	/**
-	 * Store the listeners we want to notify
-	 */
-	private Set<ChangeListener> affectedListeners = new IdentityHashSet<ChangeListener>();
-
 	private ChangeDispatchSource source;
 	
 	private Runnable doDispatchRunnable = new Runnable() {
@@ -54,6 +49,8 @@ public class ChangeDispatcherSwing implements ChangeDispatcher {
 	}
 
 	private synchronized void doDispatch() {
+		Set<ChangeListener> affectedListeners = new IdentityHashSet<ChangeListener>();
+
 		//This is expected to lock the source so we are allowed to dispatch, and the changes/initial will not change
 		source.prepareDispatch();
 		try {
