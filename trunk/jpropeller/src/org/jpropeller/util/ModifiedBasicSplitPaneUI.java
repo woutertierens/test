@@ -108,13 +108,13 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
      * Keys to use for forward focus traversal when the JComponent is
      * managing focus.
      */
-    private Set managingFocusForwardTraversalKeys;
+    private Set<KeyStroke> managingFocusForwardTraversalKeys;
 
     /**
      * Keys to use for backward focus traversal when the JComponent is
      * managing focus.
      */
-    private Set managingFocusBackwardTraversalKeys;
+    private Set<KeyStroke> managingFocusBackwardTraversalKeys;
 
 
     /**
@@ -233,7 +233,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
 
         // focus forward traversal key
         if (managingFocusForwardTraversalKeys==null) {
-            managingFocusForwardTraversalKeys = new HashSet();
+            managingFocusForwardTraversalKeys = new HashSet<KeyStroke>();
             managingFocusForwardTraversalKeys.add(
                 KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
         }
@@ -241,7 +241,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
                                         managingFocusForwardTraversalKeys);
         // focus backward traversal key
         if (managingFocusBackwardTraversalKeys==null) {
-            managingFocusBackwardTraversalKeys = new HashSet();
+            managingFocusBackwardTraversalKeys = new HashSet<KeyStroke>();
             managingFocusBackwardTraversalKeys.add(
                 KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK));
         }
@@ -1930,7 +1930,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
             Component focusOn = (direction > 0) ?
                 policy.getComponentAfter(rootAncestor, splitPane) :
                 policy.getComponentBefore(rootAncestor, splitPane);
-            HashSet focusFrom = new HashSet();
+            HashSet<Component> focusFrom = new HashSet<Component>();
             if (splitPane.isAncestorOf(focusOn)) {
                 do {
                     focusFrom.add(focusOn);
