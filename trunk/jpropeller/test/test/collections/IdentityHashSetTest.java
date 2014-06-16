@@ -3,7 +3,7 @@ package test.collections;
 import java.util.HashSet;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jpropeller.collection.CList;
 import org.jpropeller.collection.impl.CListDefault;
