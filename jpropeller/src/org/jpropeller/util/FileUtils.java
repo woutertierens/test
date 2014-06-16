@@ -33,15 +33,6 @@ public class FileUtils {
 	
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final Charset USASCII = Charset.forName("US-ASCII"); 
-
-	/**
-	 * Read an entire input stream to a string, assuming UTF-8 encoding
-	 * @param is	The input stream
-	 * @return		The string
-	 */
-	public static String convertStreamToString(InputStream is) { 
-	    return new Scanner(is, "UTF-8").useDelimiter("\\A").next();
-	}
 	
 	/**
 	 * Read an entire input stream to a byte array
@@ -241,10 +232,20 @@ public class FileUtils {
 	 * @throws IOException	If files cannot be read and written appropriately
 	 */
 	public final static void copyFile(File inFile, File outFile) throws IOException {
-		FileChannel in = new FileInputStream(inFile).getChannel();
-		FileChannel out = new FileOutputStream(outFile).getChannel();
-		int fileLength = (int)in.size();
-		transferFile(in, fileLength, out);
+		FileInputStream inStream = new FileInputStream(inFile);
+		try {
+			FileOutputStream outStream = new FileOutputStream(outFile);
+			try {
+				FileChannel in = inStream.getChannel();
+				FileChannel out = outStream.getChannel();
+				int fileLength = (int)in.size();
+				transferFile(in, fileLength, out);
+			} finally {
+				outStream.close();
+			}
+		} finally {
+			inStream.close();
+		}
 	}
 	
 	/**
@@ -481,12 +482,32 @@ public class FileUtils {
 	}
 
 	/**
+	 * Read an entire input stream to a string, assuming UTF-8 encoding
+	 * @param is	The input stream
+	 * @return		The string
+	 */
+	public static String convertStreamToString(InputStream is) {
+		Scanner s = new Scanner(is, "UTF-8");
+		try {
+			return s.useDelimiter("\\A").next();
+		} finally {
+			s.close();
+		}
+	}
+
+	
+	/**
 	 * Read a string from a file in UTF-8 encoding
 	 * @param file			The file to read from
 	 * @return 				The whole file as a string
 	 * @throws IOException	If file cannot be read
 	 */
 	public static String readStringFromFile(File file) throws IOException {
-	    return new Scanner(new FileInputStream(file), "UTF-8").useDelimiter("\\A").next();
+		Scanner s =  new Scanner(new FileInputStream(file), "UTF-8");
+		try {
+			return s.useDelimiter("\\A").next();
+		} finally {
+			s.close();
+		}
 	}
 }
