@@ -24,17 +24,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.peer.ComponentPeer;
-import java.awt.peer.LightweightPeer;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
@@ -49,12 +53,18 @@ import org.jpropeller.ui.IconFactory.IconSize;
 import org.jpropeller.view.Views;
 
 
-
-import sun.swing.DefaultLookup;
-import sun.swing.SwingUtilities2;
-import sun.swing.UIAction;
-
-
+/**
+ * Modified split pane UI, adapted from javax.swing code
+ * Notable new functions are
+ * (1) addComponentToDivider(JComponent comp,ComponentLocator locator)
+ * to add components to the divider at the location specified by locator
+ * (2) revalidateDivider()
+ * to revalidate components on the divider
+ * (3) addDefaultDragComponent()
+ * Adds a drag component onto the divider
+ * See com.itis.pcr.view.wells.SampleDataDefaultViewFactory for an example of the added functionality.
+ */
+@SuppressWarnings("javadoc")
 public class ModifiedBasicSplitPaneUI extends SplitPaneUI
 {    /**
      * The divider used for non-continuous layout is added to the split pane
@@ -88,6 +98,131 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
      * Instance of the divider for this JSplitPane.
      */
     protected ModifiedBasicSplitPaneDivider divider;
+    
+    public void revalidateDivider()
+    {
+    	divider.revalidate();
+    }
+
+    protected List<Pair<JComponent,ComponentLocator>> additionalComponentsOnDivider;
+
+    /**
+     * Puts the component on the divider
+     * Keep in mind that the component will take the cursor from the divider unless comp.setcursor has been called.
+     * @param comp
+     */
+    public void addComponentToDivider(JComponent comp,ComponentLocator locator)
+    {
+    	if(additionalComponentsOnDivider==null)
+    	{
+    		additionalComponentsOnDivider=new LinkedList<Pair<JComponent,ComponentLocator>>();
+    	}
+    	additionalComponentsOnDivider.add(new Pair<JComponent,ComponentLocator>(comp,locator));
+    	if(divider!=null)
+    	{
+    		divider.addComponentToDivider(comp,locator);
+    	}
+    }
+    
+    /**
+     * Makes a ComponentLocator that will place a component horizontally between c1 and c2
+     * @param c1
+     * @param c2
+     * @return
+     */
+    public static ComponentLocator inBetweenHoriz(final JComponent c1,final JComponent c2)
+    {
+    	return new DeferredLocator()
+    	{
+			@Override
+			public void locateComponent(JComponent component, Rectangle bounds) {
+				component.setBounds(c1.getBounds().x+c1.getBounds().width, 0, c2.getBounds().x-(c1.getBounds().x+c1.getBounds().width), bounds.height);
+			}
+    		
+    	};
+    }
+    
+    /**
+     * Makes a ComponentLocator that fills the entire available space
+     * @param c1
+     * @param c2
+     * @return
+     */
+    public static ComponentLocator fillSpace()
+    {
+    	return new ComponentLocator()
+    	{
+			@Override
+			public void locateComponent(JComponent component, Rectangle bounds) {
+				component.setBounds(bounds);
+			}
+    		
+    	};
+    }
+    
+
+    /**
+     * Makes a centred "drag" component for this UI.
+     * This component draws its rectangle centred and sized relative to the parent component (i.e. the divider),
+     *  if there is enough space to do so.
+     * If there is not enough space, it draws a smaller rectangle centred within this component.
+     * This is the component used by addDefaultDragComponent().
+     * @return
+     */
+    public static JComponent makeCentralDragComponent()
+    {
+    	return new JPanel()
+    	{
+    		@Override
+    		public void paintComponent(Graphics g)
+    		{
+    			g.setColor(this.getBackground());
+    			Rectangle bounds=getBounds();
+    			Dimension size=getParent().getSize();
+    			int w=size.width/3;
+    			int h=size.height/3;
+    			if(w>h)
+    			{
+    				h=Math.min(h, 6);
+    			}
+    			else
+    			{
+    				w=Math.min(w, 6);
+    			}
+    			if(bounds.contains(size.width/2-(w/2), size.height/2-(h/2),w,h)) // bounds is relative to the parent component
+    			{
+    				//System.out.println("Draw central");
+    				g.draw3DRect(size.width/2-(w/2)-bounds.x, size.height/2-(h/2)-bounds.y,w,h,false); // drawing relative to this component, hence the translation
+    			}
+    			else
+    			{
+    				//System.out.println("Draw special");
+	    			size=getSize();
+	    			w=size.width/2;
+	    			h=size.height/3;
+	    			if(w>h)
+	    			{
+	    				h=Math.min(h, 6);
+	    			}
+	    			else
+	    			{
+	    				w=Math.min(w, 6);
+	    			}
+	    			g.draw3DRect(size.width/2-(w/2), size.height/2-(h/2),w,h,false);
+    			}
+    		}
+    	};
+    }
+    
+    /**
+     * Shows the default drag component on the divider.
+     * Should not be used together with addComponentToDivider.
+     * If addComponentToDivider is used, the drag component (if one is desired) should also be added with addComponentToDivider, using a carefully chosen ComponentLocator.
+     */
+    public void addDefaultDragComponent()
+    {
+    	addComponentToDivider(makeCentralDragComponent(),fillSpace());
+    }
 
 
     /**
@@ -133,8 +268,10 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     /**
      * Set to true in startDragging if any of the children
      * (not including the nonContinuousLayoutDivider) are heavy weights.
+     * 
+     * changed to always be false
      */
-    protected boolean draggingHW;
+    protected final boolean draggingHW=false;
 
 
     /**
@@ -217,7 +354,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
         dividerSize = divider.getDividerSize();
         splitPane.add(divider, JSplitPane.DIVIDER);
 
-        setContinuousLayout(splitPane.isContinuousLayout());
+        setContinuousLayout(true);//splitPane.isContinuousLayout()
 
         resetLayoutManager();
 
@@ -278,10 +415,10 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     }
 
     InputMap getInputMap(int condition) {
-        if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
+        /*if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
             return (InputMap)DefaultLookup.get(splitPane, this,
                                                "SplitPane.ancestorInputMap");
-        }
+        }*/
         return null;
     }
 
@@ -633,10 +770,10 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
         nonContinuousLayoutDivider = newDivider;
     }
 
-    private void addHeavyweightDivider() {
+    /*private void addHeavyweightDivider() {
         if(nonContinuousLayoutDivider != null && splitPane != null) {
 
-            /* Needs to remove all the components and re-add them! YECK! */
+            // Needs to remove all the components and re-add them! YECK! 
             // This is all done so that the nonContinuousLayoutDivider will
             // be drawn on top of the other components, without this, one
             // of the heavyweights will draw over the divider!
@@ -661,7 +798,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
             }
         }
 
-    }
+    }*/
 
 
     /**
@@ -687,7 +824,16 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
      * Creates the default divider.
      */
     public ModifiedBasicSplitPaneDivider createDefaultDivider() {
-        return new ModifiedBasicSplitPaneDivider(this);
+    	ModifiedBasicSplitPaneDivider ret=new ModifiedBasicSplitPaneDivider(this);
+    	if(additionalComponentsOnDivider!=null)
+    	{
+    		for(Pair<JComponent, ComponentLocator> c : additionalComponentsOnDivider)
+    		{
+    			ret.addComponentToDivider(c.a(), c.b());
+    		}
+        	additionalComponentsOnDivider.clear();
+    	}
+        return ret;
     }
 
 
@@ -910,39 +1056,42 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     /**
      * Should be messaged before the dragging session starts, resets
      * lastDragLocation and dividerSize.
+     * 
+     * Code involving draggingHW is commented out.
      */
-    protected void startDragging() {
-        Component       leftC = splitPane.getLeftComponent();
+    @SuppressWarnings("deprecation")
+	protected void startDragging() {
+        /*Component       leftC = splitPane.getLeftComponent();
         Component       rightC = splitPane.getRightComponent();
-        ComponentPeer   cPeer;
+        ComponentPeer   cPeer;*/
 
         beginDragDividerLocation = getDividerLocation(splitPane);
-        draggingHW = false;
+        /*draggingHW = false;
         if(leftC != null && (cPeer = leftC.getPeer()) != null &&
            !(cPeer instanceof LightweightPeer)) {
             draggingHW = true;
         } else if(rightC != null && (cPeer = rightC.getPeer()) != null
                   && !(cPeer instanceof LightweightPeer)) {
             draggingHW = true;
-        }
+        }*/
         if(orientation == JSplitPane.HORIZONTAL_SPLIT) {
             setLastDragLocation(divider.getBounds().x);
             dividerSize = divider.getSize().width;
-            if(!isContinuousLayout() && draggingHW) {
+            /*if(!isContinuousLayout() && draggingHW) {
                 nonContinuousLayoutDivider.setBounds
                         (getLastDragLocation(), 0, dividerSize,
                          splitPane.getHeight());
                       addHeavyweightDivider();
-            }
+            }*/
         } else {
             setLastDragLocation(divider.getBounds().y);
             dividerSize = divider.getSize().height;
-            if(!isContinuousLayout() && draggingHW) {
+            /*if(!isContinuousLayout() && draggingHW) {
                 nonContinuousLayoutDivider.setBounds
                         (0, getLastDragLocation(), splitPane.getWidth(),
                          dividerSize);
                       addHeavyweightDivider();
-            }
+            }*/
         }
     }
 
@@ -994,7 +1143,8 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
      * Messaged to finish the dragging session. If not continuous display
      * the dividers location will be reset.
      */
-    protected void finishDraggingTo(int location) {
+    @SuppressWarnings("unused")
+	protected void finishDraggingTo(int location) {
         dragDividerTo(location);
         setLastDragLocation(-1);
         if(!isContinuousLayout()) {
@@ -1065,7 +1215,8 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
         /**
          * Does the actual layout.
          */
-        public void layoutContainer(Container container) {
+        @SuppressWarnings("unused")
+		public void layoutContainer(Container container) {
             Dimension   containerSize = container.getSize();
 
             // If the splitpane has a zero size then no op out of here.
@@ -1783,7 +1934,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     public class BasicVerticalLayoutManager extends
             BasicHorizontalLayoutManager
     {
-        public BasicVerticalLayoutManager() {
+		public BasicVerticalLayoutManager() {
             super(1);
         }
     }
@@ -1843,7 +1994,8 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     }
 
 
-    private static class Actions extends UIAction {
+    @SuppressWarnings("unused")
+	private static class Actions extends UIAction {
         private static final String NEGATIVE_INCREMENT = "negativeIncrement";
         private static final String POSITIVE_INCREMENT = "positiveIncrement";
         private static final String SELECT_MIN = "selectMin";
@@ -1946,6 +2098,40 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
                 focusOn.requestFocus();
             }
         }
+        
+        /**
+         * Implementation copied from internal SwingUtilities2 class, so as to not rely on the existence of that class.
+         * @param component
+         * @return
+         */
+        public static Component compositeRequestFocus(Component component) {
+            if (component instanceof Container) {
+                Container container = (Container)component;
+                if (container.isFocusCycleRoot()) {
+                    FocusTraversalPolicy policy = container.getFocusTraversalPolicy();
+                    Component comp = policy.getDefaultComponent(container);
+                    if (comp!=null) {
+                        comp.requestFocus();
+                        return comp;
+                    }
+                }
+                Container rootAncestor = container.getFocusCycleRootAncestor();
+                if (rootAncestor!=null) {
+                    FocusTraversalPolicy policy = rootAncestor.getFocusTraversalPolicy();
+                    Component comp = policy.getComponentAfter(rootAncestor, container);
+
+                    if (comp!=null && SwingUtilities.isDescendingFrom(comp, container)) {
+                        comp.requestFocus();
+                        return comp;
+                    }
+                }
+            }
+            if (component.isFocusable()) {
+                component.requestFocus();
+                return component;
+            }
+            return null;
+        }
 
         private void toggleFocus(JSplitPane splitPane) {
             Component left = splitPane.getLeftComponent();
@@ -1965,7 +2151,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
                         SwingUtilities.isDescendingFrom(focusOn, right)) ) ) {
                     return;
                 }
-                SwingUtilities2.compositeRequestFocus(focusOn);
+                compositeRequestFocus(focusOn);
             }
         }
 
@@ -2008,7 +2194,7 @@ public class ModifiedBasicSplitPaneUI extends SplitPaneUI
     }
 }
 
-class ModifiedBasicSplitPaneDivider extends Container
+class ModifiedBasicSplitPaneDivider extends JPanel
 implements PropertyChangeListener
 {
 /**
@@ -2077,18 +2263,16 @@ private boolean mouseOver;
 private int oneTouchSize;
 private int oneTouchOffset;
 
-/**
- * If true the one touch buttons are centered on the divider.
- */
-private boolean centerOneTouchButtons;
-
 private Icon leftIcon,rightIcon,topIcon,bottomIcon;
+
+private Map<JComponent,ComponentLocator> additionalComponentsOnDivider;
 
 
 /**
  * Creates an instance of BasicSplitPaneDivider. Registers this
  * instance for mouse events and mouse dragged events.
  */
+@SuppressWarnings("javadoc")
 public ModifiedBasicSplitPaneDivider(ModifiedBasicSplitPaneUI ui) {
     oneTouchSize = ONE_TOUCH_SIZE;
     oneTouchOffset = ONE_TOUCH_OFFSET;
@@ -2098,16 +2282,23 @@ public ModifiedBasicSplitPaneDivider(ModifiedBasicSplitPaneUI ui) {
     topIcon=Views.getIconFactory().getIcon(IconSize.SMALL, "actions", "go-top-gray");
     bottomIcon=Views.getIconFactory().getIcon(IconSize.SMALL, "actions", "go-bottom-gray");
     
-    centerOneTouchButtons = DefaultLookup.getBoolean(ui.getSplitPane(),
-             ui, "SplitPane.centerOneTouchButtons", true);
     setLayout(new DividerLayout());
     setBasicSplitPaneUI(ui);
     orientation = splitPane.getOrientation();
     setCursor((orientation == JSplitPane.HORIZONTAL_SPLIT) ?
               Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR) :
               Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-    setBackground(UIManager.getColor("SplitPane.background"));
+    //setBackground(UIManager.getColor("SplitPane.background"));
+    setBackground(ui.splitPane.getBackground());
+}
 
+public void addComponentToDivider(JComponent comp, ComponentLocator locator) {
+	if(additionalComponentsOnDivider==null)
+	{
+		additionalComponentsOnDivider=new HashMap<JComponent,ComponentLocator>();
+	}
+	additionalComponentsOnDivider.put(comp,locator);
+	add(comp);
 }
 
 public void revalidate() {
@@ -2120,6 +2311,7 @@ public void revalidate() {
 /**
  * Sets the SplitPaneUI that is using the receiver.
  */
+@SuppressWarnings("javadoc")
 public void setBasicSplitPaneUI(ModifiedBasicSplitPaneUI modifiedBasicSplitPaneUI) {
     if (splitPane != null) {
         splitPane.removePropertyChangeListener(this);
@@ -2156,6 +2348,7 @@ public void setBasicSplitPaneUI(ModifiedBasicSplitPaneUI modifiedBasicSplitPaneU
  * Returns the <code>SplitPaneUI</code> the receiver is currently
  * in.
  */
+@SuppressWarnings("javadoc")
 public ModifiedBasicSplitPaneUI getBasicSplitPaneUI() {
     return splitPaneUI;
 }
@@ -2166,6 +2359,7 @@ public ModifiedBasicSplitPaneUI getBasicSplitPaneUI() {
  * the width if the splitpane is <code>HORIZONTAL_SPLIT</code>, or
  * the height of <code>VERTICAL_SPLIT</code>.
  */
+@SuppressWarnings("javadoc")
 public void setDividerSize(int newSize) {
     dividerSize = newSize;
 }
@@ -2175,6 +2369,7 @@ public void setDividerSize(int newSize) {
  * Returns the size of the divider, that is the width if the splitpane
  * is HORIZONTAL_SPLIT, or the height of VERTICAL_SPLIT.
  */
+@SuppressWarnings("javadoc")
 public int getDividerSize() {
     return dividerSize;
 }
@@ -2184,6 +2379,7 @@ public int getDividerSize() {
  * Sets the border of this component.
  * @since 1.3
  */
+@SuppressWarnings({ "javadoc", "unused" })
 public void setBorder(Border border) {
     Border         oldBorder = this.border;
 
@@ -2291,10 +2487,19 @@ public void paint(Graphics g) {
       Dimension size = getSize();
       border.paintBorder(this, g, 0, 0, size.width, size.height);
   }
-  
-  Dimension size = getSize();
-  g.setColor(this.getBackground());
-  g.draw3DRect(size.width/2-(size.width/6), size.height/2-(size.height/6),size.width/3,size.height/3,false);
+  /*int nComponents=this.getComponentCount();
+  if(splitPane.isOneTouchExpandable() &&
+	        leftButton != null &&
+	        rightButton != null)
+  {
+	  nComponents-=2;
+  }
+  if(nComponents==0)
+  {
+	  Dimension size = getSize();
+	  g.setColor(this.getBackground());
+	  g.draw3DRect(size.width/2-(size.width/6), size.height/2-(size.height/6),size.width/3,size.height/3,false);
+  }*/
 }
 
 
@@ -2305,11 +2510,11 @@ public void paint(Graphics g) {
  * are null. invalidates the receiver as well.
  */
 protected void oneTouchExpandableChanged() {
-    if (!DefaultLookup.getBoolean(splitPane, splitPaneUI,
+    /*if (!DefaultLookup.getBoolean(splitPane, splitPaneUI,
                        "SplitPane.supportsOneTouchButtons", true)) {
         // Look and feel doesn't want to support one touch buttons, bail.
         return;
-    }
+    }*/
     if (splitPane.isOneTouchExpandable() &&
         leftButton == null &&
         rightButton == null) {
@@ -2794,6 +2999,7 @@ protected class VerticalDragController extends DragController
 } // End of BasicSplitPaneDividier.VerticalDragController
 
 
+
 /**
  * Used to layout a <code>BasicSplitPaneDivider</code>.
  * Layout for the divider
@@ -2802,13 +3008,54 @@ protected class VerticalDragController extends DragController
  */
 protected class DividerLayout implements LayoutManager
 {
+	public void arrangeComponents(Container c,Rectangle bounds)
+	{
+		int nComponents=c.getComponentCount();
+		
+		List<JComponent> deferredComponents=new LinkedList<JComponent>();
+		
+        for(int i=0;i<nComponents;i++)
+        {
+        	JComponent comp=(JComponent)c.getComponent(i);
+        	if(comp!=leftButton && comp!=rightButton)
+        	{
+        		if(additionalComponentsOnDivider!=null)
+        		{
+        			ComponentLocator cl=additionalComponentsOnDivider.get(comp);
+        			if(cl!=null)
+        			{
+        				if(cl instanceof DeferredLocator)
+        				{
+        					deferredComponents.add(comp);
+        				}
+        				else
+        				{
+        					cl.locateComponent(comp, bounds);
+        				}
+        			}
+        		}
+        	}
+        }
+        for(JComponent comp : deferredComponents)
+        {
+        	ComponentLocator cl=additionalComponentsOnDivider.get(comp);
+        	if(cl!=null)
+			{
+        		cl.locateComponent(comp, bounds);
+			}
+        }
+	}
+	
     public void layoutContainer(Container c) {
-        if (leftButton != null && rightButton != null &&
-            c == ModifiedBasicSplitPaneDivider.this) {
-            if (splitPane.isOneTouchExpandable()) {
+        if (leftButton != null && rightButton != null && c == ModifiedBasicSplitPaneDivider.this)
+        {
+            if (splitPane.isOneTouchExpandable())
+            {
+            	//show buttons
                 Insets insets = getInsets();
 
-                if (orientation == JSplitPane.VERTICAL_SPLIT) {
+                if (orientation == JSplitPane.VERTICAL_SPLIT)
+                {
                     int extraX = (insets != null) ? insets.left : 0;
                     int blockSize = getHeight();
 
@@ -2818,19 +3065,32 @@ protected class DividerLayout implements LayoutManager
                     }
                     blockSize = Math.min(blockSize, oneTouchSize);
 
-                    int y = (c.getSize().height - blockSize) / 2;
-
-                    if (!centerOneTouchButtons) {
-                        y = (insets != null) ? insets.top : 0;
-                        extraX = 0;
+                    if(blockSize>=c.getSize().height/2)
+                    {
+                        int y = (c.getSize().height - blockSize) / 2;
+	                    leftButton.setBounds(extraX + oneTouchOffset, y,
+	                                         blockSize, blockSize);
+	                    rightButton.setBounds(extraX + oneTouchOffset +
+	                                          oneTouchSize, y,
+	                                          blockSize, blockSize);
                     }
-                    leftButton.setBounds(extraX + oneTouchOffset, y,
-                                         blockSize * 2, blockSize);
-                    rightButton.setBounds(extraX + oneTouchOffset +
-                                          oneTouchSize * 2, y,
-                                          blockSize * 2, blockSize);
+                    else
+                    {
+                        int y = (c.getSize().height) / 2 - blockSize;
+	                    leftButton.setBounds(extraX + oneTouchOffset, y,
+                                blockSize, blockSize);
+	                    rightButton.setBounds(extraX + oneTouchOffset, y+blockSize,
+                                blockSize, blockSize);
+                    }
+                    
+                    int maxButtonX = Math.max(rightButton.getBounds().x+rightButton.getBounds().width,
+                    		leftButton.getBounds().x+leftButton.getBounds().width);
+
+                    Rectangle bounds=new Rectangle(maxButtonX,0,c.getWidth()-maxButtonX,c.getHeight());
+                    arrangeComponents(c,bounds);
                 }
-                else {
+                else
+                {
                     int extraY = (insets != null) ? insets.top : 0;
                     int blockSize = getWidth();
 
@@ -2842,22 +3102,34 @@ protected class DividerLayout implements LayoutManager
 
                     int x = (c.getSize().width - blockSize) / 2;
 
-                    if (!centerOneTouchButtons) {
-                        x = (insets != null) ? insets.left : 0;
-                        extraY = 0;
-                    }
-
                     leftButton.setBounds(x, extraY + oneTouchOffset,
-                                         blockSize, blockSize * 2);
+                                         blockSize, blockSize);
                     rightButton.setBounds(x, extraY + oneTouchOffset +
-                                          oneTouchSize * 2, blockSize,
-                                          blockSize * 2);
+                                          oneTouchSize, blockSize,
+                                          blockSize);
+
+                    int maxButtonY = Math.max(rightButton.getBounds().y+rightButton.getBounds().height,
+                    		leftButton.getBounds().y+leftButton.getBounds().height);
+
+                    Rectangle bounds=new Rectangle(0,maxButtonY,c.getWidth(),c.getHeight()-maxButtonY);
+                    arrangeComponents(c,bounds);
                 }
             }
             else {
+            	//hide buttons
                 leftButton.setBounds(-5, -5, 1, 1);
                 rightButton.setBounds(-5, -5, 1, 1);
+                
+                //arrange extra components
+            	Rectangle bounds=new Rectangle(0,0,c.getWidth(),c.getHeight());
+                arrangeComponents(c,bounds);
             }
+        }
+        else if(!splitPane.isOneTouchExpandable() && c == ModifiedBasicSplitPaneDivider.this)
+        {
+            //arrange extra components
+       	 	Rectangle bounds=new Rectangle(0,0,c.getWidth(),c.getHeight());
+            arrangeComponents(c,bounds);
         }
     }
 
@@ -2995,4 +3267,65 @@ private class OneTouchActionHandler implements ActionListener {
         }
     }
 } // End of class BasicSplitPaneDivider.LeftActionListener
+}
+
+
+interface DeferredLocator extends ComponentLocator
+{
+	
+}
+
+/**
+ * Implementation copied from sun.swing.UIAction, because that is an internal API.
+ */
+abstract class UIAction implements Action {
+    private String name;
+
+    public UIAction(String name) {
+        this.name = name;
+    }
+
+    public final String getName() {
+        return name;
+    }
+
+    public Object getValue(String key) {
+        if (key == NAME) {
+            return name;
+        }
+        return null;
+    }
+
+    // UIAction is not mutable, this does nothing.
+    public void putValue(String key, Object value) {
+    }
+
+    // UIAction is not mutable, this does nothing.
+    public void setEnabled(boolean b) {
+    }
+
+    /**
+     * Cover method for <code>isEnabled(null)</code>.
+     */
+    public final boolean isEnabled() {
+        return isEnabled(null);
+    }
+
+    /**
+     * Subclasses that need to conditionalize the enabled state should
+     * override this. Be aware that <code>sender</code> may be null.
+     *
+     * @param sender Widget enabled state is being asked for, may be null.
+     */
+    public boolean isEnabled(Object sender) {
+        return true;
+    }
+
+    // UIAction is not mutable, this does nothing.
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    }
+
+    // UIAction is not mutable, this does nothing.
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    }
 }
