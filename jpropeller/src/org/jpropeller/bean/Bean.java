@@ -33,6 +33,8 @@ import org.jpropeller.properties.change.Changeable;
  * {@link BeanFeatures} that can be used to look up the Props associated
  * with the Bean, and listen to changes to them.
  * 
+ * test
+ * 
  * {@link BeanFeatures} is provided as a separate interface to be returned
  * as an instance to make it (much) easier to implement {@link Bean}s without
  * extending a base {@link Bean} implementation class. 
